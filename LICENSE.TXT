@@ -9,13 +9,13 @@ Basically, that means that you can use its source for your own work, including
 commercial uses. But...
 
 [ ]  You must attribute (or openly mention) the original Author.
-[ ]  You must "share alike" – meaning you'll need to make the parts that you
+[ ]  You must "share alike" - meaning you'll need to make the parts that you
      use or modify also freely available.
 
 The best way to do that is to have a link back to the source repository on
 GitHub using one of the two ("c1k.it") logos (found in the includes folder).
 
-But writing ones code from scratch is ludicrous, so we’ve used some other work
+But writing ones code from scratch is ludicrous, so we've used some other work
 that needs attribution:
 
 Sources of Intellectual Property Included
@@ -30,7 +30,7 @@ Copyright (c) 2011, Yahoo! Inc.
 * http://developer.yahoo.com/yui - BSD License <http://developer.yahoo.com/yui/license.html>
 
 Browser detection by Chris Schuld
-Copyright © 2008-2010 Chris Schuld
+Copyright (c) 2008-2010 Chris Schuld
 * http://chrisschuld.com - GPLv2 or later License (** See file LIC_GNU-GPL-3.0.TXT **)
 
 -Vino Rodrigues ;)
