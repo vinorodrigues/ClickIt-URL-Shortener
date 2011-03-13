@@ -1,0 +1,154 @@
+html, body {
+	height: 100%;
+}
+
+body {
+	font-family: 'Ubuntu', Helvetica, Arial, sans-serif;
+	margin: 0;
+	background-color: #184C64;
+	background-image: url('../images/bg.jpg');
+	background-repeat: repeat-x;
+}
+
+html[high-color-depth] body {
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#112), to(#256));
+	background:	-moz-linear-gradient(19% 75% 90deg, #112, #256);
+	background-attachment: fixed;
+}
+
+ol, ul, dl {
+	margin-left: 0;
+}
+
+a {
+	color: #099;
+	text-decoration: none;
+}
+
+a:hover, a:focus {
+	text-decoration: none;
+	border-bottom: 1px dotted #099;
+}
+
+a:visited {
+	color: #B77; 
+}
+
+fieldset {
+	color: captiontext;
+	background: window;
+	padding: 0 1em;
+	border: 1px solid activeborder;
+
+	-webkit-border-radius: 0.5em;
+	-moz-border-radius: 0.5em;
+	border-radius: 0.5em;	
+
+	-webkit-box-shadow: 1px 1px 2px #555;
+	-moz-box-shadow: 1px 1px 2px #555;
+	box-shadow: 1px 1px 2px #555;
+}
+
+#cell {
+	padding-top: 80px;
+	margin-bottom: -1em;
+}
+
+#footer {
+	position: absolute; bottom: 0; right: 0; width: auto; 
+	padding: 0.25em;
+	font-size: 77%;
+	color: #DDD;
+	text-shadow: #222 0 1px 0;
+}
+
+#footer a, #footer a:hover, #footer a:focus {
+	text-decoration: none;
+	color: inherit;
+} 
+
+
+#box {
+	overflow:auto;
+	width: 62.5%;
+	min-width: 320px;
+	max-width: 640px;
+	background-color: white;
+	color: black;
+	/* font-size: 10pt; */
+	line-height: 18px;
+	margin: auto;
+	padding: 20px;
+}
+
+.rounded {
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;	
+}
+
+.boxed {
+	border: 2px solid #222;
+}
+
+html[high-color-depth] .boxed {
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFD), to(#FFF));
+	background:	-moz-linear-gradient(19% 75% 90deg, #FFD, #FFF);	
+}
+
+.shadow {
+	-webkit-box-shadow: 4px 4px 8px #555;
+	-moz-box-shadow: 4px 4px 8px #555;
+	box-shadow: 4px 4px 8px #555;
+}
+
+a#logo, a:hover#logo, a:focus#logo, a:visited#logo {
+	border: none;
+	text-decoration: none;
+}
+
+a#logo img {
+	float: right;
+	border: 0;
+	margin-top: -4px;
+	-webkit-margin-start: 20px;
+}
+
+h1#title {
+	margin-top: 0;
+}
+
+.panel {
+	color: activecaption;
+	background: buttonface;
+	padding: 0.25em 1em;
+	border: 1px solid activeborder;
+	
+	-webkit-border-radius: 0.5em;
+	-moz-border-radius: 0.5em;
+	border-radius: 0.5em;	
+
+	-webkit-box-shadow: 1px 1px 2px #555;
+	-moz-box-shadow: 1px 1px 2px #555;
+	box-shadow: 1px 1px 2px #555;
+}	
+	
+.red {
+	color: red;
+}
+
+.green {
+	color: green;
+	font-weight: bolder;
+}
+
+
+
+/* See http://positioniseverything.net/easyclearing.html for a description of this code. */
+.clearfix:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+.clearfix { display: inline-table; }
+/* Hides from IE-mac \*/
+* html .clearfix { height: 1%; }
+*+html .clearfix { height: 1%; }
+.clearfix { display: block; }
+/* End hide from IE-mac */
