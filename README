@@ -1,10 +1,47 @@
+Introduction
+------------
+
 c1k.it is URL shortening service.
 
-Similar to other public shortening services – like grandfather of shorteners
+Similar to other public shortening services – like the grandfather of shorteners
 <http://tinyurl.com>, the father <http://bit.ly> or more the more modern
 <http://goo.gl>, <http://tr.im>, <http://ow.ly>, <http://is.gd>, <http://su.pr>
 and others – It is run by tecsmith.com.au for its online marketing clients. 
 
 We hope you enjoy learning, or even using, this source.
+
+Releases
+--------
+
+0.1 Beta - Basic site functionality, installer and template engine
+        Database access external, you'll need to use someting like phpMyAdmin
+        (Released 14 Mar 2011)
+        
+Upcomming milestones
+--------------------        
+
+0.2 Beta - Basic user functionality like sign-on and URL creation
+        Hash-tag engine, YUI Grids layout
+
+0.3 Beta - Integration with Google Analytics, both site and click throughs
+
+0.4 Beta - Mobile links (QR-Code)
+
+0.5 Beta - Basic Reporting
+
+0.9 RC1 - Basic cleanups for release candidate
+
+1.0 - Feature freez
+
+1.1 - Jason and XML API's
+
+1.2 - Drupal plugin 
+
+1.3 - Wordpress plugin    
+
+Get Involved
+------------
+
+Co-maintainers welcome, please email author.
 
 -Vino Rodrigues ;)
