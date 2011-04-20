@@ -17,17 +17,19 @@ Releases
         Database access external, you'll need to use someting like phpMyAdmin
         (Released 14 Mar 2011)
         
+0.2 Beta - Basic user functionality like sign-on and URL creation
+        Hash-tag engine, internationalization
+
 Upcomming milestones
 --------------------        
 
-0.2 Beta - Basic user functionality like sign-on and URL creation
-        Hash-tag engine, YUI Grids layout
+0.3 Beta - User management
 
-0.3 Beta - Integration with Google Analytics, both site and click throughs
+0.4 Beta - Integration with Google Analytics, both site and click throughs
 
-0.4 Beta - Mobile links (QR-Code)
+0.5 Beta - Mobile links (QR-Code)
 
-0.5 Beta - Basic Reporting
+0.6 Beta - Basic Reporting
 
 0.9 RC1 - Basic cleanups for release candidate
 

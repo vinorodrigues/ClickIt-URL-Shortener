@@ -1,0 +1,41 @@
+/*
+ * @copyright  Tecsmith.com.au
+ *   See LICENSE.TXT for copyright notice and details.
+ */
+
+#cell {
+	padding-top: 0;
+}
+
+#box {
+	width: 100%;
+	max-width: 1024px;
+} 
+
+.rounded {
+	-webkit-border-radius: 0;
+	-moz-border-radius: 0;
+	border-radius: 0;
+}
+
+.rounded-top {
+	-webkit-border-radius: 0;
+	-moz-border-radius: 0;
+	border-radius: 0;
+}
+
+.rounded-bottom {
+	-webkit-border-radius: 0;
+	-moz-border-radius: 0;
+	border-radius: 0;
+}
+
+.shadow {
+	-webkit-box-shadow: 0 5px 12px #555;
+	-moz-box-shadow: 0 5px 12px #555;
+	box-shadow: 0 5px 12px #555;
+}
+
+#footer {
+	padding-bottom: 2em;
+}

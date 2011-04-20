@@ -1,0 +1,26 @@
+/* $Id$ */
+/* Adapted from Font Squirrel (http://www.fontsquirrel.com) */
+
+@font-face {
+	font-family: 'Silkscreen';
+	font-style: normal;
+	font-weight: normal;
+    src: url('slkscr.eot');
+    src: url('slkscr.eot?iefix') format('eot'),
+    	local('Silkscreen'),
+		url('slkscr.woff') format('woff'),
+		url('slkscr.ttf') format('truetype'),
+		url('slkscr.svg#webfontRmuj1ggf') format('svg');
+}
+
+@font-face {
+	font-family: 'Silkscreen';
+	font-style: normal;
+	font-weight: bold;
+    src: url('slkscrb.eot');
+    src: url('slkscrb.eot?iefix') format('eot'),
+		local('Silkscreen Bold'),
+		url('slkscrb.woff') format('woff'),
+		url('slkscrb.ttf') format('truetype'),
+		url('slkscrb.svg#webfontLQQG4hbV') format('svg');
+}

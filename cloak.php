@@ -12,8 +12,10 @@
 if (!defined('IN_CLICKIT')) die('Restricted');
 
 if (!isset($p_title)) $p_title = pathinfo($_SERVER["PHP_SELF"], PATHINFO_BASENAME);
-if (!isset($p_url)) $p_url = pathinfo($_SERVER["PHP_SELF"], PATHINFO_DIRNAME) . '/' ;
-$p_favicon = parse_url($p_url, PHP_URL_HOST) . '/favicon.ico'; 
+if (!isset($p_url)) $p_url = pathinfo($_SERVER["PHP_SELF"], PATHINFO_DIRNAME);
+if (substr($p_url, -1) != '/') $p_url .= '/';
+$p_favicon = parse_url($p_url, PHP_URL_HOST) . '/favicon.ico';
+// TODO : /favicon.gif 
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>

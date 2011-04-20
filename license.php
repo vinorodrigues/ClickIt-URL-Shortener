@@ -10,11 +10,14 @@
  */
 
 require_once('includes/library.php');
+require_once('includes/lang.php');
+initialize_settings();
+initialize_lang();
 
-$head_title = "C1K.IT LICENSE";
-$title = "License and other legalities";
+$page['head_title'] = "c1k.it LICENSE";
+$page['title'] = "License and other legalities";
 
-$head_suffix = "\t<style>" . 
+$page['head_suffix'] = "\t<style>" . 
 	" td, th { border: none; vertical-align: top; }" . 
 	" p { margin-top: 0; margin-bottom: 1em; }" .
 	" img { border-width: 0; } " .
@@ -85,12 +88,22 @@ Copyright &copy; 2011, Yahoo! Inc.<br />
 Browser detection by <a href="http://chrisschuld.com">Chris Schuld</a><br />
 Copyright &copy; 2008-2010 Chris Schuld<br />
 * <a href="http://chrisschuld.com">http://chrisschuld.com</a> - GPLv2 or later License
-
+</td>
+</tr>
+<tr>
+<td class="l">
+<a href="http://www.php.net"><img src="images/php-88x31.png" alt="PHP" /></a>
+</td>
+<td class="r">
+And finaly, but not least, thanks to the PHP Group and community, specifically
+Andrew Moore, 
+Enrico Pallazzo,
+and other PHP Manual <a href="http://www.php.net/manual/en/preface.php#contributors">Contributors</a>. 
 </td>
 </tr>
 </tfoot>
 </table>
 
 <?php
-$content = ob_get_clean();
+$page['content'] = ob_get_clean();
 include('includes/' . TEMPLATE . '.php');

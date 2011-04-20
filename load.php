@@ -11,12 +11,12 @@
 
 /* ----- Includes ----- */
 require_once('includes/library.php');
-load_settings();
+initialize_settings();
 
 /* ----- Offline ----- */
 if ($settings['offline']) :
 	include('index-offline.php');
-	exit;
+	exit();
 endif;
 
 /* ----- Get URL ----- */
@@ -25,61 +25,38 @@ if (isset($_REQUEST['url'])) :
 else :
 	$e = 404;
 	include('error.php');
-	die();
+	die(404);
 endif;
-$shortURL = strtolower( preg_replace("/[^a-z0-9]+/i", "", $expectedURL) );
+$shortURL = strtolower( preg_replace("/[^a-z0-9_]+/i", "", $expectedURL) );
 // test for file existance of urls like "about" and redirect to 'about.php'
 if (file_exists($shortURL . '.php')) :
 	// make sure it's not this file or else we'll go into a infinite loop
 	if ( strcasecmp($shortURL, pathinfo(__FILE__, PATHINFO_FILENAME)) != 0 ) :
-		include($shortURL . '.php');
-		exit;
+		// include($shortURL . '.php');
+		$e = (isset($settings['force302']) && $settings['force302']) ? 302 : 303;
+		header("Location: $shortURL.php", true, $e);  // 303 See Other - correct way to redirect local URI 
+		exit($e);
 	endif;
 endif;
-$actionURL = substr( preg_replace("/[a-z0-9]/i", "", $expectedURL), 0, 1);
+$actionURL = substr( preg_replace("/[a-z0-9_]/i", "", $expectedURL), 0, 1);
 
 /* ---- find url ----- */
 $isShortURL = false;
 
-include_once('includes/db/' . $settings['dbms'] . '.' . $phpEx);
-$sql_db = 'dbal_' . $settings['dbms'];  // fix for a bug! 
-
 set_error_handler('error_handler');
 set_exception_handler('exception_handler');	
 
-$db = new $sql_db();
-$db->sql_connect(
-	$settings['dbhost'],
-	$settings['dbuser'],
-	$settings['dbpasswd'],
-	$settings['dbname'],
-	$settings['dbport'],
-	false,
-	false);
+$db = initialize_db();
 
 if (empty($m)) :  // was there an error connecting
 	$sql = 	"SELECT * FROM $URLS_TABLE" .  
-		" WHERE " . $db->sql_build_array('SELECT', Array('shorturl' => $shortURL));
+		" WHERE " . $db->sql_build_array('SELECT', array(
+			'shorturl' => $shortURL,
+			'enabled' => 1,  // true,
+			));
 	$result = $db->sql_query($sql);
-	
-	switch ($db->sql_layer) :
-		case 'mysql' :
-		case 'mysql4' :
-			$ok = (mysql_num_rows($result) > 0);
-			break;
-		case 'mysqli' : 
-			$ok = ($result->num_rows > 0);
-			break;
-		default :
-			$m = "SQL Layer <code>" . $db->sql_layer .  "</code> not supported" . 
-				" - see " . __FILE__ . " line number " . __LINE__;
-			$ok = false;
-			break;
-	endswitch;
-	
-	if ($ok) :
-		$row = $db->sql_fetchrow($result);
-		
+	$row = $db->sql_fetchrow($result);
+	if ($row) :	
 		$p_cloak = (boolean) $row['cloak']; 
 		switch ($actionURL) :
 			case '-' : $p_action = 'preview'; break;
@@ -99,20 +76,20 @@ if (empty($m)) :  // was there an error connecting
 		
 		// update lastvisiton
 		$sql = "UPDATE $URLS_TABLE" .
-			" SET " . $db->sql_build_array('UPDATE', Array('lastvisiton' => microtime(true))) .
-			" WHERE " . $db->sql_build_array('SELECT', Array('id' => $id));
+			" SET " . $db->sql_build_array('UPDATE', array('lastvisiton' => microtime(true))) .
+			" WHERE " . $db->sql_build_array('SELECT', array('id' => $id));
 		$db->sql_query($sql);
 
 		// log visit
 		if ($p_log) :
-			$data = Array(
+			$data = array(
 				'urlid' => $id,
 				'accessedon' => microtime(true),
 				'ipaddress' => $db->sql_escape($_SERVER['REMOTE_ADDR']),
 				'referer' => isset($_SERVER['HTTP_REFERER']) ? $db->sql_escape($_SERVER['HTTP_REFERER']) : '',
 				);
 				
-			$bf = isset($settings['getbrowser']) ? 'includes/'.$settings['getbrowser'] : false;
+			$bf = isset($settings['func_getbrowser']) ? 'includes/'.$settings['func_getbrowser'] : false;
 			if ($bf && file_exists($bf)) :
 				include_once($bf);
 				$brwsr = _get_browser($_SERVER['HTTP_USER_AGENT']);
@@ -156,10 +133,13 @@ endif;
 
 switch($p_action) :
 	case 'preview' :
+		initialize_settings();
+		initialize_lang();
+		
 		$p_delay = 60;
 		if (isset($settings['preview_delay'])) $p_delay = $settings['preview_delay'];
 		if ($p_delay > 0) :
-			$head_prefix = "\t<meta http-equiv=\"refresh\" content=\"$p_delay;$p_url\">\n";
+			$page['head_prefix'] = "\t<meta http-equiv=\"refresh\" content=\"$p_delay;$p_url\">\n";
 			ob_start();
 ?>
 	<script type="text/javascript">
@@ -169,7 +149,7 @@ switch($p_action) :
 		function countdown() { 
 			seconds--; 
 			var count = document.getElementById("countdown"); 
-			count.innerHTML = " - in "+seconds+" sec"; 
+			count.innerHTML = "<?php P('SEC_PREFIX'); ?>"+seconds+"<?php P('SEC_SUFIX'); ?>"; 
 			if (seconds == 0) { 
 				window.clearInterval(int);
 				count.innerHTML = "";
@@ -178,18 +158,18 @@ switch($p_action) :
 		}
 	</script>
 <?php
-			$head_suffix = ob_get_clean();			
+			$page['head_suffix'] = ob_get_clean();			
 		endif;
 
-		$head_title = "$p_title ($p_url)";
-		$title = $p_title;
-		$content = "Redirecting to <a href=\"$p_url\">$p_url</a>";
-		if ($p_delay > 0) $content .= " <small><span id=\"countdown\"></span></small>";
+		$page['head_title'] = "$p_title ($p_url)";
+		$page['title'] = $p_title;
+		$page['content'] = T('REDIRECTING_TO', array('url' => $p_url)); 
+		if ($p_delay > 0) $page['content'] .= " <small><span id=\"countdown\"></span></small>";
 		include('includes/' . TEMPLATE . '.php');
 		break;
 
 	case 'cloak' :
-		include 'cloak.php';
+		include('cloak.php');
 		break;
 		
 	default : // 'redir'
@@ -199,7 +179,7 @@ switch($p_action) :
 		$ref_path .= $_SERVER["REQUEST_URI"];
 		header("Referer: $ref_path");  // be nice and tell the other server where you came from
 		$e = (isset($settings['force302']) && $settings['force302']) ? 302 : 307;
-		header("Location: $p_url", TRUE, $e);
+		header("Location: $p_url", true, $e);
 		break;
 		
 endswitch;

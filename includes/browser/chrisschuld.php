@@ -19,7 +19,7 @@ function _get_browser($user_agent = '') {
 	if (!empty($user_agent))
 		$browser->setUserAgent($user_agent);
 		
-	$ret = Array();
+	$ret = array();
 	$ret['browser'] = $browser->getBrowser();
 	$ret['version'] = $browser->getVersion();
 	$ret['platform'] = $browser->getPlatform();

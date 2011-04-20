@@ -1,18 +1,34 @@
+/*
+ * @copyright  Tecsmith.com.au
+ *   See LICENSE.TXT for copyright notice and details.
+ */
+
+@IMPORT url('http://fonts.googleapis.com/css?family=Ubuntu');
+@IMPORT url('../fonts/silkscr/silkscr.css');
+@IMPORT url('minibutton.css');
+
 html, body {
 	height: 100%;
+	background: white;
 }
 
 body {
 	font-family: 'Ubuntu', Helvetica, Arial, sans-serif;
 	margin: 0;
-	background-color: #184C64;
-	background-image: url('../images/bg.jpg');
-	background-repeat: repeat-x;
+	padding: 0;
+	-webkit-text-size-adjust: none;
+}
+
+input, button, textarea, select {
+	font-family: inherit;
+	-webkit-text-size-adjust: none;
+	font-size: 100%;
 }
 
 html[high-color-depth] body {
-	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#112), to(#256));
-	background:	-moz-linear-gradient(19% 75% 90deg, #112, #256);
+	background: #FFF;
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#EEE), to(#FFF));
+	background:	-moz-linear-gradient(19% 75% 90deg, #EEE, #FFF);
 	background-attachment: fixed;
 }
 
@@ -31,7 +47,7 @@ a:hover, a:focus {
 }
 
 a:visited {
-	color: #B77; 
+	color: #077; 
 }
 
 fieldset {
@@ -49,17 +65,40 @@ fieldset {
 	box-shadow: 1px 1px 2px #555;
 }
 
+th, td { border: none; }
+
+blockquote {
+	font-style: italic;
+}
+
+hr { 
+	border: 0; 
+	width: 100%; 
+	height: 1px; 
+	background-color: transparent;
+	border-bottom: 1px solid #BBC;
+}
+
+
 #cell {
-	padding-top: 80px;
+	padding-top: 40px;
 	margin-bottom: -1em;
 }
 
+#box {}
+
+#frame {}
+
 #footer {
-	position: absolute; bottom: 0; right: 0; width: auto; 
-	padding: 0.25em;
-	font-size: 77%;
-	color: #DDD;
-	text-shadow: #222 0 1px 0;
+	font-family: 'Silkscreen';
+	font-size: 8px;
+	-webkit-font-smoothing: subpixel-antialiased;
+	
+	margin-top: 16px;
+	text-align: center;
+	padding: 0 auto;
+	color: #BBB;
+	text-shadow: #DDD 0 1px 0;
 }
 
 #footer a, #footer a:hover, #footer a:focus {
@@ -67,55 +106,159 @@ fieldset {
 	color: inherit;
 } 
 
-
 #box {
-	overflow:auto;
-	width: 62.5%;
+	width: 60%;
 	min-width: 320px;
 	max-width: 640px;
-	background-color: white;
-	color: black;
-	/* font-size: 10pt; */
-	line-height: 18px;
 	margin: auto;
-	padding: 20px;
 }
 
-.rounded {
-	-webkit-border-radius: 10px;
-	-moz-border-radius: 10px;
-	border-radius: 10px;	
+.nowrap {
+	white-space: nowrap;
+}
+
+.dithered {
+	padding: 0.25em 0.75em;
+	background-color: #EEF;
+	border-top: 1px solid #DDE;
+}
+
+.dithered tr.z2 td {
+	border-top: 2px solid #DDE;
+}
+
+#branding, #navigation, #messages, #content, #footer {
+	/* border: 1px dashed red; */
+	display: block;
+	overflow: hidden;
+}
+	
+.branding {
+	border: 1px solid #359;
+	background-color: #058;
+	height: 40px;
+	color: #FFF;
+	padding: 0.5em;
+	margin: 0;
+}
+
+.branding {
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#036), to(#169));
+	background:	-moz-linear-gradient(19% 75% 90deg, #036, #169);
+	/* filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#003366', endColorstr='#116699'); */
+}
+
+a#logo-link, a#logo-link:hover, a#logo-link:focus {
+	text-decoration: none;
+	border: none;
+}
+
+#logo-image {
+	border: none;
+}
+
+.navigation {
+	text-align: right;
+	font-size: 77%;
+	background-color: #FFF;
+	padding: 0.25em;
+	margin: 0;
+	border: 1px solid #DDD;
+	border-bottom: none;
+}
+
+.navigation {
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFF), to(#DDF));
+	background:	-moz-linear-gradient(19% 75% 90deg, #FFF, #DDF);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFFFFF', endColorstr='#DDDDFF');
+}
+
+#messages {
+	margin: 0;
+	padding: 0;
+}
+
+#messages .info,
+#messages .success,
+#messages .warning,
+#messages .error,
+#messages .validation,
+#messages .message {
+	font-size: 93%;
+    border-top: 1px solid;
+	border-bottom: 1px solid;
+	margin: 0;
+    padding: 0.25em 2em;
+    padding-left: 32px;
+    background-repeat: no-repeat;
+    background-position: 0.5em 50%;
+}
+
+#messages .info {
+    color: #00529B;
+    background-color: #BDE5F8;
+    background-image: url('../images/ico_info.png');
+}
+
+#messages .success {
+    color: #4F8A10;
+    background-color: #DFF2BF;
+    background-image:url('../images/ico_success.png');
+}
+
+#messages .warning {
+    color: #9F6000;
+    background-color: #FEEFB3;
+    background-image: url('../images/ico_warning.png');
+}
+
+#messages .error {
+    color: #D8000C;
+    background-color: #FFBABA;
+    background-image: url('../images/ico_error.png');
+}
+
+#messages .validation {
+    color: #D63301;
+    background-color: #FFCCBA;
+    background-image: url('../images/ico_validation.png');
+}
+
+#title {
+	text-align: center;
+	margin-top: 0;
 }
 
 .boxed {
-	border: 2px solid #222;
+	border: 1px solid #DDD;
+	background-color: white;
+	color: black;
+	line-height: 18px;
+	padding: 1em;
 }
 
-html[high-color-depth] .boxed {
-	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFD), to(#FFF));
-	background:	-moz-linear-gradient(19% 75% 90deg, #FFD, #FFF);	
+.rounded {
+	-webkit-border-radius: 0.5em;
+	-moz-border-radius: 0.5em;
+	border-radius: 0.5em;
+}
+
+.rounded-top {
+	-webkit-border-radius: 0.5em 0.5em 0 0;
+	-moz-border-radius: 0.5em 0.5em 0 0;
+	border-radius: 0.5em 0.5em 0 0;
+}
+
+.rounded-bottom {
+	-webkit-border-radius: 0 0 0.5em 0.5em;
+	-moz-border-radius: 0 0 0.5em 0.5em;
+	border-radius: 0 0 0.5em 0.5em;
 }
 
 .shadow {
-	-webkit-box-shadow: 4px 4px 8px #555;
-	-moz-box-shadow: 4px 4px 8px #555;
-	box-shadow: 4px 4px 8px #555;
-}
-
-a#logo, a:hover#logo, a:focus#logo, a:visited#logo {
-	border: none;
-	text-decoration: none;
-}
-
-a#logo img {
-	float: right;
-	border: 0;
-	margin-top: -4px;
-	-webkit-margin-start: 20px;
-}
-
-h1#title {
-	margin-top: 0;
+	-webkit-box-shadow: 2px 5px 12px #555;
+	-moz-box-shadow: 2px 5px 12px #555;
+	box-shadow: 2px 5px 12px #555;
 }
 
 .panel {
@@ -131,8 +274,41 @@ h1#title {
 	-webkit-box-shadow: 1px 1px 2px #555;
 	-moz-box-shadow: 1px 1px 2px #555;
 	box-shadow: 1px 1px 2px #555;
-}	
-	
+}
+
+table.editlist {
+	width: 100%;
+}
+
+table.editlist, table.editlist th, table.editlist td {
+	border-collapse: collapse;
+	vertical-align: top;
+}
+table.editlist { border-top: 1px solid #DDD; }
+table.editlist th, table.editlist td { border-bottom: 1px solid #DDD; }
+
+table.editlist thead th { background-color: #DDD; }
+table.editlist tbody th { text-align: right; font-weight: normal; border-right: 1px dashed #DDD; }
+table.editlist tr.odd { background-color: #F7F7FF; }
+table.editlist tr.even { background-color: #FFE; }
+table.editlist tr.single { background-color: #EEE; }
+table.editlist tr.odd.arch { background-color: #FEE; }
+table.editlist tr.even.arch { background-color: #FEF; }
+
+table.editlist span.title { color: #111; font-weight: bold; margin-left: 4px; }
+table.editlist span.clicks { color: #700; font-size: 77%; }
+table.editlist span.longurl, table.editlist a.longurl { color: #77F; font-size: 86%; margin-left: 20px; }
+table.editlist span.shorturl, table.editlist a.shorturl { color: #777; font-size: 86%; margin-left: 20px; }
+table.editlist span.date { color: #700; font-size: 77%; padding-left: 20px; }
+table.editlist div.editbuttons { margin-top: 0.5em; }
+
+table.editlist input[type='text'],
+table.editlist select, 
+table.editlist textarea {
+	width: 100%
+}
+	 
+
 .red {
 	color: red;
 }
@@ -142,6 +318,46 @@ h1#title {
 	font-weight: bolder;
 }
 
+.required {
+	width: 16px;
+	padding-left: 16px;
+	background: url('../images/required.png') no-repeat left center;
+}
+
+a.loginout, a.home, a.user, a.list, a.arch, a.admin {
+	padding-left: 14px;
+} 
+a.loginout { background: url('../images/tny_login.png') no-repeat left center; }
+a.home { background: url('../images/tny_home.png') no-repeat left center; }
+a.user { background: url('../images/tny_user.png') no-repeat left center; }
+a.list { background: url('../images/tny_list.png') no-repeat left center; }
+a.arch { background: url('../images/tny_arch.png') no-repeat left center; }
+a.admin { background: url('../images/tny_star.png') no-repeat left center; }
+
+
+.tips {
+	font-size: 77%;
+}
+
+.tips .validation {
+	font-weight: bold;
+	color: orange;
+}
+
+.tips .error {
+	font-weight: bold;
+	color: red;
+}
+
+.tips .success {
+	font-weight: bold;
+	color: blue;
+}
+
+.tips .warning {
+	font-weight: bold;
+	color: purple;
+}
 
 
 /* See http://positioniseverything.net/easyclearing.html for a description of this code. */

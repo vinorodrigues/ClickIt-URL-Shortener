@@ -1,4 +1,4 @@
- <?php
+<?php
 /**
  * @package    c1k.it
  * @author     Vino Rodrigues
@@ -10,11 +10,11 @@
  */
 
 require_once('includes/library.php');
-load_settings(false);
+initialize_settings(true);
 
 if (file_exists('config.php')) : 
 	$e = 403;
-	$m = 'File <code>config.php</code> already exists';
+	poke_error('File <code>config.php</code> already exists');
 	include('error.php');
 	die();
 endif;
@@ -24,7 +24,7 @@ global $o;  $o = '';  // Outcome messages
 
 function add_outcome($msg, $success = true) {
 	global $o;
-	$tf = $success ? 'true' : 'false';
+	$tf = $success ? 'success' : 'fail';
 	$yn = $success ? 'yes' : 'no';
 	$o .= "<li style=\"list-style:none;\"><img src=\"images/ico_$tf.png\" alt=\"$yn\" style=\"padding-right:1em;\" />  $msg</li>\n";
 }
@@ -35,7 +35,7 @@ else :
 	$nextstep = 0;
 endif;
 
-$head_title = 'ClickIt Install';
+$page['head_title'] = 'ClickIt Install';
 if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 	set_error_handler('error_handler');
 	set_exception_handler('exception_handler');	
@@ -57,7 +57,7 @@ if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 		if ($nextstep > 3) :  // = 4 +
 			$dbprefix = $_REQUEST['dbprefix'];
 
-			// redifine table names, ignoring ones set by load_settings()
+			// redifine table names, ignoring ones set by initialize_settings()
 			$SETTINGS_TABLE = $dbprefix . 'settings';
 			$USERS_TABLE = $dbprefix . 'users';
 			$URLS_TABLE = $dbprefix . 'urls';
@@ -66,16 +66,16 @@ if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 		
 		if ($nextstep == 4) :  // = 4
 			$drop_old = $_REQUEST['drop_old'];
-			$adminuser = $_REQUEST['adminuser'];
+			$adminuser = strtolower( $_REQUEST['adminuser'] );
 			$adminpasswd = $_REQUEST['adminpasswd'];
 			if (!empty($adminpasswd)) $adminpasswd = md5($adminpasswd);
-			
+
 			include_once('includes/db/db_tools.' . $phpEx);
 			$tools = new phpbb_db_tools($db);
-			
+
 			// drop all first in case there are linked tables
 			if ($drop_old) :
-				$drop_list = Array($LOG_TABLE, $URLS_TABLE, $USERS_TABLE, $SETTINGS_TABLE);
+				$drop_list = array($LOG_TABLE, $URLS_TABLE, $USERS_TABLE, $SETTINGS_TABLE);
 				// Drop tables - reverse order
 				foreach($drop_list as $Table) :
 					if ($tools->sql_table_exists($Table)) :
@@ -85,79 +85,87 @@ if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 				endforeach;
 				unset($drop_list);
 			endif;
-			
-			$schemas = Array(
 
-				// ----- Settings -----
-				$SETTINGS_TABLE => Array(
-					'COLUMNS' => Array(
-						'name' => Array('CHAR:70', Null),
-						'value' => Array('CHAR:140', ''),
-						),
-					'PRIMARY_KEY' => 'name',
-					),
+			$schemas = array(
 
 				// ----- Users -----					
-				$USERS_TABLE => Array(
-					'COLUMNS' => Array(
-						'id' => Array('UINT', Null, 'auto_increment'),
-						'username' => Array('CHAR:32', Null),
-						'passwd' => Array('CHAR:32', ''),
-						'realname' => Array('VCHAR:70', ''),
-						'email' => Array('VCHAR:150', ''),
-						'createdon' => Array('TIMESTAMP', 0),  // db_tools does't do DEFAULT CURRENT_TIMESTAMP 
-						'lastvisiton' => Array('TIMESTAMP', 0),
-						'enabled' => Array('BOOL', 0),
-						'is_admin' => Array('BOOL', 0),
-						'analytics' => Array('CHAR:32', ''),
+				$USERS_TABLE => array(
+					'COLUMNS' => array(
+						'id' => array('UINT', Null, 'auto_increment'),
+						'username' => array('CHAR:32', Null),
+						'passwd' => array('CHAR:32', ''),
+						'token' => array('CHAR:32', ''),
+						'userlevel' => array('TINT:1', 0),
+						'realname' => array('VCHAR:70', ''),
+						'email' => array('VCHAR:150', ''),
+						'createdon' => array('TIMESTAMP', 0),  // db_tools does't do DEFAULT CURRENT_TIMESTAMP 
+						'lastvisiton' => array('TIMESTAMP', 0),
+						'enabled' => array('BOOL', 0),
+						'bad_logon' => array('TINT:1', 0),
+						'analytics' => array('CHAR:32', ''),
 						),
 					'PRIMARY_KEY' => 'id',
-					'KEYS' => Array(
-						'KEY_username' => Array('UNIQUE', 'username'),
+					'KEYS' => array(
+						'KEY_username' => array('UNIQUE', 'username'),
+						'KEY_token' => array('INDEX', 'token'),
+						),
+					),
+
+				// ----- Settings -----
+				$SETTINGS_TABLE => array(
+					'COLUMNS' => array(
+						'userid' => array('UINT', 0),
+						'name' => array('CHAR:70', Null),
+						'value' => array('CHAR:140', ''),
+						),
+					'PRIMARY_KEY' => array('userid', 'name'),
+					'KEYS' => array(
+						'KEY_userid' => array('INDEX', 'userid'),
 						),
 					),
 
 				// ----- Urls -----
-				$URLS_TABLE => Array(
-					'COLUMNS' => Array(
-						'id' => Array('UINT', Null, 'auto_increment'),
-						'shorturl' => Array('CHAR:25', Null),
-						'longurl' => Array('VCHAR:254', Null),
-						'userid' => Array('UINT', 0),
-						'createdon' => Array('TIMESTAMP', 0),  // db_tools does't do DEFAULT CURRENT_TIMESTAMP
-						'lastvisiton' => Array('TIMESTAMP', 0),
-						'cloak' => Array('BOOL', 0),
-						'title' => Array('VCHAR:96', ''),
-						'metakeyw' => Array('VCHAR:254', ''),
-						'metadesc' => Array('VCHAR:254', ''),
-						'log' => Array('BOOL', 0),
-						'analytics' => Array('BOOL', 0),
+				$URLS_TABLE => array(
+					'COLUMNS' => array(
+						'id' => array('UINT', Null, 'auto_increment'),
+						'shorturl' => array('CHAR:25', Null),
+						'longurl' => array('VCHAR:254', Null),
+						'userid' => array('UINT', 0),
+						'createdon' => array('TIMESTAMP', 0),  // db_tools does't do DEFAULT CURRENT_TIMESTAMP
+						'lastvisiton' => array('TIMESTAMP', 0),
+						'enabled' => array('BOOL', 1),
+						'cloak' => array('BOOL', 0),
+						'title' => array('VCHAR:96', ''),
+						'metakeyw' => array('VCHAR:254', ''),
+						'metadesc' => array('VCHAR:254', ''),
+						'log' => array('BOOL', 0),
+						'analytics' => array('BOOL', 0),
 						),
 					'PRIMARY_KEY' => 'id',
-					'KEYS' => Array(
-						'KEY_shorturl' => Array('UNIQUE', 'shorturl'),
+					'KEYS' => array(
+						'KEY_shorturl' => array('UNIQUE', 'shorturl'),
 						),
 					),
 
 				// ----- Log -----	
-				$LOG_TABLE => Array(
-					'COLUMNS' => Array(
-						'urlid' => Array('UINT', Null),
-						'accessedon' => Array('TIMESTAMP', 0),  // db_tools does't do DEFAULT CURRENT_TIMESTAMP
-						'ipaddress' => Array('CHAR:15', ''),
-						'referer' => Array('VCHAR:254', ''),
-						'browser' => Array('CHAR:45', ''),
-						'version' => Array('CHAR:10', ''),
-						'platform' => Array('CHAR:45', ''),
+				$LOG_TABLE => array(
+					'COLUMNS' => array(
+						'urlid' => array('UINT', Null),
+						'accessedon' => array('TIMESTAMP', 0),  // db_tools does't do DEFAULT CURRENT_TIMESTAMP
+						'ipaddress' => array('CHAR:15', ''),
+						'referer' => array('VCHAR:254', ''),
+						'browser' => array('CHAR:45', ''),
+						'version' => array('CHAR:10', ''),
+						'platform' => array('CHAR:45', ''),
 						),
-					'KEYS' => Array(
-						'KEY_urlid' => Array('INDEX', 'urlid'),
+					'KEYS' => array(
+						'KEY_urlid' => array('INDEX', 'urlid'),
 						),
-				), 
+					), 
 				);
 
 			foreach($schemas as $tablename => $schema) :
-				if (!empty($m)) break;
+				if (!empty($messages)) break;
 				if (!$tools->sql_table_exists($tablename)) :
 					$tools->sql_create_table($tablename, $schema);
 					add_outcome("Created table <code>$tablename</code>");
@@ -165,27 +173,42 @@ if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 					add_outcome("Table <code>$tablename</code> already exists", false);
 				endif;
 			endforeach;
-			
+
 			// ===== Inital required data =====
-				
+
 			// ----- Settings Data -----
-			if (empty($m)) :
-				$data = Array(
+			if (empty($messages)) :
+				$data = array(
+					'userid' => 0,
 					'name' => 'version',
 					'value' => CLICKIT_VER,
 					);
 				$sql = "INSERT INTO $SETTINGS_TABLE" . $db->sql_build_array('INSERT', $data) . ";";
 				$db->sql_query($sql);
+				
+				include_once('includes/uuid.php');
+				$url = (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on')) ? 'https://' : 'http://';
+				$url .= $_SERVER['SERVER_PORT'] != '80' ? $_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'] : $_SERVER['SERVER_NAME'];
+								
+				$data = array(
+					'userid' => 0,
+					'name' => 'apikey',
+					'value' => str_replace('-', '', get_uuid5(NS_URL, $url)),
+					);
+				$sql = "INSERT INTO $SETTINGS_TABLE" . $db->sql_build_array('INSERT', $data) . ";";
+				$db->sql_query($sql);
+
 				add_outcome("Populated table <code>$SETTINGS_TABLE</code>");
 			endif;
 
 			// ----- Users Data -----
-			if (empty($m)) :
-				$data = Array(
+			if (empty($messages)) :
+				$data = array(
 					'username' => $adminuser,
+					'realname' => 'Administrator',
 					'createdon' => microtime(true),
-					'enabled' => '1',
-					'is_admin' => '1',
+					'enabled' => true,
+					'userlevel' => USER_LEVEL_GD,
 					);
 				if (!empty($adminpasswd)) $data['passwd'] = $adminpasswd;
 				$sql = "INSERT INTO $USERS_TABLE" . $db->sql_build_array('INSERT', $data) . ";";
@@ -196,30 +219,47 @@ if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 			// ----- End DB -----
 		elseif ($nextstep == 5) :
 			$sampledata = $_REQUEST['sampledata'];
-			
+			$adminuser = strtolower( $_REQUEST['adminuser'] );
+
 			if (($sampledata == 1) && (strcasecmp($adminuser, 'vino') != 0)) :
 				// ----- Users -----
-				$data = Array(
+				$data = array(
 					'username' => 'vino',
 					'passwd' => md5('1'),
 					'realname' => 'Vino Rodrigues',
 					'email' => 'clickit.source' . '@' . 'tecsmith.com.au',  // just to stop source scrapers
 					'createdon' => microtime(true),
 					'analytics' => 'UA-00000000-0',  // naa... not mine!
-					'enabled' => 1,
-					'is_admin' => 1,
+					'enabled' => true,
+					'userlevel' => USER_LEVEL_GD,
 					);
 				$sql = "INSERT INTO $USERS_TABLE" . $db->sql_build_array('INSERT', $data) . ";";
 				$db->sql_query($sql);
+
 				$user_id = $db->sql_nextid();
-				add_outcome("Added sample data for table <code>$USERS_TABLE</code>");
 			else :
 				$user_id = 1;  // Let's hope ...
 			endif; 
 
 			if ($sampledata == 1) :
+				// ----- Users -----
+				$data = array(
+					'username' => 'joe',
+					'passwd' => md5('1'),
+					'realname' => 'Joe Blow',
+					'email' => 'root@localhost',  // hope you have a SMTP server on your PC ;)
+					'createdon' => microtime(true),
+					'analytics' => 'UA-00000000-0',
+					'enabled' => true,
+					'userlevel' => USER_LEVEL_CR,
+					);
+				$sql = "INSERT INTO $USERS_TABLE" . $db->sql_build_array('INSERT', $data) . ";";
+				$db->sql_query($sql);
+				
+				add_outcome("Added sample data for table <code>$USERS_TABLE</code>");
+			
 				// ----- Urls -----
-				$data = Array(
+				$data = array(
 					'shorturl' => 'vino',
 					'longurl' => 'http://vinorodrigues.com',
 					'userid' => $user_id,
@@ -231,8 +271,8 @@ if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 					);
 				$sql = "INSERT INTO $URLS_TABLE" . $db->sql_build_array('INSERT', $data) . ";";
 				$db->sql_query($sql);
-				
-				$data = Array(
+
+				$data = array(
 					'shorturl' => 'ts',
 					'longurl' => 'http://tecsmith.com.au',
 					'userid' => $user_id,
@@ -243,8 +283,8 @@ if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 					);
 				$sql = "INSERT INTO $URLS_TABLE" . $db->sql_build_array('INSERT', $data) . ";";
 				$db->sql_query($sql);
-				
-				$data = Array(
+
+				$data = array(
 					'shorturl' => 'test',
 					'longurl' => 'http://localhost',
 					'userid' => $user_id,
@@ -257,8 +297,8 @@ if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 					);
 				$sql = "INSERT INTO $URLS_TABLE" . $db->sql_build_array('INSERT', $data) . ";";
 				$db->sql_query($sql);
-				
-				$data = Array(
+
+				$data = array(
 					'shorturl' => 'mail',
 					'longurl' => 'mailto:clickit.source@tecsmith.com.au',
 					'userid' => $user_id,
@@ -271,29 +311,29 @@ if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 				$db->sql_query($sql);
 
 				add_outcome("Added sample data for table <code>$URLS_TABLE</code>");  /* */
-								
+
 				$sql = '';  // clean SQL
 			endif;
 
 			// The config.php file we be created now...
 		endif;
-					
+
 		$db->sql_close();
 	endif;
-	
+
 	restore_exception_handler();
 	restore_error_handler();
-	if (!empty($m)) : $e = 500; include('error.php'); die(); endif;
-		
+	if (!empty($messages)) : $e = 500; include('error.php'); die(); endif;
+
 	if ($nextstep == 5) :  // = 5
 		// Finally - we write the config.php file
-		
+
 		set_error_handler('error_handler');
 		set_exception_handler('exception_handler');	
 
 		$myFile = "config.php";
 		$fh = fopen($myFile, 'w');
-		
+
 		$content = '<' . "?php" . PHP_EOL;
 		$content .= "if (!defined('IN_CLICKIT')) die('Restricted');" . PHP_EOL . PHP_EOL;
 
@@ -310,8 +350,8 @@ if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 		$content .= '$' . "settings['dbprefix'] = '$dbprefix';" . PHP_EOL;
 
 		// $content .= PHP_EOL . '?' . '>';
-		
-		if (!$fh || !empty($m)) :
+
+		if (!$fh || !empty($messages)) :
 			$content = str_replace('<', '&lt;', $content);
 			$content = str_replace('>', '&gt;', $content);
 			$content = str_replace('"', '&quot;', $content);
@@ -324,10 +364,10 @@ if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 			fclose($fh);
 			add_outcome('Create file <code>' . $myFile . '</code>');  /* */
 		endif;
-		
+
 		restore_exception_handler();
 		restore_error_handler();
-		$m = '';  // Clear errors
+		$messages = array();  // Clear errors
 	endif;
 endif;
 
@@ -335,7 +375,7 @@ switch($nextstep) :
 	/* ----- 0 ------------------------------------------------------------- */
 	case 0 :
 		if (!defined('IN_CLICKIT')) : $e = 403; include('error.php'); die(); endif;
-		
+
 	case 1 :
 		ob_start();
 		?>
@@ -343,11 +383,11 @@ switch($nextstep) :
 <h2>Welcome to the ClickIt installation wizard</h2>
 <form action="install.php" method="<?php print $method; ?>" name="step1" id="step1"> 
 
-<fieldset>
+<fieldset title="DBMS">
 
 <p>What type of database system will you be connecting to?
 <select name="dbms">
-<?php $x = Array('mysql', 'mysqli');
+<?php $x = array('mysql', 'mysqli');
 	foreach ($x as $s) :
 		print "  <option value=\"$s\"";
 		if (strcasecmp($settings['dbms'], $s) == 0) print "selected=\"selected\"";
@@ -360,11 +400,11 @@ switch($nextstep) :
 
 <input type="hidden" name="nextstep" value="2" />
 
-<div class="panel clearfix"><input type="submit" value="Next >"  style="float:right;" /></div>
+<div class="panel clearfix"><input type="submit" value="Next >" style="float:right;" /></div>
 </form>
 		<?php
-		$content = ob_get_clean();
-		$title = $head_title . ' - Step 1';
+		$page['content'] = ob_get_clean();
+		$page['title'] = $page['head_title'] . ' - Step 1';
 		break;
 
 	/* ----- 2 ------------------------------------------------------------- */
@@ -377,7 +417,7 @@ switch($nextstep) :
 
 <input type="hidden" name="dbms" value="<?php echo $dbms; ?>" />
 
-<fieldset>
+<fieldset title="Database">
 
 <p>Database Host: <input type="text" name="dbhost" value="<?php print $settings['dbhost']; ?>" size="15" maxlength="128" /></p>
 
@@ -387,7 +427,7 @@ switch($nextstep) :
 <small><b>Warning:</b> This installation script will transmit your password in clear text.</small></p>
 
 <p>Database Name: <input type="text" name="dbname" value="<?php print $settings['dbname']; ?>" size="15" maxlength="30" /><br />
-<small><b>Note:</b> The databse must already exist.</small></p>
+<small><b>Note:</b> The databse must already exist. Collation should be case insensitive (<i>xxx</i><b>_ci</b> in MySQL)</small></p>
 
 </fieldset>
 
@@ -397,8 +437,8 @@ switch($nextstep) :
 <div class="panel clearfix"><input type="submit" value="Next >"  style="float:right;" /></div>
 </form>
 		<?php
-		$content = ob_get_clean();
-		$title = $head_title . ' - Step 2';
+		$page['content'] = ob_get_clean();
+		$page['title'] = $page['head_title'] . ' - Step 2';
 
 		break;
 
@@ -418,14 +458,14 @@ switch($nextstep) :
 <input type="hidden" name="dbname" value="<?php echo $dbname; ?>" />
 <input type="hidden" name="dbport" value="<?php echo $dbport; ?>" />
 
-<fieldset>
+<fieldset title="Tables">
 
 <p>Table name prefix: <input type="text" name="dbprefix" value="<?php print $settings['dbprefix']; ?>" size="5" maxlength="10" /></p>
 
 <p><input type="checkbox" checked="checked" name="drop_old" id="drop_old" />
 <label for="drop_old">Drop existing tables if they exist</label></p>
 
-</fieldset><fieldset title="Administrator">
+<?php print '</fieldset><fieldset title="Administrator">'; /* Eclipse parse workaround */ ?>
 
 <p>Admin Username: <input type="text" name="adminuser" value="admin" size="15" maxlength="30" /></p>
 
@@ -440,8 +480,8 @@ switch($nextstep) :
 </form>
 		
 		<?php
-		$content = ob_get_clean();
-		$title = $head_title . ' - Step 3';
+		$page['content'] = ob_get_clean();
+		$page['title'] = $page['head_title'] . ' - Step 3';
 
 		break;
 		
@@ -462,6 +502,7 @@ switch($nextstep) :
 <input type="hidden" name="dbname" value="<?php echo $dbname; ?>" />
 <input type="hidden" name="dbport" value="<?php echo $dbport; ?>" />
 <input type="hidden" name="dbprefix" value="<?php echo $dbprefix; ?>" />
+<input type="hidden" name="adminuser" value="<?php echo $adminuser; ?>" />
 
 <fieldset>
 
@@ -483,8 +524,8 @@ switch($nextstep) :
 </form>
 
 		<?php
-		$content = ob_get_clean();
-		$title = $head_title . ' - Step 4';
+		$page['content'] = ob_get_clean();
+		$page['title'] = $page['head_title'] . ' - Step 4';
 
 		break;
 
@@ -506,8 +547,8 @@ You will now be directed to the home page.
 <p><small>It is recomended that in production systems the file <code>install.php</code> be deleted.</small></p>
 		
 		<?php
-		$content = ob_get_clean();
-		$title = $head_title . ' - Done!';
+		$page['content'] = ob_get_clean();
+		$page['title'] = $page['head_title'] . ' - Done!';
 
 		break;
 

@@ -10,8 +10,15 @@
  */
 
 require_once('includes/library.php');
+include_once('includes/lang.php');
 
-$errors = Array(
+// don't call initialize_settings(), just do the simple config inclusion
+require_once('includes/config-default.php');
+if (file_exists('config.php')) include_once('config.php');
+
+initialize_lang();
+
+$errors = array(
 	300 => "Info Multiple Choices",
 	301 => "Moved Permanently",
 	302 => "Found",
@@ -45,20 +52,33 @@ $errors = Array(
 	505 => "HTTP Version not supported",
 	);
   
-if (!isset($e)) :
+if (!isset($e)) :  // may come from include, so $e may already be set
 	if (isset($_REQUEST['e'])) :
 		$e = intval(trim($_REQUEST['e']));
 	else:
 		$e = 400;
 	endif;
 endif;
-if (!isset($errors[$e])) $e = 400;
 
-header('HTTP/1.0 ' . $e . ' ' . $errors[$e], true, $e);
+$err = 'STATUS_' . $e;
+if (isset($lang[$err])) :
+	if (is_array($lang[$err])) :
+		$err = '';
+		foreach ( $lang[$err] as $s ) $err .= $s . '<br />';
+	else :
+		$err = $lang[$err]; 
+	endif;
+else :
+	if (isset($errors[$e])) :
+		$err = $errors[$e];
+	else :
+		$err = '';
+	endif;
+endif; 
 
-$head_title = "Error $e - $errors[$e]";
-$title = "<span class=\"red\">HTTP Error:</span> $e";
-$content = "<p>$errors[$e]</p>";
-if (isset($m) && !empty($m)) $content .= "\n<hr />$m";
+header('HTTP/1.0 ' . $e . ' ' . $err, true, $e);
 
+$page['head_title'] = empty($err) ? "Error $e" : "Error $e - $err";
+$page['title'] = "<span class=\"red\">HTTP Error:</span> $e";
+if (!empty($err)) $page['content'] = "<p>$err</p>";
 include('includes/' . TEMPLATE . '.php');
