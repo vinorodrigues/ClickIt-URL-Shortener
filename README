@@ -1,7 +1,7 @@
 Introduction
 ------------
 
-c1k.it is URL shortening service.
+c1k.it <http://c1k.it> is URL shortening service.  This is it's source code.
 
 Similar to other public shortening services – like the grandfather of shorteners
 <http://tinyurl.com>, the father <http://bit.ly> or more the more modern
@@ -14,18 +14,21 @@ Releases
 --------
 
 0.1 Beta - Basic site functionality, installer and template engine
-        Database access external, you'll need to use someting like phpMyAdmin
-        (Released 14 Mar 2011)
+           Database access external, you'll need to use someting like phpMyAdmin
+           (Released 14 Mar 2011)
         
 0.2 Beta - Basic user functionality like sign-on and URL creation
-        Hash-tag engine, internationalization
+           Hash-tag engine, internationalization
+           Facebook and Google Analitics integration
+           (Released 21 Apr 2011)
 
 Upcomming milestones
 --------------------        
 
 0.3 Beta - User management
 
-0.4 Beta - Integration with Google Analytics, both site and click throughs
+0.4 Beta - ShortURL integration with Google Analytics, for click throughs and
+           cloaking
 
 0.5 Beta - Mobile links (QR-Code)
 
@@ -44,6 +47,6 @@ Upcomming milestones
 Get Involved
 ------------
 
-Co-maintainers welcome, please email author.
+Co-maintainers welcome, please email author via GitHub.
 
 -Vino Rodrigues ;)
