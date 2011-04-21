@@ -27,8 +27,83 @@ endif;
 initialize_settings();
 initialize_db(true);
 initialize_lang();
+
 $page['title'] = T('WELCOME');
 $page['content'] = T('PREFACE', null, '<p class="intro">', '</p>' . PHP_EOL);
+
+$use_fb = isset($settings['facebook_id']) && (!empty($settings['facebook_id']));
+$use_analytics = isset($settings['google_analytics']) && (!empty($settings['google_analytics']));
+if ($use_fb || $use_analytics) $page['scripts'] = '';
+
+if ($use_analytics) :
+	ob_start(); ?>
+<script type="text/javascript">//<![CDATA[
+	var _gaq = _gaq || [];
+	_gaq.push(['_setAccount', '<?php print $settings['google_analytics']; ?>']);
+	_gaq.push(['_trackPageview']);
+
+	(function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	})();
+//]]></script>
+	<?php $page['scripts'] .= ob_get_clean();
+	endif;
+
+if ($use_fb) :
+	ob_start(); ?>
+<div id="fb-root"></div>
+<script type="text/javascript">//<![CDATA[
+	window.fbAsyncInit = function() {
+		FB.init({appId: '<?php print $settings['facebook_id']; ?>', status: true, cookie: true, xfbml: true});
+<?php if ($use_analytics) : /* _trackEvent(category, action, opt_label, opt_value) */ ?>
+		FB.Event.subscribe('edge.create', function(href, widget) {
+			_gaq.push(['_trackEvent', 'Likes', 'Like', '<?php print $page['full_path']; ?>#like']);
+		});
+		FB.Event.subscribe('edge.remove', function(href, widget) {
+			_gaq.push(['_trackEvent', 'Likes', 'Unlike', '<?php print $page['full_path']; ?>#unlike']);
+		});
+<?php endif; ?>
+	};
+	(function() {
+		var e = document.createElement('script');
+		e.type = 'text/javascript';
+		e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
+		e.async = true;
+		document.getElementById('fb-root').appendChild(e);
+	}());
+//]]></script>
+<?php $page['scripts'] .= ob_get_clean();
+
+	/* <fb:like
+ 	*   href="URL"
+ 	*   layout="standard|button_count|box_count"
+ 	*   show-faces="true|false"
+ 	*   width="450"
+ 	*   action="like|recommend"
+ 	*   colorscheme="light|dark"
+ 	*   font="arial|lucida grande|segoe ui|tahoma|trebuchet ms|verdana"
+ 	*   ></fb:like>
+ 	*/
+
+	$page['footer'] = '<div class="facebook clearfix">';
+	$_gub = $use_analytics ? '?utm_source=facebook&utm_medium=social&utm_campaign=likes' : '';
+	$page['footer'] .= '<fb:like' . 
+	' href="' . $page['full_path'] . $_gub . '"' .
+	' layout="standard"' .
+	' show-faces="true"' .
+	' width="320"' .  // size of iPhone
+	' action="recommend"' .
+	' colorscheme="light"' .
+	// ' font="arial"' .
+	'></fb:like>';
+	$page['footer'] .= '</div>';
+	
+	// See: http://www.facebook.com/insights/
+	$page['head_suffix'] = "\t<meta property=\"fb:app_id\" content=\"" . $settings['facebook_id'] . "\" />\n";
+endif;
+
 initialize_security($settings['mustlogin']);
 
 ob_start(); ?>
@@ -53,16 +128,10 @@ endif; ?>
 
 </form>
 
-<?php /*
-TODO : Add Facebook link, for Version 0.3
-<script src="http://connect.facebook.net/en_US/all.js#xfbml=1"></script>
-<fb:like href="http://c1k.it" show_faces="false" width="310" action="recommend" font=""></fb:like>
-*/ ?>
-
-<?php 
-$page['content'] .= ob_get_clean();
+<?php $page['content'] .= ob_get_clean();
 
 if (!isset($page['head_suffix'])) $page['head_suffix'] = '';
+
 $page['head_suffix'] .= ajaxjs('yui/yui-min.js');
 
 if ($userlevel >= USER_LEVEL_CR) :

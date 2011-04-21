@@ -359,6 +359,11 @@ a.admin { background: url('../images/tny_star.png') no-repeat left center; }
 	color: purple;
 }
 
+.facebook {
+	margin: 0.5em auto;
+	text-align: center;
+}
+
 
 /* See http://positioniseverything.net/easyclearing.html for a description of this code. */
 .clearfix:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }

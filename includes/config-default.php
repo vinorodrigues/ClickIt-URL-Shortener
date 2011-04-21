@@ -44,6 +44,16 @@ $settings['shortminlength'] = 4;
 $settings['meta_description'] = "c1k.it is a URL Shortening service, or URL shortener, hosted by Tecsmith.com.au for it's internet marketing clients";
 $settings['meta_keywords'] = "URL shortening,URL shortener,Clean URL,Link rot,Semantic URL,URL redirection,Vanity domain,Vanity URL,internet marketing,online marketing,marketing";
 
+// Facebook "like", see http://developers.facebook.com/docs/reference/plugins/like
+// Facebook Application ID
+$settings['facebook_id'] = '';
+// Facebook API Key
+// $settings['facebook_key'] = '';  // UNUSED
+
+// Google Analitics for tracking c1k.it's home page
+$settings['google_analytics'] = '';
+
+
 /* ----- Database Settings (overrides set by install.php in /config.php) ----- */
 
 $settings['dbms']     = 'mysqli';

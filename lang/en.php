@@ -208,7 +208,7 @@ $lang['SHORT_CREATED_DESCRIPTIVE'] = array(
 
 $lang['UNKNOWN_ACTION'] = 'Don\'t know what to do with that request';
 $lang['INAPPROPRIATE'] = 'Inapropriate use of this page';
-$lang['SUBMIT'] = 'Update';
+$lang['SUBMIT'] = 'Apply Changes';
 $lang['RESET'] = 'Revert Edits';
 $lang['BACK'] = 'Back';
 $lang['FIELD_SHORTURL'] = 'Short Bit';

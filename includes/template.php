@@ -32,6 +32,8 @@ if ($bf && file_exists($bf)) :
 	endif;
 endif;
 
+$use_fb = (isset($settings['facebook_id']) && (!empty($settings['facebook_id'])));
+
 /* $domain = preg_replace("/^www./i", "", $_SERVER['HTTP_HOST']);
 foreach ($page as $n => $v) :  // XXX : Debug use only  
 	$page[$n] = str_replace(array('c1k.it'), array($domain), $v);
@@ -41,7 +43,10 @@ print __('<?xml version="1.0" encoding="UTF-8"?>' . "\n");
 print __('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
 	'<!DOCTYPE html>') . "\n";
 ?>
-<html<?php print __(' xmlns="http://www.w3.org/1999/xhtml"'); ?>>
+<html<?php
+	print __(' xmlns="http://www.w3.org/1999/xhtml"');
+	if ($use_fb) : print ' xmlns:fb="http://www.facebook.com/2008/fbml"'; endif;
+?>>
 <head>
 <?php if (isset($page['head_prefix'])) print $page['head_prefix']; ?>
 	<title><?php print $page['head_title']; ?></title>
@@ -52,7 +57,7 @@ print __('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http:/
 	<link rel="stylesheet" type="text/css" href="<?php yuicdn(); ?>build/cssbase/base-min.css" />
 	<link rel="stylesheet" type="text/css" href="<?php yuicdn(); ?>build/cssgrids/grids-min.css" />
 	<link rel="stylesheet" href="<?php print $page['base_path']; ?>css/style.css" type="text/css" />	
-	<script <?php print "type=\"text/javascript\"";  /* Eclipse doesn't like 'type' attrib */ ?>>//<![CDATA[
+	<script <?php print "type=\"text/javascript\""; /* Eclipse doesn't like 'type' attrib */ ?>>//<![CDATA[
 	if (window.screen.colorDepth >= 24) document.documentElement.setAttribute('high-color-depth', 'yes');
 	//]]></script>
 <?php if (isset($page['head_suffix'])) print $page['head_suffix']; ?>
@@ -61,7 +66,7 @@ print __('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http:/
 <div id="cell"><div id="box"><div id="frame" class="rounded shadow">
 <div id="branding" class="branding clearfix rounded-top">
 <a href="<?php print $page['base_path']; ?>" id="logo-link"><img src="<?php print $page['base_path'] . $page['logo']?>" alt="<?php print $page['site_name']; ?>" id="logo-image" /></a>
-<b class="red"><?php print CLICKIT_VER; ?></b>
+<b class="red" style="float:right"><?php print CLICKIT_VER; ?></b>
 </div>
 <?php if (isset($page['navigation']) && (!empty($page['navigation']))) : ?>
 <div id="navigation" class="navigation clearfix"><?php print $page['navigation']; ?></div>
@@ -86,6 +91,8 @@ endif;
 		T('TERMSOS', array('url' => $page['base_path'] . 'tos.php' )) . ' | ' . 
 		T('PRIVACY', array('url' => $page['base_path'] . 'privacy.php' )); 
 ?></div>
+<?php if (isset($page['footer'])) print $page['footer']; ?>
 </div></div>
+<?php if (isset($page['scripts'])) print $page['scripts']; ?>
 </body>
 </html>		
