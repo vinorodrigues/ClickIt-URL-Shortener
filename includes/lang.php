@@ -18,11 +18,12 @@ function initialize_lang() {
 		include('lang/' . $settings['func_lang']);
 }
 
-function T($str, $params = null, $prefix = '', $suffix = '') {
+function T($str, $params = NULL, $prefix = '', $suffix = '') {
 	global $lang;
 	if (isset($lang[$str])) :
 		if (is_array($lang[$str])) :
 			$txt = '';
+			if (($prefix == '') && ($suffix == '')) $suffix = ' ';
 			foreach ( $lang[$str] as $s ) $txt .= $prefix . $s . $suffix;
 		else :
 			$txt = $prefix . $lang[$str] . $suffix; 
@@ -50,7 +51,7 @@ function T($str, $params = null, $prefix = '', $suffix = '') {
 	return $txt;
 }
 
-function P($str, $params = null, $prefix = '', $suffix = '') {
+function P($str, $params = NULL, $prefix = '', $suffix = '') {
 	print T($str, $params, $prefix, $suffix);
 }
 

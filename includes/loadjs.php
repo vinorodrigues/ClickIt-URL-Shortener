@@ -9,6 +9,8 @@
  *   clickit [dot] source [at] mail [dot] vinorodrigues [dot] com
  */
 
+define('JSMINLIB', 'jsmin/jsmin.php');
+
 @$fn = $_REQUEST['f'];
 if (file_exists($fn)) :
 	$ts = time();
@@ -34,9 +36,9 @@ if (file_exists($fn)) :
 		endif;
 
 	// Minify JS using JSMin - http://code.google.com/p/jsmin-php 
-	if ((strpos($fn, '-min') === false) && file_exists('~jsmin.php')) :
-		include_once('~jsmin.php');
-		$contents = '/* Minified */' . JSMin::minify($contents);
+	if ((strpos($fn, '-min') === FALSE) && file_exists(JSMINLIB)) :
+		include_once(JSMINLIB);
+		$contents = '/* jsmin */ ' . JSMin::minify($contents);
 	endif;
 		
 	print str_replace($needle, $replace, $contents);

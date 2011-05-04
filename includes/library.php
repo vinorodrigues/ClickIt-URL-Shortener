@@ -5,26 +5,28 @@
  * @copyright  Tecsmith.com.au
  *   See LICENSE.TXT for copyright notice and details.
  * @license    Creative Commons Attribution-ShareAlike 3.0 Unported License
- * @author     Vino Rodrigues 
+ * @author     Vino Rodrigues
  *   clickit [dot] source [at] mail [dot] vinorodrigues [dot] com
  * @version    $Id$
  */
 
 /* ----- Application related ----- */
 
-define('IN_CLICKIT', true);
-define('CLICKIT_VER', '0.2 Beta');
+define('IN_CLICKIT', TRUE);
+define('CLICKIT_VER', '0.3&beta;');
 define('CLICKIT_BUILD', '$Id$');
 define('TEMPLATE', 'template');
 
-include_once('lang.php');
+global $phpEx;
+$phpEx = substr(strrchr(__FILE__, '.'), 1);
+include_once('lang.' . $phpEx);
 
 
 
 /* ----- Helper function ----- */
 
 function boolval($var) {
-	if (empty($var)) return false;
+	if (empty($var)) return FALSE;
 	if (is_bool($var)) return $var;
 	return intval($var) > 0;
 }
@@ -39,10 +41,14 @@ global $page;
 $page = array();
 $page['head_title'] = 'c1k.it';
 $page['full_path'] = (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on')) ? 'https://' : 'http://';
-$page['full_path'] .= $_SERVER['SERVER_PORT'] != '80' ? $_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'] : $_SERVER['SERVER_NAME'];
-$page['base_path'] = pathinfo($_SERVER["PHP_SELF"], PATHINFO_DIRNAME);
+$page['full_path'] .= $_SERVER['SERVER_NAME'];
+$__port = (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on')) ? 443 : 80;
+$page['full_path'] .= (intval($_SERVER['SERVER_PORT']) != $__port) ? ':'.$_SERVER['SERVER_PORT'] : '';
+unset($__port);
+$page['base_path'] = pathinfo($_SERVER['PHP_SELF'], PATHINFO_DIRNAME);
 if (substr($page['base_path'], -1) != '/') $page['base_path'] .= '/';
-$page['full_path'] .= $page['base_path']; 
+$page['full_path'] .= $page['base_path'];
+$page['self'] = pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME) . '.' . $phpEx;
 $page['logo'] = 'images/logo.png';
 $page['site_name'] = 'c1k.it';
 // $page['site_slogan'] = '';
@@ -52,22 +58,22 @@ $page['content'] = '';
 
 function header_code($code) {
 	global $page;
-	header('HTTP/1.0 ' . $code . ' ' . T('STATUS_' . $code), true, $code);	
+	header('HTTP/1.0 ' . $code . ' ' . T('STATUS_' . $code), TRUE, $code);
 	$page['title'] = T('STATUS_' . $code);
 }
- 
+
 function access_denied() {
 	global $page;
 	header_code(403);
 	poke_error(T('ACCESS_DENIED'));
 	$page['content'] = T('NO_ACCESS');
-	
+
 	$page['navigation'] = T('HOME', array(
 		'url' => $page['base_path'],
 		));
 	/* $page['navigation'] .= ' <span class="spacer">|</span> ';
 	$page['navigation'] .= T('LOGON', array(
-		'url' => $page['base_path'] . 'login.php',
+		'url' => $page['base_path'] . 'login.' . $phpEx,
 		)); */
 }
 
@@ -75,10 +81,9 @@ function access_denied() {
 
 /* ----- phpBB's dbal stuff ----- */
 
-define('IN_PHPBB', true);
-global $phpbb_root_path, $phpEx;   
+define('IN_PHPBB', TRUE);
+global $phpbb_root_path;
 $phpbb_root_path = './';
-$phpEx = substr(strrchr(__FILE__, '.'), 1);
 
 
 
@@ -86,20 +91,20 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
 global $settings, $__loaded_settings;
 $settings = array('version' => CLICKIT_VER);
-$__loaded_settings = false;
+$__loaded_settings = FALSE;
 
 /**
  * Loads the settings files
  * @param boolean $loaduserset
  */
-function initialize_settings($is_install = false) {
+function initialize_settings($is_install = FALSE) {
 	global $__loaded_settings;
-	if ($__loaded_settings) return false;
-	$__loaded_settings = true;
-	
-	global $settings;
-	require_once('includes/config-default.php');
-	if ((!$is_install) && file_exists('config.php')) include_once('config.php');
+	if ($__loaded_settings) return FALSE;
+	$__loaded_settings = TRUE;
+
+	global $settings, $phpEx;
+	require_once('includes/config-default.' . $phpEx);
+	if ((!$is_install) && file_exists('config.' . $phpEx)) include_once('config.' . $phpEx);
 
 	/* -- Tables -- */
 	global $SETTINGS_TABLE, $USERS_TABLE, $URLS_TABLE, $LOG_TABLE;
@@ -107,30 +112,39 @@ function initialize_settings($is_install = false) {
 	$USERS_TABLE = $settings['dbprefix'] . 'users';
 	$URLS_TABLE = $settings['dbprefix'] . 'urls';
 	$LOG_TABLE = $settings['dbprefix'] . 'log';
-	
+
 	/* -- */
 	if ((!$is_install) && isset($settings['offline']) && $settings['offline']) :
 		global $page;
-		include('offline.php');
-		die();
+		header('HTTP/1.1 503 Service Unavailable');
+		include('offline.' . $phpEx);
+		die(503);
 	endif;
 
 	return $settings;
 }
 
+function webmaster($full = TRUE) {
+	global $settings;
+	return $full ?
+		$settings['webmaster_name'] . ' <' . $settings['webmaster_email'] . '>' :
+		$settings['webmaster_email'];
+}
+
+
 
 /* ----- Database stuff ----- */
 
 global $db, $sql;
-$db = false;
+$db = FALSE;
 $sql = '';  // persist $sql for error and exception handlers
 
-function initialize_db($load_settings = true) {
+function initialize_db($load_settings = TRUE) {
 	global $db;
-	if ($db === false) :
+	if ($db === FALSE) :
 		global $settings, $phpbb_root_path, $phpEx;
 		require_once('includes/db/' . $settings['dbms'] . '.' . $phpEx);
-		$sql_db = 'dbal_' . $settings['dbms'];  // fix for a bug in dbal where @sql_db not set correctly! 
+		$sql_db = 'dbal_' . $settings['dbms'];  // fix for a bug in dbal where @sql_db not set correctly!
 
 		$db = new $sql_db();
 		$db->sql_connect(
@@ -139,38 +153,40 @@ function initialize_db($load_settings = true) {
 			$settings['dbpasswd'],
 			$settings['dbname'],
 			$settings['dbport'],
-			false,
-			false
+			FALSE,
+			FALSE
 			);
 		unset($settings['dbpasswd']);  // hey... why not
 
 		if ($load_settings) :
 			global $SETTINGS_TABLE;
 			$sql = 	"SELECT name, value FROM $SETTINGS_TABLE" .
-				" WHERE " . $db->sql_build_array('SELECT', array('userid' => 0));;
-			$result = $db->sql_query($sql);	
+				" WHERE " . $db->sql_build_array('SELECT', array('userid' => 0));
+			$result = $db->sql_query($sql);
 			if ($result) :
 				while ($row = $db->sql_fetchrow($result)) :
 					$settings[$row['name']] = $row['value'];
 				endwhile;
 			endif;
+			$db->sql_freeresult($result);
 
 			if (isset($settings['offline']) && $settings['offline']) :
 				global $page;
-				include('offline.php');
-				die();
+				header('HTTP/1.1 503 Service Unavailable');
+				include('offline.' . $phpEx);
+				die(503);
 			endif;
 		endif;
 	endif;
-	
+
 	return $db;
 }
 
 function get_long($shortURL) {
 	global $db, $sql, $URLS_TABLE;
-	if (!$db) return false;
+	if (!$db) return FALSE;
 	$ret = array();
-	$sql = "SELECT id, longurl FROM $URLS_TABLE" .  
+	$sql = "SELECT id, longurl FROM $URLS_TABLE" .
 		" WHERE " . $db->sql_build_array('SELECT', array('shorturl' => $shortURL));
 	$result = $db->sql_query($sql);
 	if ($result) :
@@ -186,16 +202,17 @@ function get_long($shortURL) {
 	else :
 		$ret['code'] = 500;
 	endif;
-	return $ret;	
+	$db->sql_freeresult($result);
+	return $ret;
 }
 
 function get_short($longURL, $userid) {
 	global $db, $sql, $URLS_TABLE;
-	if (!$db) return false;
+	if (!$db) return FALSE;
 	// if (substr($longURL, -1) == '/') $longURL = substr($longURL, 0, -1);
-	$sql = "SELECT id, shorturl FROM $URLS_TABLE" .  
+	$sql = "SELECT id, shorturl FROM $URLS_TABLE" .
 		" WHERE " . $db->sql_build_array('SELECT', array('longurl' => $longURL, 'userid' => $userid));
-	$result = $db->sql_query($sql);	
+	$result = $db->sql_query($sql);
 	$ret = array();
 	if ($result) :
 		$row = $db->sql_fetchrow($result);
@@ -210,86 +227,45 @@ function get_short($longURL, $userid) {
 	else :
 		$ret['code'] = 500;
 	endif;
-	return $ret;	
+	$db->sql_freeresult($result);
+	return $ret;
 }
 
 define('REGEX_ECMA_URL', '(^(mailto\:|((ht|f)tp(s?))\://){1}\S+)');
 
-define('REGEX_PCRE_URL', '/^(mailto\:|((ht|f)tp(s?))\:\/\/){1}\S+/');
-define('REGEX_PCRE_EMAIL', '/^[a-z0-9_\+-]+(\.[a-z0-9_\+-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*\.([a-z]{2,4})$/i');
-define('REGEX_PCRE_EMAIL_RARE', "/^[a-z0-9,!#\$%&'\*\+/=\?\^_`\{\|}~-]+(\.[a-z0-9,!#\$%&'\*\+/=\?\^_`\{\|}~-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*\.([a-z]{2,})$/i");
-define('REGEX_PCRE_DOMAIN', '/^([a-z0-9]([-a-z0-9]*[a-z0-9])?\\.)+((a[cdefgilmnoqrstuwxz]|aero|arpa)|(b[abdefghijmnorstvwyz]|biz)|(c[acdfghiklmnorsuvxyz]|cat|com|coop)|d[ejkmoz]|(e[ceghrstu]|edu)|f[ijkmor]|(g[abdefghilmnpqrstuwy]|gov)|h[kmnrtu]|(i[delmnoqrst]|info|int)|(j[emop]|jobs)|k[eghimnprwyz]|l[abcikrstuvy]|(m[acdghklmnopqrstuvwxyz]|mil|mobi|museum)|(n[acefgilopruz]|name|net)|(om|org)|(p[aefghklmnrstwy]|pro)|qa|r[eouw]|s[abcdeghijklmnortvyz]|(t[cdfghjklmnoprtvwz]|travel)|u[agkmsyz]|v[aceginu]|w[fs]|y[etu]|z[amw])$/i');
-
-function validate_long($longURL, $userid = 0) {
-	// if (substr($longURL, -1) == '/') $longURL = substr($longURL, 0, -1);
-	$valid = preg_match(REGEX_PCRE_URL, $longURL); 
-	if ($valid) :
-		switch (true) :
-			case (strpos($longURL, 'mailto:') === 0) : // starts with "mailto:"
-				$s = substr($longURL, 7);
-				$valid = preg_match(REGEX_PCRE_EMAIL, $s);
-				if (!$valid) $valid = preg_match(REGEX_PCRE_EMAIL_RARE, $s);
-				break;
-				
-			case (strpos($longURL, 'http://') === 0) : 
-			case (strpos($longURL, 'ftp://') === 0) : 
-			case (strpos($longURL, 'https://') === 0) : 
-			case (strpos($longURL, 'ftps://') === 0) :
-				$s = substr($longURL, strpos($longURL, '/', 1) + 2);
-				$p = strpos($s, '/');
-				if (!$p) $p = strpos($s, '?');
-				if (!$p) $p = strpos($s, '#');
-				if ($p) $s = substr($s, 0, $p);
-				$valid = preg_match(REGEX_PCRE_DOMAIN, $s); 
-				break;
-				
-			default :
-				$valid = false;
-		endswitch;
-	endif;
-	return $valid;
-}
-
-function validate_short($shortURL, $userid) {
-	global $settings;
-	@$length = intval($settings['shortminlength']);
-	if ($length <= 0) $length = 4;
-	$pattern = str_replace('4', $length, '/^.*(?=.{4,})[a-z0-9_]+$/i');
-	$valid = preg_match($pattern, $shortURL);
-	
-	// TODO : Validate against reserved words, for version 0.9
-	
-	return $valid;
-}
-
 function generate_short($id) {
-	global $settings;
+	global $settings, $phpEx;
 	@$length = intval($settings['shortminlength']);
 	if ($length <= 0) $length = 4;
-	
-	include_once('hashlib.php');
-	
+
+	include_once('hashlib.' . $phpEx);
+
 	$shortURL = hash_numeric($id, $length);
-	$ok = false; $loop = 0;
+	$ok = FALSE; $loop = 0;
 	while ((!$ok) && ($loop < 10)) :
 		$loop++;
 		$r = get_long($shortURL);
-		if (($r === false) || ($r['code'] == 200)) :
+		if (($r === FALSE) || ($r['code'] == 200)) :
 			if ($loop < 10) :
 				$incr = pow(intval($loop / 4), 2);
 				$shortURL = hash_random($length+$incr);
 			endif;
-		else : 
-			$ok = true;
+		else :
+			$ok = TRUE;
 		endif;
 	endwhile;
-	if (!$ok) $shortURL = false;
-	return $shortURL;	
+	if (!$ok) $shortURL = FALSE;
+	return $shortURL;
 }
 
 function get_fav_icon($longURL) {
 	@$domain = parse_url($longURL, PHP_URL_HOST);
 	return T('URL_ICON_DATA', array('domain' => $domain));
+}
+
+function generate_password() {
+	$p = md5(rand() . rand());
+	return strtolower( substr($p, 0, 4) ) . strtoupper( substr($p, 4, 4) );
 }
 
 
@@ -310,7 +286,7 @@ define('MSG_WARNING',    'warning');
 define('MSG_INFO',       'info');
 define('MSG_SUCCESS',    'success');
 
-function poke_message($msg, $level = '', $far = false) {
+function poke_message($msg, $level = '', $far = FALSE) {
 	if ($far) :
 		if (!session_id()) session_start();
 		if (!isset($_SESSION['messages'])) $_SESSION['messages'] = array();
@@ -321,23 +297,23 @@ function poke_message($msg, $level = '', $far = false) {
 	endif;
 }
 
-function poke_error($msg, $far = false) {
+function poke_error($msg, $far = FALSE) {
 	poke_message($msg, MSG_ERROR, $far);
 }
 
-function poke_validation($msg, $far = false) {
+function poke_validation($msg, $far = FALSE) {
 	poke_message($msg, MSG_VALIDATION, $far);
 }
 
-function poke_warning($msg, $far = false) {
+function poke_warning($msg, $far = FALSE) {
 	poke_message($msg, MSG_WARNING, $far);
 }
 
-function poke_info($msg, $far = false) {
+function poke_info($msg, $far = FALSE) {
 	poke_message($msg, MSG_INFO, $far);
 }
 
-function poke_success($msg, $far = false) {
+function poke_success($msg, $far = FALSE) {
 	poke_message($msg, MSG_SUCCESS, $far);
 }
 
@@ -347,16 +323,16 @@ function error_handler($errno, $errstr, $errfile, $errline, $errcontext) {
 	if (!empty($sql)) : $m .= "<br /><b>SQL:</b> <pre>$sql</pre>"; $sql = ''; endif;
 	$m .= "\n";
 	$messages[$m] = MSG_ERROR;
-	return true;
+	return TRUE;
 }
 
 function exception_handler($exception) {
 	global $messages, $sql;
-	$m = "Exception: " . $exception->getMessage(); 
+	$m = "Exception: " . $exception->getMessage();
 	if (!empty($sql)) : $m .= "<br /><b>SQL:</b> <pre>$sql</pre>"; $sql = ''; endif;
 	$m .= "\n";
 	$messages[$m] = MSG_ERROR;
-	return true;
+	return TRUE;
 }
 
 
@@ -364,10 +340,10 @@ function exception_handler($exception) {
 /* ----- HTML 5 Support ----- */
 
 global $__htmlver;
-$__htmlver = false;
+$__htmlver = FALSE;
 
 function __get_htmlver() {
-	// User-Agent strings start with "Mozilla/5.0 {...}", 
+	// User-Agent strings start with "Mozilla/5.0 {...}",
 	// the version string seems to be the HTML version supported
 	// {unverified assumption}
 	$ua = $_SERVER['HTTP_USER_AGENT'];
@@ -376,23 +352,23 @@ function __get_htmlver() {
 	$j = strpos($ua, ' ', $i);
 	if (!$j) return 1;
 	$u = substr($ua, $i+1, $j-$i-1 );
-	if (($u >= 5) and (strpos($ua, 'MSIE ') !== false)) $u = 4;  // IE has crap support for HTML 5
+	if (($u >= 5) and (strpos($ua, 'MSIE ') !== FALSE)) $u = 4;  // IE has crap support for HTML 5
 	return intval($u);
 }
 
 /**
- * prints string based on HTML5 support 
+ * prints string based on HTML5 support
  * @param string $str4 Fallback string
  * @param string $str5 String if User-Agent supports HTML 5.0 +
  */
-function __($str4, $str5 = '', $return_only = false) {
+function __($str4, $str5 = '', $return_only = FALSE) {
 	global $__htmlver;
 	if (!$__htmlver) $__htmlver = __get_htmlver();
 	if ($return_only) :
-		return ($__htmlver >= 5) ? $str5 : $str4; 
-	elseif ($__htmlver >= 5) : 
-		print $str5; 
-	else : 
+		return ($__htmlver >= 5) ? $str5 : $str4;
+	elseif ($__htmlver >= 5) :
+		print $str5;
+	else :
 		print $str4;
 	endif;
 }
@@ -406,17 +382,17 @@ global $userid, $userlevel, $username, $__loaded_security;
 $userid = 0;
 $userlevel = -1;  // invalid
 $username = '';
-$__loaded_security = false;
+$__loaded_security = FALSE;
 
 /**
  * $userlevel - User Levels Caoabilities
- * User Level 0  = Login 
- * User Level 1  + Create ShortURL 
+ * User Level 0  = Login
+ * User Level 1  + Create ShortURL
  * User Level 2  + List URL's
  * User Level 3  + Edit LongURL's
  * User Level 4  + Edit ShortURL's
- * User Level 5  + Delete/Disable ShortURL's 
- * User Level 6  + Create and edit Customised ShortURL's 
+ * User Level 5  + Delete/Disable ShortURL's
+ * User Level 6  + Create and edit Customised ShortURL's
  * User Level 7  +
  * User Level 8  +
  * User Level 9  + Site Admin
@@ -435,36 +411,52 @@ define('USER_LEVEL_DL', 8);
 define('USER_LEVEL_AD', 9);
 define('USER_LEVEL_GD', 10);
 
-function initialize_security($must_login = false) {
+function get_user_levels() {
+	// do this on demand as lang may not have been loaded prior
+	return array(
+		USER_LEVEL_BS => T('USER_LEVEL_BS'),
+		USER_LEVEL_CR => T('USER_LEVEL_CR'),
+		USER_LEVEL_LS => T('USER_LEVEL_LS'),
+		USER_LEVEL_EL => T('USER_LEVEL_EL'),
+		USER_LEVEL_DS => T('USER_LEVEL_DS'),
+		USER_LEVEL_CU => T('USER_LEVEL_CU'),
+		USER_LEVEL_ES => T('USER_LEVEL_ES'),
+		USER_LEVEL_DL => T('USER_LEVEL_DL'),
+		USER_LEVEL_AD => T('USER_LEVEL_AD'),
+		USER_LEVEL_GD => T('USER_LEVEL_GD'),
+		);
+}
+
+function initialize_security($must_login = FALSE) {
 	global $__loaded_security;
-	if ($__loaded_security) return true;  // already initialized
-	$__loaded_security = true;
-	
-	global $db, $userid, $userlevel, $username, $settings;
-	global $USERS_TABLE; 
+	if ($__loaded_security) return TRUE;  // already initialized
+	$__loaded_security = TRUE;
+
+	global $db, $userid, $userlevel, $username, $settings, $phpEx;
+	global $USERS_TABLE;
 	if (!$db) $db = initialize_db();
-	
+
 	// find out if these is a TOKEN cookie
 	if (isset($_COOKIE['token'])) :
 		$token = str_replace('-', '', $_COOKIE['token']);
-		
-		$sql = "SELECT id, enabled, userlevel, username, realname FROM $USERS_TABLE" .  
+
+		$sql = "SELECT id, enabled, userlevel, username, realname FROM $USERS_TABLE" .
 			" WHERE " . $db->sql_build_array('SELECT', array('token' => $token));
-		$result = $db->sql_query($sql);	
+		$result = $db->sql_query($sql);
 		if ($result) :
 			$row = $db->sql_fetchrow($result);
 			if ($row && $row['enabled']) :
 				$userid = (int) $row['id'];
 				$userlevel = (int) $row['userlevel'];
 				$username = empty($row['realname']) ? $row['username'] : $row['realname'];
-				
+
 				$sql = "UPDATE $USERS_TABLE" .
 					" SET " . $db->sql_build_array('UPDATE', array(
-						'lastvisiton' => microtime(true),
+						'lastvisiton' => microtime(TRUE),
 						)) .
 					" WHERE " . $db->sql_build_array('SELECT', array('id' => $userid));
 				$db->sql_query($sql);
-				
+
 				global $SETTINGS_TABLE;
 				$sql = 	"SELECT name, value FROM $SETTINGS_TABLE" .
 					" WHERE " . $db->sql_build_array('SELECT', array('userid' => $userid));;
@@ -474,77 +466,71 @@ function initialize_security($must_login = false) {
 						$settings[$row['name']] = $row['value'];
 					endwhile;
 				endif;
-				
+
 				if (!isset($page['navigation']) && ($userid > 0)) :
 					global $page;
-					$page['navigation'] = T('HELLO', array(
-						'url' => $page['base_path'] . 'user.php',
+					$page['navigation'] = T('[');
+					$page['navigation'] .= T('HELLO', array(
+						'url' => $page['base_path'] . 'user.' . $phpEx,
 						'username' => $username,
 						));
 					$page['navigation'] .= T('|');
-					$page['navigation'] .= T('NOT_YOU', array(
-						'url' => $page['base_path'] . 'logout.php',
+					$page['navigation'] .= T('LOGOFF', array(
+						'url' => $page['base_path'] . 'logout.' . $phpEx,
 						));
 					if ($userlevel >= USER_LEVEL_LS) :
 						$page['navigation'] .= T('|');
 						$page['navigation'] .= T('LIST_PAGE', array(
-							'url' => $page['base_path'] . 'list.php',
+							'url' => $page['base_path'] . 'list.' . $phpEx,
 							));
 					endif;
 					if ($userlevel >= USER_LEVEL_DS) :
 						$page['navigation'] .= T('|');
 						$page['navigation'] .= T('ARCH_PAGE', array(
-							'url' => $page['base_path'] . 'archives.php?',
+							'url' => $page['base_path'] . 'archives.' . $phpEx,
 							));
-					endif; 
+					endif;
 					if ($userlevel >= USER_LEVEL_AD) :
 						$page['navigation'] .= T('|');
 						$page['navigation'] .= T('ADMIN_PAGE', array(
-							'url' => $page['base_path'] . 'admin.php',
+							'url' => $page['base_path'] . 'admin.' . $phpEx,
 							));
-					endif; 
+					endif;
+					$page['navigation'] .= T(']');
 				endif;
-				
-				return true;
+
+				return TRUE;
 			else :
 				// ignore TOKEN
 			endif;
+			$db->sql_freeresult($result);
 		else :
 			// ignore TOKEN
 		endif;
 	endif;
-	
+
 	// find out if this is a submission from the login form
 	if (isset($_REQUEST['username'])) :
-		$ftoken = isset($_REQUEST['formtoken']) ? $_REQUEST['formtoken'] : false;
-		if (!session_id()) session_start();
-		$stoken = isset($_SESSION['ftoken']) ? $_SESSION['ftoken'] : -1; 
-		if ($ftoken !== $stoken) :
-			poke_error(T('FORM_TOKEN_MISMATCH'));
-			return false;
-		else :
-			if (isset($_SESSION['ftoken'])) unset($_SESSION['ftoken']);  // clear token to protect against double submit			
-		endif;
-		
 		$username = strtolower( $_REQUEST['username'] );
 		if (empty($username)) :
 			poke_validation(T('PROVIDE_USERNAME'));
 		else :
 			$passwd = (isset($_REQUEST['passwd']) && (!empty($_REQUEST['passwd']))) ? md5( $_REQUEST['passwd'] ) : '';
-			$remember = isset($_REQUEST['remember']) ? ($_REQUEST['remember'] == 1) : $remember = false;
-			
+			$remember = isset($_REQUEST['remember']) ? ($_REQUEST['remember'] == 1) : $remember = FALSE;
+
 			if (!$db) $db = initialize_db();
-		
-			$sql = "SELECT id, passwd, token, enabled, userlevel, realname FROM $USERS_TABLE" .  
+
+			$sql = "SELECT id, passwd, token, enabled, userlevel, realname, bad_logon FROM $USERS_TABLE" .
 				" WHERE " . $db->sql_build_array('SELECT', array('username' => $username));
-			$result = $db->sql_query($sql);	
+			$result = $db->sql_query($sql);
 			if ($result) :
 				$row = $db->sql_fetchrow($result);
 				if ($row) :
 					if ($row['enabled'] == 1) :
+						$blc = intval($row['bad_logon']);
 						if (strcasecmp($passwd, $row['passwd']) == 0) :
-							$userid = (int) $row['id'];
-							$userlevel = (int) $row['userlevel'];
+							$userid = intval($row['id']);
+							$userlevel = intval($row['userlevel']);
 							$username = empty($row['realname']) ? $username : $row['realname'];
 							if ($row['token'] != '') :
 								// Rebuild GUID
@@ -556,30 +542,60 @@ function initialize_security($must_login = false) {
 								$guid = substr_replace($guid, '-', 18, 0);
 								$guid = substr_replace($guid, '-', 23, 0);
 							else :
-								include_once('includes/uuid.php');
+								include_once('includes/uuid.' . $phpEx);
 								$guid = get_uuid();
 							endif;
 							$exp = $remember ? time() + 60*60*24*30 : 0;
 							setcookie('token', $guid, $exp);
-					
+
+							$data = array(
+								'lastvisiton' => microtime(TRUE),
+								'token' => str_replace('-', '', $guid),
+								);
+							if ($blc != 0) $data['bad_logon'] = 0;
 							$sql = "UPDATE $USERS_TABLE" .
-								" SET " . $db->sql_build_array('UPDATE', array(
-									'lastvisiton' => microtime(true),
-									'token' => str_replace('-', '', $guid),
-									)) .
+								" SET " . $db->sql_build_array('UPDATE', $data) .
 								" WHERE " . $db->sql_build_array('SELECT', array('id' => $userid));
 							$db->sql_query($sql);
-							poke_success(T('LOGIN_SUCCESSFUL'), true);
-							// if ($row['token'] != '') 
-							//	poke_warning(T('LOGGED_OUT_OTHER_SESSIONS'), true);
-							
-							header('Cache-Control: no-cache, must-revalidate'); // HTTP/1.1
-							header('Expires: ' . date(DATE_RFC822));								
-							header('Location: ' . $_SERVER['SCRIPT_NAME'] );
-							die();
+							poke_success(T('LOGIN_SUCCESSFUL'), TRUE);
+							// if ($row['token'] != '')
+							//	poke_warning(T('LOGGED_OUT_OTHER_SESSIONS'), TRUE);
+
+							if (isset($_REQUEST['referer'])) :
+								$nextpage = $_REQUEST['referer'];
+							else :
+								$nextpage = $_SERVER['REQUEST_URI'];
+							endif;
+
+							if ($blc < 0) :
+								$nextpage = $page['basepath'] . 'user.' . $phpEx .
+									'?f=password&referer=' . urlencode($nextpage);
+								poke_info(T('MUST_CHANGE_PASSWORD'), TRUE);
+							endif;
+
+							die( redirect($nextpage) );
 						else :
-							// TODO : Count incorrect passwords and disable user access	
+							$blc++;
+							$max = isset($settings['badlogonmax']) ? intval($settings['badlogonmax']) : 3;
+							if ($blc >= $max) :
+								$data = array(
+									'enabled' => FALSE,
+									'lastvisiton' => microtime(TRUE),
+									'bad_logon' => $blc,
+									);
+							else :
+								$data = array(
+									'bad_logon' => $blc,
+									);
+							endif;
+
+							$sql = "UPDATE $USERS_TABLE" .
+								" SET " . $db->sql_build_array('UPDATE', $data) .
+								" WHERE " . $db->sql_build_array('SELECT', array('id' => intval($row['id'])));
+							$db->sql_query($sql);
+
 							poke_validation(T('PASSWORD_MISMATCH'));
+							if ($blc >= $max) poke_warning(T('ACCOUNT_LOCKED_OUT'));
 						endif;
 					else :
 						poke_error(T('ACCESS_DENIED'));
@@ -587,28 +603,85 @@ function initialize_security($must_login = false) {
 				else :
 					poke_validation(T('USER_NOT_FOUND'));
 				endif;
+				$db->sql_freeresult($result);
 			else :
 				poke_error('DATABASE_ERROR');
 			endif;
 		endif;
 	endif;
-	
+
 	if ($must_login) :
-		global $page, $messages;
-		$page['content'] .= T('YOU_MUST_LOGIN', null, '<p class="loginrequired">', '</p>' . PHP_EOL);
-		include('login.php');
-		die();
+		global $page, $messages, $phpEx;
+		$page['content'] .= T('YOU_MUST_LOGIN', NULL, '<p class="loginrequired">', '</p>' . PHP_EOL);
+		$http_referer = $_SERVER['REQUEST_URI'];
+		include('login.' . $phpEx);
+		die(206);  // Partial Content
 	endif;
 
-	return false;
+	return FALSE;
 }
+
+function get_admin_select_user($prompt, $form_action, $selectedid, $extra_options = NULL) {
+	global $USERS_TABLE, $sql, $userid, $userlevel, $db;
+
+	$R = "<form action=\"$form_action\" name=\"u\" method=\"get\">";
+	$R .= "<label for=\"userid\">$prompt</label>";
+	$R .= ": <select name=\"userid\" id=\"userid\" onchange=\"document.forms['u'].submit()\">";
+	if ($extra_options)
+		foreach ($extra_options as $id => $value) :
+			$R .= "<option ";
+			if ($selectedid == $id) $R .= " selected=\"selected\"";
+			$R .= "value=\"$id\">$value</option>";
+		endforeach;;
+
+	$sql = "SELECT id, username, realname FROM $USERS_TABLE" .
+		" WHERE userlevel <= $userlevel" .
+		" ORDER BY username";
+	$result = $db->sql_query($sql);
+	if ($result !== FALSE) :
+		while ($row = $db->sql_fetchrow($result)) :
+			$R .= "<option ";
+			if ($row['id'] == $selectedid) $R .= " selected=\"selected\"";
+			$R .= "value=\"" . $row['id'] . "\">" . $row['username'];
+			if (!empty($row['realname'])) $R .= " (" . $row['realname'] . ')';
+			if ($row['id'] == $userid) $R .= " " .  T('YOU');
+			$R .= "</option>";
+		endwhile;
+		$db->sql_freeresult($result);
+	endif;
+	$R .= "</select></form>";
+	return $R;
+}
+
+function get_time_ago($time) {
+	$time = time() - $time;
+
+	$tokens = array (
+		31536000 => 'YEAR',
+		2592000 => 'MONTH',
+		604800 => 'WEEK',
+		86400 => 'DAY',
+		3600 => 'HOUR',
+		60 => 'MINUTE',
+		1 => 'SECOND'
+		);
+
+    foreach ($tokens as $unit => $text) :
+        if ($time < $unit) continue;
+        $numberOfUnits = floor($time / $unit);
+        return $numberOfUnits . ' ' . T((($numberOfUnits>1)?($text.'S'):$text));
+    endforeach;
+    return T('NOW');
+}
+
+
 
 /* ----- CDN ----- */
 
 global $__yuicdn;
 $__yuicdn = '';
 
-function yuicdn($returnvalue = false) {
+function yuicdn($returnvalue = FALSE) {
 	global $__yuicdn;
 	if ($__yuicdn == '') :
 		global $settings;
@@ -617,31 +690,94 @@ function yuicdn($returnvalue = false) {
 				$__yuicdn = 'http://yui.yahooapis.com/3.3.0/';
 				break;
 			case 'google' :
-				$__yuicdn = (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on')) ? 'https://' : 'http://'; 
+				$__yuicdn = (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on')) ? 'https://' : 'http://';
 				$__yuicdn .= 'ajax.googleapis.com/ajax/libs/yui/3.3.0/';
 				break;
 			case 'google-smart' :
-				$__yuicdn = (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on')) ? 'https://' : 'http://'; 
+				$__yuicdn = (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on')) ? 'https://' : 'http://';
 				$__yuicdn .= 'ajax.googleapis.com/ajax/libs/yui/3/';
 				break;
 			default :
-				global $page;		
+				global $page;
 				$__yuicdn = $page['base_path'] . 'includes/yui/';
 		endswitch;
 	endif;
-		
+
 	if ($returnvalue) :
 		return $__yuicdn;
 	else :
 		print $__yuicdn;
-	endif;	
+	endif;
 }
 
 function ajaxjs($file) {
-	return "\t<script type=\"text/javascript\" src=\"" . yuicdn(true) . "build/$file\"></script>\n";	
+	return "\t<script type=\"text/javascript\" src=\"" . yuicdn(TRUE) . "build/$file\"></script>\n";
 }
 
 function loadjs($file) {
 	global $page;
-	return "\t<script type=\"text/javascript\" src=\"" . $page['base_path'] . "$file\"></script>\n";	
+	return "\t<script type=\"text/javascript\" src=\"" . $page['base_path'] . "$file\"></script>\n";
 }
+
+function loadscript($script) {
+	$jsmfn = 'includes/jsmin/jsmin.php';
+	if (file_exists($jsmfn)) :
+		include_once($jsmfn);
+		$script = JSMin::minify($script);
+	else :
+		$script = str_replace("\r\n", "\n", $script);
+		$script = str_replace("\n", PHP_EOL . "\t\t", $script);
+		$script = PHP_EOL . $script;
+	endif;
+	return "\t<script type=\"text/javascript\">//<![CDATA[" .
+		"\t\t$script" .
+		PHP_EOL . "\t//]]></script>" . PHP_EOL;
+}
+
+
+
+/* ----- Helper Functions ----- */
+
+function redirect($url, $external = FALSE) {
+	global $settings, $page;
+	if (isset($settings['force302']) && $settings['force302']) :
+		$code = 302;
+	else :
+		$code = $external ? 307 : 303;
+	endif;
+	header('HTTP/1.1 ' . $code . ' ' . T('STATUS_' .  $code));
+	header('Cache-Control: no-cache, must-revalidate'); // HTTP/1.1, ask me again next time
+	header('Expires: ' . date(DATE_RFC822));  // expire now
+	if ($external) :
+		$ref_path = $page['full_path'] . str_replace($page['base_path'], '', $_SERVER['REQUEST_URI']);
+		header("Referer: $ref_path");  // be nice and tell the other server where you came from
+	endif;
+	header('Location: ' . $url, TRUE, $code);
+	return $code;  // use this to die()
+}
+
+function get_referer($set_to_self = TRUE) {
+	if (isset($_REQUEST['referer']))
+		return $_REQUEST['referer'];
+
+	global $page;
+
+	if (isset($_SERVER['HTTP_REFERER'])) :
+		$ref = $_SERVER['HTTP_REFERER'];
+
+		$i = strpos($ref, $page['full_path']);
+
+		// test is referer local
+		if (($i !== FALSE) && ($i == 0))
+			return substr($ref, strlen($page['full_path']));
+	endif;
+
+	if ($set_to_self) :
+		$ref = $_SERVER['REQUEST_URI'];
+		return substr($ref, strpos($ref, $page['base_path']) + strlen($page['base_path']));
+	endif;
+
+	return FALSE;
+}
+
+?>

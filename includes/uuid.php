@@ -12,8 +12,8 @@ function is_valid_uuid($uuid) {
 	return preg_match('/^\{?[0-9a-f]{8}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?[0-9a-f]{12}\}?$/i', $uuid) === 1;
 }
 
-function get_uuid3($namespace, $name) {
-	if (!is_valid_uuid($namespace)) return false;
+function get_uuid3($namespace = NS_ISO_OID, $name = '') {
+	if (!is_valid_uuid($namespace)) return FALSE;
 
 	// Get hexadecimal components of namespace
 	$nhex = str_replace(array('-','{','}'), '', $namespace);
@@ -84,8 +84,8 @@ function get_uuid4alt() {
 		);
 }
 
-function get_uuid5($namespace, $name) {
-	if (!is_valid_uuid($namespace)) return false;
+function get_uuid5($namespace = NS_ISO_OID, $name = '') {
+	if (!is_valid_uuid($namespace)) return FALSE;
 
 	// Get hexadecimal components of namespace
 	$nhex = str_replace(array('-','{','}'), '', $namespace);
@@ -118,13 +118,12 @@ function get_uuid5($namespace, $name) {
 		);
 }
 
-
 function get_uuid() {
 	global $get_uuid_func;
-	return $get_uuid_func();
+	if (!isset($get_uuid_func)) $get_uuid_func = 'get_uuid4alt'; 
+	return call_user_func($get_uuid_func);
 }
 
 global $get_uuid_func;
-$get_uuid_func = 'get_uuid4alt';
 
 ?>

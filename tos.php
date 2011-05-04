@@ -10,7 +10,7 @@
  */
 
 require_once('includes/library.php');
-require_once('includes/lang.php');
+require_once('includes/lang.' . $phpEx);
 initialize_settings();
 initialize_lang();
 
@@ -23,4 +23,4 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY o
 <?php
 $page['content'] = ob_get_clean();
 $page['title'] = 'Terms Of Service';
-include('includes/' . TEMPLATE . '.php');
+include('includes/' . TEMPLATE . '.' . $phpEx);

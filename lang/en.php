@@ -5,13 +5,14 @@
  * @copyright  Tecsmith.com.au
  *   See LICENSE.TXT for copyright notice and details.
  * @license    Creative Commons Attribution-ShareAlike 3.0 Unported License
- * @author     Vino Rodrigues 
+ * @author     Vino Rodrigues
  *   clickit [dot] source [at] mail [dot] vinorodrigues [dot] com
  */
 
 // common
 
 $lang['#DATE_FORMAT'] = 'j/m/y';
+$lang['#DATE_LONG_FORMAT'] = 'D, j M Y';
 
 $lang['DATABASE_ERROR'] = 'Database Error';
 $lang['ACCESS_DENIED'] = 'User access denied';
@@ -23,7 +24,7 @@ $lang['STATUS_202'] = 'Accepted';
 #$lang['STATUS_203'] = 'Non-Authoritative Information';  // (since HTTP/1.1)
 #$lang['STATUS_204'] = 'No Content';
 #$lang['STATUS_205'] = 'Reset Content';
-#$lang['STATUS_206'] = 'Partial Content';
+$lang['STATUS_206'] = 'Partial Content';
 #$lang['STATUS_207'] = 'Multi-Status';  // (WebDAV) (RFC 4918)
 #$lang['STATUS_226'] = 'IM Used';  // (RFC 3229)
 $lang['STATUS_400'] = 'Bad Request';
@@ -68,14 +69,17 @@ $lang['STATUS_504'] = 'Gateway Timeout';
 
 // template page
 
-$lang['|'] = ' &#166; ';
+$lang['['] = '';  // nav-menu
+$lang['|'] = ' | ';  // nav-menu
+$lang[']'] = '';  // nav-menu
+
 $lang['HELLO'] = 'Hello <a href="*|url|*" class="user">*|username|*</a>';
 $lang['HOME'] = '<a href="*|url|*" class="home">Home</a>';
-$lang['LOGON'] = '<a href="*|url|*" class="loginout">Login</a>'; 
-$lang['NOT_YOU'] = '<a href="*|url|*" class="loginout">Not you</a>?';
+$lang['LOGON'] = '<a href="*|url|*" class="loginout">Login</a>';
+$lang['LOGOFF'] = '<a href="*|url|*" class="loginout">Logout</a>';
 $lang['LIST_PAGE'] = '<a href="*|url|*" class="list">Your URLs</a>';
-$lang['ARCH_PAGE'] = '<a href="*|url|*" class="arch">Archives</a>';
-$lang['ADMIN_PAGE'] = '<a href="*|url|*" class="admin">Admin</a>';
+$lang['ARCH_PAGE'] = '<a href="*|url|*" class="arch">Your Archives</a>';
+$lang['ADMIN_PAGE'] = '<a href="*|url|*" class="admin">Settings</a>';
 
 $lang['COPYRIGHT'] = 'Copyleft <small>(CC)</small> 2011 <a href="*|url|*">Tecsmith</a>';
 $lang['LICENSE'] = '<a rel="license" href="*|url|*">Some rights reserved</a>';
@@ -91,7 +95,26 @@ $lang['FORM_TOKEN_MISMATCH'] = 'Form security token mismatch';
 $lang['PASSWORD_MISMATCH'] = 'Password mismatch';
 $lang['USER_NOT_FOUND'] = 'User Name not found';
 $lang['LOGIN_SUCCESSFUL'] = 'Login successful';
-// $lang['LOGGED_OUT_OTHER_SESSIONS'] = 'You have been logged out of other sessions';
+$lang['ACCOUNT_LOCKED_OUT'] = 'You have exceeded your password attempts';
+$lang['LOGGED_OUT_OTHER_SESSIONS'] = 'You have been logged out of other sessions';
+$lang['MUST_CHANGE_PASSWORD'] = 'It\'s recommended that your change you password at this time';
+
+$lang['TIME_AGO'] = '*|time|* ago';
+$lang['YEAR'] = 'year';
+$lang['YEARS'] = 'years';
+$lang['MONTH'] = 'month';
+$lang['MONTHS'] = 'months';
+$lang['WEEK'] = 'week';
+$lang['WEEKS'] = 'weeks';
+$lang['DAY'] = 'day';
+$lang['DAYS'] = 'days';
+$lang['HOUR'] = 'hour';
+$lang['HOURS'] = 'hours';
+$lang['MINUTE'] = 'minute';
+$lang['MINUTES'] = 'minutes';
+$lang['SECOND'] = 'second';
+$lang['SECONDS'] = 'seconds';
+$lang['NOW'] = 'an instant';
 
 // login page
 
@@ -139,13 +162,19 @@ $lang['FORGOT_EMAIL'] = array(
 $lang['FORGOT_EMAIL_SENT'] = 'Email with verification instructions sent';
 $lang['FORGOT_EMAIL_NOT_SENT'] = 'Problem with sending emails. Please contact the <a href="mailto:*|email|*">webmaster<a>';
 $lang['RETURN_TO_HOMEPAGE'] = 'Return to the <a href="*|url|*">home page</a>.';
-$lang['USER_NAME_OR_EMAIL_NOT_FOUND'] = 'User Name or Email not found or account disabled';	
+$lang['USER_NAME_OR_EMAIL_NOT_FOUND'] = 'User Name or Email not found or account disabled';
 $lang['TRY_AGAIN'] = '<a href="*|url|*">Try again</a>?';
 $lang['TOKEN_NOT_FOUND'] = 'Token not found or check mismatch';
 
 // admin page
 
 $lang['NOT_ADMIN'] = 'You do not have administartor privlages';
+
+$lang['SAVED_IN_NO_ENTRY'] = 'Not found';
+$lang['SAVED_IN_PHP'] = 'Set in the configuration file';
+$lang['SAVED_IN_DATABASE'] = 'Set as global to all users';
+$lang['SAVED_IN_USER'] = 'Set as specific to this user';
+
 
 // index page
 
@@ -154,7 +183,7 @@ $lang['PREFACE'] = array(
 	'c1k.it is URL shortening service.',
 	'',
 	'Similar to other public shortening services, it is run by <a href="http://tecsmith.com.au">tecsmith.com.au</a> for its online marketing clients.',
-	); 
+	);
 $lang['ENTERLONG'] = 'Enter a long URL to make short';
 $lang['ENTERSHORT'] = 'Custom short <i>(optional)</i>';
 $lang['MAY_CONTAIN_LETTERS'] = 'May contain letters, numbers and underscores';
@@ -181,7 +210,7 @@ $lang['URL_ARCH_DATA'] = array(
 	);
 $lang['URL_LIST_DATA_STATS'] = ', stats from *|datef|* to *|datel|*</span>';
 $lang['URL_LIST_DATA_NONE'] = ', <i>no clicks yet</i>';
-$lang['SHOW_FOR_USER'] = '<label for="userid">Show URL\'s for user</label>:';
+$lang['SHOW_FOR_USER'] = '<label for="userid">Show URL\'s for user</label>';
 $lang['ANON_USERS'] = 'Anonymous Users';
 $lang['YOU'] = '*';
 $lang['NO_RECORDS_FOUND'] = '<i>(Nada)</i>';
@@ -189,27 +218,31 @@ $lang['EDIT'] = 'Edit';
 $lang['ARCHIVE'] = 'Archive';
 $lang['UNARCHIVE'] = 'Unarchive';
 $lang['ANONIMIZE'] = 'Anonimize';
+$lang['KILL'] = 'Delete';
+$lang['ARE_YOU_SURE'] = 'Are you certain you want to *|action|* the entry *|name|*?';
+$lang['CANT_BE_UNDONE'] = 'This is a permanent action and cannot be reverted.';
 
 // edit page
 // create page
 
+$lang['EDIT_URL'] = 'Edit URL';
 $lang['SHORT_NOT_AUTH'] = 'User not authorised to create a custom short';
 $lang['VALIDATION_ERROR'] = 'Validation Error';
 $lang['DUPLICATION_ERROR'] = 'Duplication Error';
 $lang['LONGURL_ALREADY_SHORT'] = 'Long URL "*|longurl|*" already maps to short "<code>*|shorturl|*</code>".';
 $lang['SHORT_ALREADY_MAPPED'] = 'Short "<code>*|shorturl|*</code>" already exists and may not be used again.';
 $lang['UNABLE_TO_GENERATE_SHORT'] = 'Unable to generate a randomized short at this time, please try later';
-$lang['CREATED'] = 'Short Created';
-$lang['SHORT_CREATED'] = 'Short created as \'*|short|*\'';
+$lang['SHORT_CREATED'] = 'Short Created';
+$lang['SHORT_CREATED_OK'] = 'Short created as \'*|short|*\'';
 $lang['SHORT_CREATED_DESCRIPTIVE'] = array(
 	'The short URL has been created.',
-	'The URI you can use to access this service is:<br/><code>*|fullshorturl|*</code>',
+	'The URI you can use to access this service is: <br/><code>*|fullshorturl|*</code>',
 	);
 
 $lang['UNKNOWN_ACTION'] = 'Don\'t know what to do with that request';
 $lang['INAPPROPRIATE'] = 'Inapropriate use of this page';
-$lang['SUBMIT'] = 'Apply Changes';
-$lang['RESET'] = 'Revert Edits';
+$lang['SUBMIT_EDITS'] = 'Apply Changes';
+$lang['RESET_EDITS'] = 'Revert Edits';
 $lang['BACK'] = 'Back';
 $lang['FIELD_SHORTURL'] = 'Short Bit';
 $lang['FIELD_LONGURL'] = 'Long URL';
@@ -221,9 +254,10 @@ $lang['FIELD_METAKEYW'] = 'Meta-Keywords';
 $lang['FIELD_METADESC'] = 'Meta-Description';
 $lang['FIELD_LOG'] = 'Log Clicks';
 $lang['FIELD_ANALYTICS'] = 'Google Analitics';
-$lang['ON'] = '<span class="green">on</span>';
-$lang['OFF'] = '<span class="red">off</span>';
+$lang['ON'] = '<img src="images/ico_checked.png" alt="Yes" />';
+$lang['OFF'] = '<img src="images/ico_unchecked.png" alt="No" />';
 $lang['EDITS_SAVED'] = 'Edits have been saved';
+$lang['NO_CHANGES_FOUND'] = 'No changed encountered';
 $lang['NOT_YOURS'] = 'The requested resource is not yours to modify';
 $lang['EDITING_SHORTS_DANGEROUS'] = 'Changing Short Bit may break external links to this resource';
 $lang['ROWS_AFFECTED'] = 'Changes made to the <b>*|rows|*</b> row(s)';
@@ -233,6 +267,179 @@ $lang['ROWS_AFFECTED'] = 'Changes made to the <b>*|rows|*</b> row(s)';
 $lang['DELETED'] = '\'*|title|*\' was archived';
 $lang['UNDONE'] = '\'*|title|*\' was reactivated';
 $lang['ANONYMIZED'] = '\'*|title|*\' was anonymized';
+
+// signup page
+
+$lang['SIGNUP_HERE'] = array(
+	'Your c1k.it account gives you access to create and edit short URL\'s.',
+	'If you already have a c1k.it account, you can <a href="*|url|*">log in here</a>.'
+	);
+$lang['SUBMIT_USER'] = 'Submit for Account';
+$lang['CONFIRM_EMAIL'] = 'Confirm Email';
+$lang['GOOGLE_ANALYTICS_ACC'] = 'Google Analytics Acc#';
+$lang['CAPTCHA_FAILED'] = 'CAPTCHA code not accepted';
+$lang['USERNAME_NOT_AVAIL'] = 'Username not available for use';
+$lang['USERNAME_TOO_SHORT'] = 'Username too short';
+$lang['USERNAME_NOT_VALID'] = 'Username can only contain letter, numbers and underscores';
+$lang['EMAILS_DO_NOT_MATCH'] = 'Email confirmation does not match email submitted';
+$lang['EMAIL_NOT_VALID'] = 'Invalid email address';
+$lang['EMAIL_NOT_AVAIL'] = 'Email already in use';
+$lang['USER_CREATED'] = 'User Created';
+$lang['USER_CREATED_OK'] = 'User Created Successfuly';
+$lang['NEW_USER_EMAIL'] = array(
+	'Welcome *|realname|*,',
+	'',
+	'Your user account has been created and you can signon at:',
+	'  *|url|*',
+	'',
+	'You can signon with the username you provided, and with the password:',
+	'  *|password|*',
+	'(You will be asked to change this when you signon.)',
+	'',
+	'Thank you for your patronage.',
+	'',
+	'-Regards,',
+	'c1k.it',
+	);
+$lang['NEW_USER_EMAIL_FOR_ADMIN'] = array(
+	'',
+	'---------- WEBMASTER -------------------------------------------------',
+	'NEW USER REQUEST:',
+	'',
+	'On approval forward above part to: *|email|*',
+	'Or delete user at: *|delete_url|*',
+	'----------------------------------------------------------------------',
+	);
+$lang['NEW_USER_CREATED'] = 'New User Created';
+$lang['NEW_USER_EMAIL_SENT'] = 'An email has been sent to you with your temporary password';
+$lang['NEW_USER_EMAIL_SENT_TO_ADMIN'] = 'An email has been sent to the webmaster for approval';
+$lang['NEW_USER_EMAIL_NOT_SENT'] = 'We\'re experiencing email issues, please try later';
+$lang['REALNAME'] = 'Display Name';
+$lang['EMAIL'] = 'Email';
+
+// user page
+
+$lang['YOUR_ACCOUNT'] = 'Account Details';
+
+$lang['USER_LEVEL_BS'] = 'Logon only';
+$lang['USER_LEVEL_CR'] = 'Create URL\'s';
+$lang['USER_LEVEL_LS'] = 'Create & List URL\'s';
+$lang['USER_LEVEL_EL'] = 'Create, List & Edit URL\'s';
+$lang['USER_LEVEL_DS'] = 'Create, List, Edit & Archive URL\'s';
+$lang['USER_LEVEL_CU'] = 'Create, List, Edit & Archive Custom URL\'s';
+$lang['USER_LEVEL_ES'] = 'All rights, incl. Edit Short bit';
+$lang['USER_LEVEL_DL'] = 'All rights, incl. Edit Short bit & Delete';
+$lang['USER_LEVEL_AD'] = 'Site Administrator';
+$lang['USER_LEVEL_GD'] = 'Site Super Administrator';
+
+$lang['FIELD_ID'] = 'User ID';
+$lang['FIELD_USERNAME'] = $lang['USERNAME'];
+$lang['FIELD_USERLEVEL'] = 'User Access Level';
+$lang['FIELD_REALNAME'] = $lang['REALNAME'];
+$lang['FIELD_EMAIL'] = $lang['EMAIL'];
+$lang['FIELD_CREATEDON'] = 'Member Since';
+$lang['FIELD_LASTVISITON'] = 'Last visit on';
+$lang['FIELD_ENABLED'] = 'Enabled';
+$lang['FIELD_ANALYTICS'] = 'Google Analytics Account';
+$lang['NOT_SET'] = '<span class="red">--</span>';
+
+$lang['SHOW_USER'] = 'Show User';
+$lang['EDIT_ACCOUNT'] = 'Edit Account';
+$lang['CHANGE_EMAIL'] = 'Change Email';
+$lang['CHANGE_PASSWORD'] = 'Change Password';
+$lang['DELETE_ACCOUNT'] = 'Delete Account';
+$lang['VIEW_URLS'] = 'View URLs';
+$lang['VIEW_ARCHIVES'] = 'View Archives';
+
+$lang['PASSWORD_WARNING'] = array(
+	'Remember that if this site is not transmitted in SSL (you\'ll see a <code>https://</code> in the URL, and a verified lock will appear on your browser), that your password will be sent to this server in clear text and can be snooped on at transmission.',
+	'<b class="red">It is recommended that you use a different password for every site you access, including this one.</b>',
+	'We will not store your password as clear text – rather the password in encrypted with a unidirectional MD5 algorithm – i.e. it cannot be decrypted.',
+	);
+$lang['PASSWORD_CONDITIONS'] =
+	'Passwords must: <ul>' .
+	'<li>Must be at least 8 characters long</li>' .
+	'<li>Must contain at least one one lower case letter</li>' .
+	'<li>Must contain at least one upper case letter</li>' .
+	'<li>Must contain at least one numeric digit</li>' .
+	'</ul>';
+$lang['FIELD_OLDPASSWD'] = 'Old Password';
+$lang['FIELD_PASSWD'] = 'New Password';
+$lang['FIELD_PASSWD2'] = 'Confirm Password';
+
+$lang['PASSWORD_NOT_VALID'] = 'Password not valid';
+$lang['OLD_PASSWORD_MISMATCH'] = 'Incorrect old password';
+$lang['CONFIRM_PASSWORD_MISMATCH'] = 'Confirmed password does not match';
+
+$lang['FIELD_DELETE'] = 'Type the word \'DELETE\' to confirm';
+$lang['DELETE_WARNING'] = array(
+	'Deleting a user is a permanent operation.',
+	'However, any allocated Short URL\'s will be moved to the anonymous account, as these cannot be deleted.',
+	'<b class="red">This action cannot be reverted.</b>',
+	);
+$lang['YOU_ARE_ABOUT_TO_DELETE'] = 'You are about to delete user *|userid|* \'*|username|*\' (\'*|realname|*\').';
+$lang['USER_NOT_DELETED'] = 'User not deleted';
+$lang['USER_DELETED'] = 'User deleted';
+
+$lang['EMAIL_WARNING'] = array(
+	'Please provide a legitimate email address.',
+	'Note that by changing the email address of this account the password' .
+	' will also be reset to a randomly generated password. This password' .
+	' will then be emailed to the address provided and will act as' .
+	' verification. Failure of this process will result in an account that' .
+	' cannot be accessed.',
+	'<b class="red">This process cannot be reverted.</b>',
+	);
+$lang['FIELD_EMAIL2'] = 'Confirm Email';
+
+$lang['EMAIL_CHANGED_EMAIL'] = array(
+	'Hello *|realname|*,',
+	'',
+	'Your user changed email has been saved and you should signon at:',
+	'  *|url|*',
+	'',
+	'You can signon with your username, and with the password:',
+	'  *|password|*',
+	'(You will be asked to change this when you signon.)',
+	'',
+	'Thank you for your patronage.',
+	'',
+	'-Regards,',
+	'c1k.it',
+	);;
+$lang['EMAIL_CHANGED'] = 'Email Changed';
+$lang['EMAIL_CHANGED_EMAIL_SENT'] = 'Changed Email confirmation sent';
+$lang['EMAIL_CHANGED_EMAIL_NOT_SENT'] = 'Unable to send confirmation Email';
+
+// captcha library
+
+$lang['INCORRECT'] = 'Incorrect, please try again';
+$lang['ENTER_WORDS'] = 'Enter CAPTCHA';
+$lang['ENTER_NUMBERS'] = 'Enter audible numbers';
+$lang['GET_ANOTHER'] = '<img src="images/ico_refresh.png" alt="Get another code" />';
+$lang['GET_AUDIO'] = '<img src="images/ico_sound.png" alt="Get audio code" />';
+$lang['GET_IMAGE'] = '<img src="images/ico_text.png" alt="Get text code" />';
+$lang['GET_HELP'] = '<img src="images/ico_help.png" alt="Help" />';
+
+// admin page
+
+$lang['SITE_ADMIN'] = 'Settings';
+
+$lang['OTHER_SETTINGS'] = 'Other Settings';
+$lang['SHOW_SETTINGS_FOR'] = 'Show settings for';
+$lang['ALL_USERS'] = 'Sitewide / All Users';
+$lang['SETTING'] = 'Setting';
+$lang['VALUE'] = 'Value';
+$lang['INFO'] = '<img src="images/ico_info.png" title="Help and information on where the setting is saved" />';
+$lang['DELETE'] = '<img src="images/ico_arch.png" title="Check to delete item if available" />';
+$lang['DELETE_ITEM'] = 'Delete item';
+$lang['CHANGE_SITEWIDE'] = 'Sitewide / For all users';
+$lang['CHANGE_FOR_USER'] = 'Only for user ID *|userid|*, *|username|* (*|realname|*)';
+$lang['CHANGES_MADE'] = '*|cnt|* changes made';
+$lang['SETTING_DELETED'] = 'Setting \'*|name|*\' deleted';
+$lang['SETTING_UPDATED'] = 'Setting \'*|name|*\' updated';
+$lang['SETTING_INSERTED'] = 'Setting \'*|name|*\' inserted';
+
 
 // ajax page
 
@@ -257,8 +464,9 @@ $lang['SHORTURL_TAKEN_DESC'] = '<span class="warning">Exists already</span>';
 
 // load page
 
+$lang['PREVIEW'] = '<i>Preview:</i>';
 $lang['SEC_PREFIX'] = ' - in ';
-$lang['SEC_SUFIX'] = ' sec';
+$lang['SEC_SUFIX'] = ' seconds';
 $lang['REDIRECTING_TO'] = 'Redirecting to <a href="*|url|*">*|url|*</a>';
 
 ?>

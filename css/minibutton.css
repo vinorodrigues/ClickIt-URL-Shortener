@@ -23,7 +23,7 @@ button.minibutton::-moz-focus-inner{margin:-1px -3px;}
 
 /* I just swaped the G & B in the RGB pallet */
 .minibutton.green{color:#080;}
-.minibutton.green:hover,.minibutton.danger:focus{color:#fff;text-decoration:none;text-shadow:-1px -1px 0 rgba(0,0,0,0.3);border-color:#51c68c;border-bottom-color:#2aa065;background:#59dc9b;filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#59dc9b',endColorstr='#30b372');background:-webkit-gradient(linear,left top,left bottom,from(#59dc9b),to(#30b372));background:-moz-linear-gradient(top,#59dc9b,#30b372);}
+.minibutton.green:hover,.minibutton.green:focus{color:#fff;text-decoration:none;text-shadow:-1px -1px 0 rgba(0,0,0,0.3);border-color:#51c68c;border-bottom-color:#2aa065;background:#59dc9b;filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#59dc9b',endColorstr='#30b372');background:-webkit-gradient(linear,left top,left bottom,from(#59dc9b),to(#30b372));background:-moz-linear-gradient(top,#59dc9b,#30b372);}
 .minibutton.green.mousedown{border-color:#2aa065;border-bottom-color:#51c68c;background:#30b372;filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#30b372',endColorstr='#59dc9b');background:-webkit-gradient(linear,left top,left bottom,from(#30b372),to(#59dc9b));background:-moz-linear-gradient(top,#30b372,#59dc9b);}
 
 /* icons, modified for this site */
@@ -59,3 +59,13 @@ button.minibutton::-moz-focus-inner{margin:-1px -3px;}
 .btn-rset span.icon{background-position:-84px 0;}
 .btn-rset.danger span.icon{background-position:-84px -24px;}
 .btn-rset:hover span.icon{background-position:-84px -12px;}
+
+.btn-lock span.icon{background-position:-96px 0;}
+.btn-lock:hover span.icon{background-position:-96px -12px;}
+
+.btn-mail span.icon{background-position:-108px 0;}
+.btn-mail:hover span.icon{background-position:-108px -12px;}
+
+/* shadow */
+.minibutton{margin-bottom:2px;-webkit-box-shadow:1px 1px 2px #777;-moz-box-shadow:1px 1px 2px #777;box-shadow:1px 1px 2px #777;}
+.minibutton.mousedown{-webkit-box-shadow:0 0 0;-moz-box-shadow:0 0 0;box-shadow:0 0 0;}

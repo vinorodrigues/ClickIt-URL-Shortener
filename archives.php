@@ -9,8 +9,8 @@
  *   clickit [dot] source [at] mail [dot] vinorodrigues [dot] com
  */
 
-$enabled_state = false;
-include('list.php');
+$enabled_state = FALSE;
+include( 'list.' . substr(strrchr(__FILE__, '.'), 1) );
 
 /*
  * This page is the same code base as list.php, but instead of duplication we just include it.

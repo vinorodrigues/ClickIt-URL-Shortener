@@ -21,11 +21,12 @@ Releases
            Hash-tag engine, internationalization
            Facebook and Google Analitics integration
            (Released 21 Apr 2011)
+           
+0.3 Beta - User management & settings managment
+           (Released 4 May 2011)
 
 Upcomming milestones
 --------------------        
-
-0.3 Beta - User management
 
 0.4 Beta - ShortURL integration with Google Analytics, for click throughs and
            cloaking

@@ -5,27 +5,27 @@
  * @copyright  Tecsmith.com.au
  *   See LICENSE.TXT for copyright notice and details.
  * @license    Creative Commons Attribution-ShareAlike 3.0 Unported License
- * @author     Vino Rodrigues 
+ * @author     Vino Rodrigues
  *   clickit [dot] source [at] mail [dot] vinorodrigues [dot] com
  */
 
 require_once('includes/library.php');
-require_once('includes/lang.php');
+require_once('includes/lang.' . $phpEx);
 initialize_settings();
 initialize_lang();
 
 $page['head_title'] = "c1k.it LICENSE";
 $page['title'] = "License and other legalities";
 
-$page['head_suffix'] = "\t<style>" . 
-	" td, th { border: none; vertical-align: top; }" . 
+$page['head_suffix'] = "\t<style>" .
+	" td, th { border: none; vertical-align: top; }" .
 	" p { margin-top: 0; margin-bottom: 1em; }" .
 	" img { border-width: 0; } " .
 	" p.indent { padding-left: 2em; font-size: 85% } " .
 	" li.indent { list-style: square outside; font-size: 85% } " .
 	" td.l { text-align: center; } " .
 	" td.r { border-left: 1px dashed #CCC; } " .
-	" th { border-bottom: 1px dashed #CCC; } " .  
+	" th { border-bottom: 1px dashed #CCC; } " .
 	"</style>\n";
 
 ob_start();
@@ -92,13 +92,30 @@ Copyright &copy; 2008-2010 Chris Schuld<br />
 </tr>
 <tr>
 <td class="l">
+<img alt="" src="images/thanks-88x31.png" /><br /><br /><img alt="" src="images/google-88x31.png" /><br /><br /><img alt="" src="images/facebook-88x31.png" />
+</td>
+<td class="r">
+Special thanks to: <small><i>(See source code for links to author sites)</i></small>
+<ul>
+	<li class="indent">Icons by FAMFAMFAM</li>
+	<li class="indent">Button images by SomeRandomDude</li>
+	<li class="indent">GitHub Minibutton by David Walsh</li>
+	<li class="indent">Captcha &amp; reCaptchaLib by ReCAPTCHA (Google)</li>
+	<li class="indent">JSMin by Douglas Crockford &amp; Ryan Grove</li>
+	<li class="indent">Analitics by Google</li>
+	<li class="indent">Chart API by Google</li>
+	<li class="indent">Facebook Lib by Facebook</li>
+</ul>
+</td></tr>
+<tr>
+<td class="l">
 <a href="http://www.php.net"><img src="images/php-88x31.png" alt="PHP" /></a>
 </td>
 <td class="r">
 And finaly, but not least, thanks to the PHP Group and community, specifically
-Andrew Moore, 
+Andrew Moore,
 Enrico Pallazzo,
-and other PHP Manual <a href="http://www.php.net/manual/en/preface.php#contributors">Contributors</a>. 
+and other PHP Manual <a href="http://www.php.net/manual/en/preface.php#contributors">Contributors</a>.
 </td>
 </tr>
 </tfoot>
@@ -106,4 +123,4 @@ and other PHP Manual <a href="http://www.php.net/manual/en/preface.php#contribut
 
 <?php
 $page['content'] = ob_get_clean();
-include('includes/' . TEMPLATE . '.php');
+include('includes/' . TEMPLATE . '.' . $phpEx);

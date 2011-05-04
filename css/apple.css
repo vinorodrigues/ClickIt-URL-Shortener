@@ -36,6 +36,33 @@
 	box-shadow: 0 5px 12px #555;
 }
 
+th, td,
+.boxed {
+	padding: 4px;
+}
+
 #footer {
 	padding-bottom: 2em;
 }
+
+table.editlist input[type='text'],
+table.editlist input[type='password'],
+table.editlist input[type='email'],
+table.editlist input[type='number'],
+table.editlist select, 
+table.editlist textarea {
+	-webkit-text-size-adjust: 93%;
+	width: 95%;
+}
+
+table.editlist input[type='text'],
+table.editlist input[type='email'] {
+	width: 86%;
+}
+
+table.editlist .col_3, 
+table.editlist .col_4 { 
+	width: 20px;
+	border-left: 0;
+	padding: 0.5em 2px;
+} 

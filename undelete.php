@@ -10,7 +10,7 @@
  */
 
 $delete_action = 'undo';
-include('delete.php');
+include( 'delete.' . substr(strrchr(__FILE__, '.'), 1) );
 
 /*
  * See note in archives.php

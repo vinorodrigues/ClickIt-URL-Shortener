@@ -5,24 +5,24 @@
  * @copyright  Tecsmith.com.au
  *   See LICENSE.TXT for copyright notice and details.
  * @license    Creative Commons Attribution-ShareAlike 3.0 Unported License
- * @author     Vino Rodrigues 
+ * @author     Vino Rodrigues
  *   clickit [dot] source [at] mail [dot] vinorodrigues [dot] com
  */
 
 require_once('includes/library.php');
-initialize_settings(true);
+initialize_settings(TRUE);
 
-if (file_exists('config.php')) : 
+if (file_exists('config.' . $phpEx)) :
 	$e = 403;
-	poke_error('File <code>config.php</code> already exists');
-	include('error.php');
-	die();
+	poke_error('File <code>config.' . $phpEx . '</code> already exists');
+	include('error.' . $phpEx);
+	die(403);
 endif;
 
 $method = 'post';  // set to post forms
 global $o;  $o = '';  // Outcome messages
 
-function add_outcome($msg, $success = true) {
+function add_outcome($msg, $success = TRUE) {
 	global $o;
 	$tf = $success ? 'success' : 'fail';
 	$yn = $success ? 'yes' : 'no';
@@ -38,22 +38,22 @@ endif;
 $page['head_title'] = 'ClickIt Install';
 if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 	set_error_handler('error_handler');
-	set_exception_handler('exception_handler');	
+	set_exception_handler('exception_handler');
 
 	$dbms = $_REQUEST['dbms'];
 	include_once('includes/db/' . $dbms . '.' . $phpEx);
-		
+
 	if ($nextstep > 2) :  // = 3
 		$dbhost = $_REQUEST['dbhost'];
 		$dbuser = $_REQUEST['dbuser'];
 		$dbpasswd = $_REQUEST['dbpasswd'];
 		$dbname = $_REQUEST['dbname'];
 		$dbport = $_REQUEST['dbport'];
-		
+
 		// Connect to database to see if it works
 		$db = new $sql_db();
-		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false);
-		
+		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, FALSE, FALSE);
+
 		if ($nextstep > 3) :  // = 4 +
 			$dbprefix = $_REQUEST['dbprefix'];
 
@@ -63,7 +63,7 @@ if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 			$URLS_TABLE = $dbprefix . 'urls';
 			$LOG_TABLE = $dbprefix . 'log';
 		endif;
-		
+
 		if ($nextstep == 4) :  // = 4
 			$drop_old = $_REQUEST['drop_old'];
 			$adminuser = strtolower( $_REQUEST['adminuser'] );
@@ -88,17 +88,17 @@ if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 
 			$schemas = array(
 
-				// ----- Users -----					
+				// ----- Users -----
 				$USERS_TABLE => array(
 					'COLUMNS' => array(
-						'id' => array('UINT', Null, 'auto_increment'),
-						'username' => array('CHAR:32', Null),
+						'id' => array('UINT', NULL, 'auto_increment'),
+						'username' => array('CHAR:32', NULL),
 						'passwd' => array('CHAR:32', ''),
 						'token' => array('CHAR:32', ''),
 						'userlevel' => array('TINT:1', 0),
 						'realname' => array('VCHAR:70', ''),
 						'email' => array('VCHAR:150', ''),
-						'createdon' => array('TIMESTAMP', 0),  // db_tools does't do DEFAULT CURRENT_TIMESTAMP 
+						'createdon' => array('TIMESTAMP', 0),  // db_tools does't do DEFAULT CURRENT_TIMESTAMP
 						'lastvisiton' => array('TIMESTAMP', 0),
 						'enabled' => array('BOOL', 0),
 						'bad_logon' => array('TINT:1', 0),
@@ -115,7 +115,7 @@ if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 				$SETTINGS_TABLE => array(
 					'COLUMNS' => array(
 						'userid' => array('UINT', 0),
-						'name' => array('CHAR:70', Null),
+						'name' => array('CHAR:70', NULL),
 						'value' => array('CHAR:140', ''),
 						),
 					'PRIMARY_KEY' => array('userid', 'name'),
@@ -127,9 +127,9 @@ if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 				// ----- Urls -----
 				$URLS_TABLE => array(
 					'COLUMNS' => array(
-						'id' => array('UINT', Null, 'auto_increment'),
-						'shorturl' => array('CHAR:25', Null),
-						'longurl' => array('VCHAR:254', Null),
+						'id' => array('UINT', NULL, 'auto_increment'),
+						'shorturl' => array('CHAR:25', NULL),
+						'longurl' => array('VCHAR:254', NULL),
 						'userid' => array('UINT', 0),
 						'createdon' => array('TIMESTAMP', 0),  // db_tools does't do DEFAULT CURRENT_TIMESTAMP
 						'lastvisiton' => array('TIMESTAMP', 0),
@@ -147,10 +147,10 @@ if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 						),
 					),
 
-				// ----- Log -----	
+				// ----- Log -----
 				$LOG_TABLE => array(
 					'COLUMNS' => array(
-						'urlid' => array('UINT', Null),
+						'urlid' => array('UINT', NULL),
 						'accessedon' => array('TIMESTAMP', 0),  // db_tools does't do DEFAULT CURRENT_TIMESTAMP
 						'ipaddress' => array('CHAR:15', ''),
 						'referer' => array('VCHAR:254', ''),
@@ -161,7 +161,7 @@ if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 					'KEYS' => array(
 						'KEY_urlid' => array('INDEX', 'urlid'),
 						),
-					), 
+					),
 				);
 
 			foreach($schemas as $tablename => $schema) :
@@ -170,7 +170,7 @@ if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 					$tools->sql_create_table($tablename, $schema);
 					add_outcome("Created table <code>$tablename</code>");
 				else :
-					add_outcome("Table <code>$tablename</code> already exists", false);
+					add_outcome("Table <code>$tablename</code> already exists", FALSE);
 				endif;
 			endforeach;
 
@@ -181,21 +181,20 @@ if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 				$data = array(
 					'userid' => 0,
 					'name' => 'version',
-					'value' => CLICKIT_VER,
+					'value' => str_replace(array('&', ';'), array(' ', ''), CLICKIT_VER),
 					);
-				$sql = "INSERT INTO $SETTINGS_TABLE" . $db->sql_build_array('INSERT', $data) . ";";
+				$sql = "INSERT INTO $SETTINGS_TABLE " . $db->sql_build_array('INSERT', $data);
 				$db->sql_query($sql);
-				
-				include_once('includes/uuid.php');
-				$url = (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on')) ? 'https://' : 'http://';
-				$url .= $_SERVER['SERVER_PORT'] != '80' ? $_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'] : $_SERVER['SERVER_NAME'];
-								
+
+				include_once('includes/uuid.' . $phpEx);
+				$url = $page['full_path'];
+
 				$data = array(
 					'userid' => 0,
 					'name' => 'apikey',
 					'value' => str_replace('-', '', get_uuid5(NS_URL, $url)),
 					);
-				$sql = "INSERT INTO $SETTINGS_TABLE" . $db->sql_build_array('INSERT', $data) . ";";
+				$sql = "INSERT INTO $SETTINGS_TABLE " . $db->sql_build_array('INSERT', $data);
 				$db->sql_query($sql);
 
 				add_outcome("Populated table <code>$SETTINGS_TABLE</code>");
@@ -206,12 +205,12 @@ if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 				$data = array(
 					'username' => $adminuser,
 					'realname' => 'Administrator',
-					'createdon' => microtime(true),
-					'enabled' => true,
+					'createdon' => microtime(TRUE),
+					'enabled' => TRUE,
 					'userlevel' => USER_LEVEL_GD,
 					);
 				if (!empty($adminpasswd)) $data['passwd'] = $adminpasswd;
-				$sql = "INSERT INTO $USERS_TABLE" . $db->sql_build_array('INSERT', $data) . ";";
+				$sql = "INSERT INTO $USERS_TABLE " . $db->sql_build_array('INSERT', $data);
 				$db->sql_query($sql);
 				add_outcome("Populated table <code>$USERS_TABLE</code>");
 			endif;
@@ -228,18 +227,18 @@ if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 					'passwd' => md5('1'),
 					'realname' => 'Vino Rodrigues',
 					'email' => 'clickit.source' . '@' . 'tecsmith.com.au',  // just to stop source scrapers
-					'createdon' => microtime(true),
+					'createdon' => microtime(TRUE),
 					'analytics' => 'UA-00000000-0',  // naa... not mine!
-					'enabled' => true,
+					'enabled' => TRUE,
 					'userlevel' => USER_LEVEL_GD,
 					);
-				$sql = "INSERT INTO $USERS_TABLE" . $db->sql_build_array('INSERT', $data) . ";";
+				$sql = "INSERT INTO $USERS_TABLE " . $db->sql_build_array('INSERT', $data);
 				$db->sql_query($sql);
 
 				$user_id = $db->sql_nextid();
 			else :
 				$user_id = 1;  // Let's hope ...
-			endif; 
+			endif;
 
 			if ($sampledata == 1) :
 				// ----- Users -----
@@ -248,66 +247,66 @@ if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 					'passwd' => md5('1'),
 					'realname' => 'Joe Blow',
 					'email' => 'root@localhost',  // hope you have a SMTP server on your PC ;)
-					'createdon' => microtime(true),
+					'createdon' => microtime(TRUE),
 					'analytics' => 'UA-00000000-0',
-					'enabled' => true,
+					'enabled' => TRUE,
 					'userlevel' => USER_LEVEL_CR,
 					);
-				$sql = "INSERT INTO $USERS_TABLE" . $db->sql_build_array('INSERT', $data) . ";";
+				$sql = "INSERT INTO $USERS_TABLE " . $db->sql_build_array('INSERT', $data);
 				$db->sql_query($sql);
-				
+
 				add_outcome("Added sample data for table <code>$USERS_TABLE</code>");
-			
+
 				// ----- Urls -----
 				$data = array(
 					'shorturl' => 'vino',
 					'longurl' => 'http://vinorodrigues.com',
 					'userid' => $user_id,
-					'createdon' => microtime(true),
+					'createdon' => microtime(TRUE),
 					'cloak' => 0,
 					'title' => 'Vino Rodrigues',
 					'log' => 1,
 					'analytics' => 1,
 					);
-				$sql = "INSERT INTO $URLS_TABLE" . $db->sql_build_array('INSERT', $data) . ";";
+				$sql = "INSERT INTO $URLS_TABLE " . $db->sql_build_array('INSERT', $data);
 				$db->sql_query($sql);
 
 				$data = array(
 					'shorturl' => 'ts',
 					'longurl' => 'http://tecsmith.com.au',
 					'userid' => $user_id,
-					'createdon' => microtime(true),
+					'createdon' => microtime(TRUE),
 					'cloak' => 0,
 					'title' => 'Tecsmith',
 					'log' => 0,
 					);
-				$sql = "INSERT INTO $URLS_TABLE" . $db->sql_build_array('INSERT', $data) . ";";
+				$sql = "INSERT INTO $URLS_TABLE " . $db->sql_build_array('INSERT', $data);
 				$db->sql_query($sql);
 
 				$data = array(
 					'shorturl' => 'test',
 					'longurl' => 'http://localhost',
 					'userid' => $user_id,
-					'createdon' => microtime(true),
+					'createdon' => microtime(TRUE),
 					'cloak' => 1,
 					'title' => 'LocalHost',
 					'metakeyw' => 'Keyword, keyword, keyword, keyword, keyword' ,
 					'metadesc' => 'Meta description and meta description and then more meta description' ,
 					'log' => 0,
 					);
-				$sql = "INSERT INTO $URLS_TABLE" . $db->sql_build_array('INSERT', $data) . ";";
+				$sql = "INSERT INTO $URLS_TABLE " . $db->sql_build_array('INSERT', $data);
 				$db->sql_query($sql);
 
 				$data = array(
 					'shorturl' => 'mail',
 					'longurl' => 'mailto:clickit.source@tecsmith.com.au',
 					'userid' => $user_id,
-					'createdon' => microtime(true),
+					'createdon' => microtime(TRUE),
 					'cloak' => 0,
 					'title' => 'Send Vino Rodrigues an email',
 					'log' => 1,
 					);
-				$sql = "INSERT INTO $URLS_TABLE" . $db->sql_build_array('INSERT', $data) . ";";
+				$sql = "INSERT INTO $URLS_TABLE " . $db->sql_build_array('INSERT', $data);
 				$db->sql_query($sql);
 
 				add_outcome("Added sample data for table <code>$URLS_TABLE</code>");  /* */
@@ -323,21 +322,21 @@ if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 
 	restore_exception_handler();
 	restore_error_handler();
-	if (!empty($messages)) : $e = 500; include('error.php'); die(); endif;
+	if (!empty($messages)) : $e = 500; include('error.' . $phpEx); die(500); endif;
 
 	if ($nextstep == 5) :  // = 5
 		// Finally - we write the config.php file
 
 		set_error_handler('error_handler');
-		set_exception_handler('exception_handler');	
+		set_exception_handler('exception_handler');
 
-		$myFile = "config.php";
+		$myFile = "config." . $phpEx;
 		$fh = fopen($myFile, 'w');
 
 		$content = '<' . "?php" . PHP_EOL;
 		$content .= "if (!defined('IN_CLICKIT')) die('Restricted');" . PHP_EOL . PHP_EOL;
 
-		// $content .= '$' . "settings['offline'] = false;" . PHP_EOL . PHP_EOL;
+		// $content .= '$' . "settings['offline'] = FALSE;" . PHP_EOL . PHP_EOL;
 
 		$content .= '$' . "settings['dbms'] = '$dbms';" . PHP_EOL;
 		$content .= '$' . "settings['dbhost'] = '$dbhost';" . PHP_EOL;
@@ -358,7 +357,7 @@ if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 			$content = str_replace('&', '&amp;', $content);
 			add_outcome('Cannot create file <code>' . $myFile . '</code>,' .
 				' please create it with the following contents:' .
-				"<pre>$content</pre>", false);  /* */
+				"<pre>$content</pre>", FALSE);  /* */
 		else :
 			fwrite($fh, $content);
 			fclose($fh);
@@ -374,16 +373,16 @@ endif;
 switch($nextstep) :
 	/* ----- 0 ------------------------------------------------------------- */
 	case 0 :
-		if (!defined('IN_CLICKIT')) : $e = 403; include('error.php'); die(); endif;
+		if (!defined('IN_CLICKIT')) : $e = 403; include('error.' . $phpEx); die(403); endif;
 
 	case 1 :
 		ob_start();
 		?>
 
 <h2>Welcome to the ClickIt installation wizard</h2>
-<form action="install.php" method="<?php print $method; ?>" name="step1" id="step1"> 
+<form action="install.<?php print $phpEx; ?>" method="<?php print $method; ?>" name="step1" id="step1">
 
-<fieldset title="DBMS">
+<fieldset class="install" title="DBMS">
 
 <p>What type of database system will you be connecting to?
 <select name="dbms">
@@ -391,7 +390,7 @@ switch($nextstep) :
 	foreach ($x as $s) :
 		print "  <option value=\"$s\"";
 		if (strcasecmp($settings['dbms'], $s) == 0) print "selected=\"selected\"";
-		print ">$s</option>\n"; 
+		print ">$s</option>\n";
 	endforeach; ?>
 </select></p>
 <p>
@@ -413,11 +412,11 @@ switch($nextstep) :
 		?>
 
 <h2>Connect to <?php echo strtoupper($dbms); ?> database</h2>
-<form action="install.php" method="<?php print $method; ?>" name="step2" id="step2">
+<form action="install.<?php print $phpEx; ?>" method="<?php print $method; ?>" name="step2" id="step2">
 
 <input type="hidden" name="dbms" value="<?php echo $dbms; ?>" />
 
-<fieldset title="Database">
+<fieldset class="install" title="Database">
 
 <p>Database Host: <input type="text" name="dbhost" value="<?php print $settings['dbhost']; ?>" size="15" maxlength="128" /></p>
 
@@ -446,10 +445,10 @@ switch($nextstep) :
 	case 3 :
 		ob_start();
 		?>
-		
+
 <h2>Create tables in <i><?php echo $dbname; ?></i> database</h2>
 
-<form action="install.php" method="<?php print $method; ?>" name="step3" id="step3">
+<form action="install.<?php print $phpEx; ?>" method="<?php print $method; ?>" name="step3" id="step3">
 
 <input type="hidden" name="dbms" value="<?php echo $dbms; ?>" />
 <input type="hidden" name="dbhost" value="<?php echo $dbhost; ?>" />
@@ -458,14 +457,14 @@ switch($nextstep) :
 <input type="hidden" name="dbname" value="<?php echo $dbname; ?>" />
 <input type="hidden" name="dbport" value="<?php echo $dbport; ?>" />
 
-<fieldset title="Tables">
+<fieldset class="install" title="Tables">
 
 <p>Table name prefix: <input type="text" name="dbprefix" value="<?php print $settings['dbprefix']; ?>" size="5" maxlength="10" /></p>
 
 <p><input type="checkbox" checked="checked" name="drop_old" id="drop_old" />
 <label for="drop_old">Drop existing tables if they exist</label></p>
 
-<?php print '</fieldset><fieldset title="Administrator">'; /* Eclipse parse workaround */ ?>
+<?php print '</fieldset><fieldset class="install" title="Administrator">'; /* Eclipse parse workaround */ ?>
 
 <p>Admin Username: <input type="text" name="adminuser" value="admin" size="15" maxlength="30" /></p>
 
@@ -478,13 +477,13 @@ switch($nextstep) :
 
 <div class="panel clearfix"><input type="submit" value="Next >"  style="float:right;" /></div>
 </form>
-		
+
 		<?php
 		$page['content'] = ob_get_clean();
 		$page['title'] = $page['head_title'] . ' - Step 3';
 
 		break;
-		
+
 	/* ----- 4 ------------------------------------------------------------- */
 	case 4 :
 		ob_start();
@@ -493,7 +492,7 @@ switch($nextstep) :
 
 <h2>Create configuration file and optional sample data</h2>
 
-<form action="install.php" method="<?php print $method; ?>" name="step4" id="step4">
+<form action="install.<?php print $phpEx; ?>" method="<?php print $method; ?>" name="step4" id="step4">
 
 <input type="hidden" name="dbms" value="<?php echo $dbms; ?>" />
 <input type="hidden" name="dbhost" value="<?php echo $dbhost; ?>" />
@@ -504,7 +503,7 @@ switch($nextstep) :
 <input type="hidden" name="dbprefix" value="<?php echo $dbprefix; ?>" />
 <input type="hidden" name="adminuser" value="<?php echo $adminuser; ?>" />
 
-<fieldset>
+<fieldset class="install" title="Sample data">
 
 <p>
 <label for="yesno">Do you wish to add sample data?</label>
@@ -534,18 +533,18 @@ switch($nextstep) :
 		ob_start();
 		if (!empty($o)) : print "<ul>$o</ul>"; endif;
 		?>
-		
+
 <h2>Installation complete</h2>
 
-<form action="index.php" method="<?php print $method; ?>" name="step5" id="step5">
+<form action="index.<?php print $phpEx; ?>" method="<?php print $method; ?>" name="step5" id="step5">
 <div class="panel clearfix">
 You will now be directed to the home page.
 <input type="submit" id="yes" value="Next >" style="float:right;" />
 </div>
 </form>
 
-<p><small>It is recomended that in production systems the file <code>install.php</code> be deleted.</small></p>
-		
+<p><small>It is recomended that in production systems the file <code>install.<?php print $phpEx; ?></code> be deleted.</small></p>
+
 		<?php
 		$page['content'] = ob_get_clean();
 		$page['title'] = $page['head_title'] . ' - Done!';
@@ -554,8 +553,8 @@ You will now be directed to the home page.
 
 	/* ----- default ------------------------------------------------------- */
 	default:
-		$e = 405; include('error.php'); die();
+		$e = 405; include('error.' . $phpEx); die(405);
 		break;
 endswitch;
 
-include('includes/' . TEMPLATE . '.php');
+include('includes/' . TEMPLATE . '.' . $phpEx);

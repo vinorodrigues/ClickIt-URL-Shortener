@@ -18,7 +18,7 @@ function _get_browser($user_agent = '') {
 	$old_error_reporting = error_reporting();
 	error_reporting(E_ERROR);
 	
-	$data = get_browser($user_agent, true);
+	$data = get_browser($user_agent, TRUE);
 	
 	error_reporting($old_error_reporting);
 	

@@ -9,7 +9,7 @@
 
 html, body {
 	height: 100%;
-	background: white;
+	background: #FFF;
 }
 
 body {
@@ -26,10 +26,9 @@ input, button, textarea, select {
 }
 
 html[high-color-depth] body {
-	background: #FFF;
-	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#EEE), to(#FFF));
-	background:	-moz-linear-gradient(19% 75% 90deg, #EEE, #FFF);
-	background-attachment: fixed;
+	background: #F7F7F7;
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#DDD), to(#FFF));
+	background:	-moz-linear-gradient(19% 75% 90deg, #DDD, #FFF);
 }
 
 ol, ul, dl {
@@ -48,21 +47,6 @@ a:hover, a:focus {
 
 a:visited {
 	color: #077; 
-}
-
-fieldset {
-	color: captiontext;
-	background: window;
-	padding: 0 1em;
-	border: 1px solid activeborder;
-
-	-webkit-border-radius: 0.5em;
-	-moz-border-radius: 0.5em;
-	border-radius: 0.5em;	
-
-	-webkit-box-shadow: 1px 1px 2px #555;
-	-moz-box-shadow: 1px 1px 2px #555;
-	box-shadow: 1px 1px 2px #555;
 }
 
 th, td { border: none; }
@@ -120,10 +104,9 @@ hr {
 .dithered {
 	padding: 0.25em 0.75em;
 	background-color: #EEF;
-	border-top: 1px solid #DDE;
+	border: 1px solid #DDE;
 }
-
-.dithered tr.z2 td {
+.dithered tr.row_2 td {
 	border-top: 2px solid #DDE;
 }
 
@@ -145,7 +128,6 @@ hr {
 .branding {
 	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#036), to(#169));
 	background:	-moz-linear-gradient(19% 75% 90deg, #036, #169);
-	/* filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#003366', endColorstr='#116699'); */
 }
 
 a#logo-link, a#logo-link:hover, a#logo-link:focus {
@@ -238,21 +220,21 @@ a#logo-link, a#logo-link:hover, a#logo-link:focus {
 }
 
 .rounded {
-	-webkit-border-radius: 0.5em;
-	-moz-border-radius: 0.5em;
-	border-radius: 0.5em;
+	-webkit-border-radius: 0.4em;
+	-moz-border-radius: 0.4em;
+	border-radius: 0.4em;
 }
 
 .rounded-top {
-	-webkit-border-radius: 0.5em 0.5em 0 0;
-	-moz-border-radius: 0.5em 0.5em 0 0;
-	border-radius: 0.5em 0.5em 0 0;
+	-webkit-border-radius: 0.4em 0.4em 0 0;
+	-moz-border-radius: 0.4em 0.4em 0 0;
+	border-radius: 0.4em 0.4em 0 0;
 }
 
 .rounded-bottom {
-	-webkit-border-radius: 0 0 0.5em 0.5em;
-	-moz-border-radius: 0 0 0.5em 0.5em;
-	border-radius: 0 0 0.5em 0.5em;
+	-webkit-border-radius: 0 0 0.4em 0.4em;
+	-moz-border-radius: 0 0 0.4em 0.4em;
+	border-radius: 0 0 0.4em 0.4em;
 }
 
 .shadow {
@@ -262,33 +244,38 @@ a#logo-link, a#logo-link:hover, a#logo-link:focus {
 }
 
 .panel {
-	color: activecaption;
-	background: buttonface;
+	color: #6E6E6E;
+	text-shadow: #F1F1F1 0px 1px 0px;
+	background: #DFDFDF;
 	padding: 0.25em 1em;
-	border: 1px solid activeborder;
+	border: 1px solid #999;
 	
-	-webkit-border-radius: 0.5em;
-	-moz-border-radius: 0.5em;
-	border-radius: 0.5em;	
+	-webkit-border-radius: 0.4em;
+	-moz-border-radius: 0.4em;
+	border-radius: 0.4em;	
 
-	-webkit-box-shadow: 1px 1px 2px #555;
-	-moz-box-shadow: 1px 1px 2px #555;
-	box-shadow: 1px 1px 2px #555;
+	/* -webkit-box-shadow: 1px 2px 6px #888;
+	-moz-box-shadow: 1px 2px 6px #888;
+	box-shadow: 1px 2px 6px #888; */
 }
 
-table.editlist {
-	width: 100%;
-}
-
-table.editlist, table.editlist th, table.editlist td {
-	border-collapse: collapse;
-	vertical-align: top;
-}
-table.editlist { border-top: 1px solid #DDD; }
-table.editlist th, table.editlist td { border-bottom: 1px solid #DDD; }
-
+table.editlist { width: 100%; }
+table.editlist img { border: 0; }
+table.editlist, table.editlist th, table.editlist td { border-collapse: collapse; }
+table.editlist { border-top: 1px solid #DDD; border-left: 1px solid #DDD; border-right: 1px solid #DDD; }
+table.editlist th, table.editlist td { border-bottom: 1px solid #DDD; vertical-align: top; word-wrap: break-word; }
+table.editlist thead th { padding: 0.25em; font-size: 85%; vertical-align: middle; background-color: #000 !important; color: #FFF !important; }
+table.editlist thead .col_2,
+table.editlist thead .col_3,
+table.editlist thead .col_4 { border-left: 1px dotted #777; } 
+table.editlist tbody .col_1 { width: 40%; }
+table.editlist tbody .col_2 { width: 60%; overflow: hidden; }
+table.editlist tbody .col_3,
+table.editlist tbody .col_4 { width: 5%; border-left: 1px dotted #DDD; text-align: center; padding: 0.5em 0.25em; } 
 table.editlist thead th { background-color: #DDD; }
-table.editlist tbody th { text-align: right; font-weight: normal; border-right: 1px dashed #DDD; }
+table.editlist tbody th { text-align: right; font-weight: normal; border-right: 1px dotted #DDD; }
+table.editlist tfoot th { text-align: right; font-weight: normal; background-color: #DDD; }
+table.editlist tfoot td { background-color: #DDD; }
 table.editlist tr.odd { background-color: #F7F7FF; }
 table.editlist tr.even { background-color: #FFE; }
 table.editlist tr.single { background-color: #EEE; }
@@ -303,11 +290,31 @@ table.editlist span.date { color: #700; font-size: 77%; padding-left: 20px; }
 table.editlist div.editbuttons { margin-top: 0.5em; }
 
 table.editlist input[type='text'],
+table.editlist input[type='password'],
+table.editlist input[type='email'],
+table.editlist input[type='number'],
 table.editlist select, 
 table.editlist textarea {
 	width: 100%
 }
-	 
+
+table.editlist fieldset {
+	padding: 1px 0;
+	margin: 0;
+	border: none;
+	background: inherit;
+	color: inherit;
+	
+	-webkit-border-radius: 0; -moz-border-radius: 0; border-radius: 0;
+	-webkit-box-shadow: 0 0; -moz-box-shadow: 0 0; box-shadow: 0 0;	
+}
+
+table.editlist tr.section th { text-align: left; font-weight: bold; padding: 0.2em 0.5em }
+table.editlist tr.section.odd th { background-color: #D7D7DF; }
+table.editlist tr.section.even th { background-color: #DDC; }
+table.editlist tr.sub-section th { text-align: left; font-weight: bold; padding: 0.2em 1.5em; font-size: 93% }
+table.editlist tr.sub-section.odd th { background-color: #E7E7EF; }
+table.editlist tr.sub-section.even th { background-color: #EED; }
 
 .red {
 	color: red;
@@ -333,7 +340,6 @@ a.user { background: url('../images/tny_user.png') no-repeat left center; }
 a.list { background: url('../images/tny_list.png') no-repeat left center; }
 a.arch { background: url('../images/tny_arch.png') no-repeat left center; }
 a.admin { background: url('../images/tny_star.png') no-repeat left center; }
-
 
 .tips {
 	font-size: 77%;
@@ -362,6 +368,18 @@ a.admin { background: url('../images/tny_star.png') no-repeat left center; }
 .facebook {
 	margin: 0.5em auto;
 	text-align: center;
+}
+
+fieldset.install {
+	background-color: #FFE;
+	margin: 0;
+	margin-bottom: 1em;
+	padding: 0.5em;
+	border: 1px solid #DDD;
+
+	-webkit-border-radius: 0.5em;
+	-moz-border-radius: 0.5em;
+	border-radius: 0.5em;	
 }
 
 

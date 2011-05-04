@@ -10,11 +10,11 @@
  */
 
 require_once('includes/library.php');
-include_once('includes/lang.php');
+include_once('includes/lang.' . $phpEx);
 
 // don't call initialize_settings(), just do the simple config inclusion
-require_once('includes/config-default.php');
-if (file_exists('config.php')) include_once('config.php');
+require_once('includes/config-default.' . $phpEx);
+if (file_exists('config.' . $phpEx)) include_once('config.' . $phpEx);
 
 initialize_lang();
 
@@ -76,9 +76,9 @@ else :
 	endif;
 endif; 
 
-header('HTTP/1.0 ' . $e . ' ' . $err, true, $e);
+header('HTTP/1.0 ' . $e . ' ' . $err, TRUE, $e);
 
 $page['head_title'] = empty($err) ? "Error $e" : "Error $e - $err";
 $page['title'] = "<span class=\"red\">HTTP Error:</span> $e";
 if (!empty($err)) $page['content'] = "<p>$err</p>";
-include('includes/' . TEMPLATE . '.php');
+include('includes/' . TEMPLATE . '.' . $phpEx);

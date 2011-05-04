@@ -31,4 +31,4 @@ the <cite title="bit.ly launched 2009, by November that year serving 2.1 billion
 <?php
 $page['content'] = ob_get_clean();
 $page['title'] = 'Website currently <span class="red" style="text-transform: uppercase;">offline</span>';
-include('includes/' . TEMPLATE . '.php');
+include('includes/' . TEMPLATE . '.' . $phpEx);

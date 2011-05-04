@@ -10,7 +10,7 @@
  */
 
 require_once('includes/library.php');
-require_once('includes/lang.php');
+require_once('includes/lang.' . $phpEx);
 initialize_settings();
 initialize_lang();
 
@@ -33,4 +33,4 @@ But then again this is the <cite title="George W. Bush, 2004 election's second d
 <?php
 $page['content'] = ob_get_clean();
 $page['title'] = 'Privacy';
-include('includes/' . TEMPLATE . '.php');
+include('includes/' . TEMPLATE . '.' . $phpEx);

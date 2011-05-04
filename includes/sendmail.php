@@ -12,7 +12,8 @@
 
 # if (!defined('IN_CLICKIT')) die('Restricted');
 
-include_once('uuid.php');
+$phpEx = substr(strrchr(__FILE__, '.'), 1);
+include_once('uuid.' . $phpEx);
 
 function Send_Mail($sender, $to, $subject, $body) {
 	// Set MIME Boundry
@@ -64,7 +65,7 @@ function Send_Mail($sender, $to, $subject, $body) {
 	echo "$message" . PHP_EOL;
 	echo "</pre>";
 
-	return true;
+	return TRUE;
 	/* */
 }
 
