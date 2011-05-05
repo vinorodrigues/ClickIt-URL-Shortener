@@ -20,12 +20,16 @@ $page['title'] = "License and other legalities";
 $page['head_suffix'] = "\t<style>" .
 	" td, th { border: none; vertical-align: top; }" .
 	" p { margin-top: 0; margin-bottom: 1em; }" .
-	" img { border-width: 0; } " .
-	" p.indent { padding-left: 2em; font-size: 85% } " .
-	" li.indent { list-style: square outside; font-size: 85% } " .
-	" td.l { text-align: center; } " .
-	" td.r { border-left: 1px dashed #CCC; } " .
-	" th { border-bottom: 1px dashed #CCC; } " .
+	" img { border-width: 0; }" .
+	" p.indent { padding-left: 2em; font-size: 85% }" .
+	" li.indent { list-style: square outside; font-size: 85% }" .
+	" td.l { text-align: center; }" .
+	" td.r { border-left: 1px dashed #CCC; }" .
+	" th { border-bottom: 1px dashed #CCC; }" .
+	" td.s { background: rgba(238, 238, 238, 0.2);  vertical-align:middle; " .
+		"border-top: 1px solid #DDD; border-bottom: 1px solid #DDD; } " .
+	" span.s { color: navy; font-weight: bold; }" .
+	" small.s { font-size: 77%; font-style: italic; }" .
 	"</style>\n";
 
 ob_start();
@@ -47,7 +51,7 @@ ob_start();
 </td>
 <td class="r">
 <p>c1k.it is an open source project - it's source is free (as in freedom) and free (as in no-cost). Its source is hosted on <a rel="source" href="http://github.com/vinorodrigues/ClickIt-URL-Shortener">GitHub</a>.</p>
-<p>It is licenced under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.</p>
+<p>It is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.</p>
 <p class="indent">Basically, that means that you can use its source for your own work, including commercial uses.  But...</p>
 <ul>
 	<li class="indent">You must attribute (or openly mention) the original Author.</li>
@@ -81,30 +85,25 @@ Copyright &copy; 2011, Yahoo! Inc.<br />
 </td>
 </tr>
 <tr>
-<td class="l">
-<a rel="license" href="http://www.gnu.org/copyleft/gpl.html"><img src="http://www.gnu.org/graphics/gplv3-88x31.png" alt="GNU GPLv3"></a>
+<td class="l s">
+<img alt="" src="images/google-88x31.png" /><br /><br />
+<img alt="" src="images/facebook-88x31.png" /><br /><br />
+<img alt="" src="images/apple-88x31.png" />
 </td>
-<td class="r">
-Browser detection by <a href="http://chrisschuld.com">Chris Schuld</a><br />
-Copyright &copy; 2008-2010 Chris Schuld<br />
-* <a href="http://chrisschuld.com">http://chrisschuld.com</a> - GPLv2 or later License
-</td>
-</tr>
-<tr>
-<td class="l">
-<img alt="" src="images/thanks-88x31.png" /><br /><br /><img alt="" src="images/google-88x31.png" /><br /><br /><img alt="" src="images/facebook-88x31.png" />
-</td>
-<td class="r">
-Special thanks to: <small><i>(See source code for links to author sites)</i></small>
+<td class="r s">
+<span class="s">Special thanks to:</span> <small class="s">(See source code for links to author sites)</small>
 <ul>
-	<li class="indent">Icons by FAMFAMFAM</li>
-	<li class="indent">Button images by SomeRandomDude</li>
-	<li class="indent">GitHub Minibutton by David Walsh</li>
-	<li class="indent">Captcha &amp; reCaptchaLib by ReCAPTCHA (Google)</li>
-	<li class="indent">JSMin by Douglas Crockford &amp; Ryan Grove</li>
-	<li class="indent">Analitics by Google</li>
-	<li class="indent">Chart API by Google</li>
-	<li class="indent">Facebook Lib by Facebook</li>
+	<li class="indent">Browser detection <i>by</i> Chris Schuld</li>
+	<li class="indent">Icons <i>by</i> FAMFAMFAM</li>
+	<li class="indent">Button images <i>by</i> SomeRandomDude</li>
+	<li class="indent">GitHub Minibutton <i>by</i> David Walsh</li>
+	<li class="indent">Captcha &amp; reCaptchaLib <i>by</i> ReCAPTCHA (Google)</li>
+	<li class="indent">JSMin <i>by</i> Douglas Crockford &amp; Ryan Grove</li>
+	<li class="indent">UUID generator <i>by</i> Andrew Moore</li>
+	<li class="indent">Analitics <i>by</i> Google</li>
+	<li class="indent">Chart API <i>by</i> Google</li>
+	<li class="indent">Facebook Lib <i>by</i> Facebook</li>
+	<li class="indent">iPhone integration <i>by</i> Apple Developer</li>
 </ul>
 </td></tr>
 <tr>

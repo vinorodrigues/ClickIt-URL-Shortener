@@ -11,7 +11,7 @@
 
 if (!defined('IN_CLICKIT')) die('Restricted');
 
-include_once('recaptchalib.' . $phpEx);
+include_once('recaptcha-php/recaptchalib.' . $phpEx);
 include_once('lang.' . $phpEx);
 
 /**
@@ -30,51 +30,31 @@ function captcha_ready() {
  * Returns iether the captcha html code or FALSE
  * @return string|boolean
 */
-function get_captcha($use_noscript = TRUE, $row = 1, $odd = TRUE, $colspan = 2) {
-	global $settings, $lang;
+function get_captcha($use_noscript = TRUE, $colspan = 2) {
+	global $settings, $lang, $row, $tab;
+	if (!isset($row)) $row = 0;  if (!isset($tab)) $tab = 0;
+	$row++;  $tab++;
 	if (!isset($lang)) $lang = 'en';
 	if (captcha_ready()) :
 
-		$custom = '<tbody id="recaptcha_widget" style="display:none">
-<tr class="row_' . ($row) . ' ' . ($odd ? 'odd' : 'even') . '">
-<td colspan="' . $colspan . '" align="center" style="background-color: white;">
-	<div id="recaptcha_image"></div>
-	<span><a href="javascript:Recaptcha.reload()" class="minibutton silver">' . T('GET_ANOTHER') . '</a></span>
-	<span class="recaptcha_only_if_image"><a href="javascript:Recaptcha.switch_type(\'audio\')" class="minibutton silver">' . T('GET_AUDIO') . '</a></span>
-	<span class="recaptcha_only_if_audio"><a href="javascript:Recaptcha.switch_type(\'image\')" class="minibutton silver">' . T('GET_IMAGE') .  '</a></span>
-	<span><a href="javascript:Recaptcha.showhelp()" class="minibutton silver">' . T('GET_HELP') . '</a></span>
-</td>
-</tr>
-<tr class="row_' . ($row+1) . ' ' . (!$odd ? 'odd' : 'even') . '">
-<th>
-	<span class="recaptcha_only_if_incorrect_sol red">' . T('INCORRECT') . '<br /></span>
-	<span class="recaptcha_only_if_image">' . T('ENTER_WORDS') . ':<span class="required"></span></span>
-	<span class="recaptcha_only_if_audio">' . T('ENTER_NUMBERS') . ':<span class="required"></span></span>
-</th>
-<td colspan="' . ($colspan-1) . '">
-	<input type="text" id="recaptcha_response_field" name="recaptcha_response_field" ' . __('', ' required="required"', TRUE) . ' />
-	<js_goes_here />
-</td>
-</tbody>
+		$custom = '<tr class="row_' . ($row) . ' ' . (is_odd($row) ? 'odd' : 'even') . '">
+<td colspan="' . $colspan . '" align="center" style="padding:0;background:white">
+<js_goes_here />
+</td></tr>
 ';
 
-		$part1 = "<script type=\"text/javascript\">
-//<![CDATA[
-	var RecaptchaOptions = {
-		theme : 'custom',
-		lang : '" . $lang . "',
-		custom_theme_widget: 'recaptcha_widget'
-	};
-//]]>
-</script>
-";
+		$s1 = "var RecaptchaOptions = {
+	theme : 'white',
+	tabindex : " . $tab . "
+};";
+		$part1 = loadscript($s1);
 
 		$use_ssl = (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on'));
 		$part2 = recaptcha_get_html(
 			$settings['recaptcha_public'],
 			'',
 			$use_ssl,
-			FALSE) . PHP_EOL;
+			$use_noscript) . PHP_EOL;
 
 		return str_replace('<js_goes_here />', $part1 . $part2, $custom);
 	else :

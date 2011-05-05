@@ -13,7 +13,7 @@
  * AUTHORS:
  *   Mike Crawford
  *   Ben Maurer
- *   J. Esteban Acosta Villafañe (PLD League)
+ *   J. Esteban Acosta Villafane (PLD League)
  *   Wez Furlong
  *   Vino Rodrigues
  *
@@ -102,25 +102,30 @@ function _recaptcha_http_post($host, $path, $data, $port = 80)
 
 function _recaptcha_http_post_curl($host, $path, $data, $port = 80)
 {
-	// This code adapted from "legacy" (J. Esteban Acosta Villafañe)
+	// This code adapted from "legacy" (J. Esteban Acosta Villafane)
 	// http://pldleague.com/code/server-side-coding/recaptcha-php-library-with-curl-support/
 
 	$add_headers = array(
 		"Host: $host",
 		);
 
-	$curl_config = array(
+	// merge config array - don't use array_merge as CURLOPT_xx are numeric
+	$__config = array(
 		CURLOPT_POST => true,
 		CURLOPT_RETURNTRANSFER => true,
 		CURLOPT_CONNECTTIMEOUT => 10,
 		CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_0,
 		CURLOPT_USERAGENT => "reCAPTCHA/PHP",
 		CURLOPT_HEADER => true
-		) + $GLOBALS['curl_config'];
+		);
+	// with provided overrides
+	foreach ($GLOBALS['curl_config'] as $n => $v) :
+		$__config[$n] = $v;
+	endforeach;
 
 	$url = 'http://' . $host . (($port != 80) ? ':' . $port : '') . $path;
 	$ch = curl_init( $url );
-	curl_setopt_array( $ch , $curl_config );
+	curl_setopt_array( $ch , $__config );
 	curl_setopt( $ch, CURLOPT_POSTFIELDS, $data );
 	curl_setopt( $ch, CURLOPT_HTTPHEADER, $add_headers );
 	$response = curl_exec( $ch );
@@ -234,13 +239,16 @@ function recaptcha_get_html($pubkey, $error = null, $use_ssl = false, $use_noscr
 
 	$errorpart = "";
 	if ($error) {
-		$errorpart = "&amp;error=" . $error;
+		$errorpart = "&error=" . $error;
 	}
-	$html = '<script type="text/javascript" src="'. $server . '/challenge?k=' . $pubkey . $errorpart . '"></script>';
+	$html = '<script type="text/javascript"
+	src="'. $server . '/challenge?k=' . $pubkey . $errorpart . '">
+</script>
+';
 	if ($use_noscript)
 	$html .= '<noscript>
-	<iframe src="'. $server . '/noscript?k=' . $pubkey . $errorpart . '" height="300" width="500" frameborder="0"></iframe><br/>
-	<textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
+	<iframe src="'. $server . '/noscript?k=' . $pubkey . $errorpart . '" height="300" width="100%" frameborder="0"></iframe><br />
+	<textarea name="recaptcha_challenge_field" rows="2" cols="38"></textarea>
 	<input type="hidden" name="recaptcha_response_field" value="manual_challenge"/>
 </noscript>
 ';

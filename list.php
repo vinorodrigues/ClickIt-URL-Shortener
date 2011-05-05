@@ -89,7 +89,7 @@ if ($userlevel >= USER_LEVEL_LS) :  // list
 				'id' => $row['id'],
 				'count' => boolval($row['log']) ? $row2['cnt'] : T('NOT_LOGGED'),
 				// 'title' => '<a href="info.' . $phpEx . '?id=' . $row['id'] . '">' . (!$row['title'] ? $row['longurl'] : $row['title']) . '</a>',
-				'title' => $title,
+				'title' => $title,  // TODO : LIST : Make Title link to info page
 				'icon' => get_fav_icon($row['longurl']),
 				'iconarch' => '<img src="' . $page['base_path'] . 'images/ico_arch.png" width="16" height="16" />',
 				'longurl' => $row['longurl'],

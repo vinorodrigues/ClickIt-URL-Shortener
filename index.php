@@ -12,7 +12,7 @@
 require_once('includes/library.php');
 require_once('includes/lang.' . $phpEx);
 
-if (!file_exists('config.' . $phpEx)) :
+if ((!file_exists('config.' . $phpEx)) && (!file_exists('~config.' . $phpEx))) :
 	if (file_exists('install.' . $phpEx)) :
 		include('install.' . $phpEx);
 		exit;

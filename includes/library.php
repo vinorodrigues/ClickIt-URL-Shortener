@@ -104,7 +104,10 @@ function initialize_settings($is_install = FALSE) {
 
 	global $settings, $phpEx;
 	require_once('includes/config-default.' . $phpEx);
-	if ((!$is_install) && file_exists('config.' . $phpEx)) include_once('config.' . $phpEx);
+	if ((!$is_install) && file_exists('config.' . $phpEx))
+		include_once('config.' . $phpEx);
+	if ((!$is_install) && file_exists('~config.' . $phpEx))
+		include_once('~config.' . $phpEx);  // for debugging
 
 	/* -- Tables -- */
 	global $SETTINGS_TABLE, $USERS_TABLE, $URLS_TABLE, $LOG_TABLE;
@@ -259,6 +262,7 @@ function generate_short($id) {
 }
 
 function get_fav_icon($longURL) {
+	// TODO : LIBRARY : Make get_fav_icon use a list of providers, like the CDN setting
 	@$domain = parse_url($longURL, PHP_URL_HOST);
 	return T('URL_ICON_DATA', array('domain' => $domain));
 }

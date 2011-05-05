@@ -436,9 +436,9 @@ $lang['DELETE_ITEM'] = 'Delete item';
 $lang['CHANGE_SITEWIDE'] = 'Sitewide / For all users';
 $lang['CHANGE_FOR_USER'] = 'Only for user ID *|userid|*, *|username|* (*|realname|*)';
 $lang['CHANGES_MADE'] = '*|cnt|* changes made';
-$lang['SETTING_DELETED'] = 'Setting \'*|name|*\' deleted';
-$lang['SETTING_UPDATED'] = 'Setting \'*|name|*\' updated';
-$lang['SETTING_INSERTED'] = 'Setting \'*|name|*\' inserted';
+$lang['SETTING_DELETED'] = 'Setting <b>*|name|*</b> deleted';
+$lang['SETTING_UPDATED'] = 'Setting <b>*|name|*</b> updated';
+$lang['SETTING_INSERTED'] = 'Setting <b>*|name|*</b> inserted';
 
 
 // ajax page

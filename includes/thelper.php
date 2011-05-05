@@ -59,7 +59,7 @@ function output_field($field, $value,
 			?><input type="checkbox" id="f_<?php print $field; ?>" name="<?php print $field; ?>" <?php if (boolval($value)) print "checked=\"checked\""; ?> value="1" tabindex="<?php print $tab; ?>" /><?php
 			break;
 		case 'textarea' :
-			?><textarea id="f_<?php print $field; ?>" name="<?php print $field; ?>" tabindex="<?php print $tab; ?>"><?php print $value; ?></textarea><?php
+			?><textarea id="f_<?php print $field; ?>" name="<?php print $field; ?>" tabindex="<?php print $tab; ?>" rows="2" cols="38"><?php print $value; ?></textarea><?php
 			break;
 		case 'select' :
 			?><select id="f_<?php print $field; ?>" name="<?php print $field; ?>" tabindex="<?php print $tab; ?>"><?php

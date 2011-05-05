@@ -9,13 +9,16 @@
  *   clickit [dot] source [at] mail [dot] vinorodrigues [dot] com
  */
 
-if (!defined('IN_CLICKIT')) die('Restricted');
+$included = strtolower(realpath(__FILE__)) != strtolower(realpath($_SERVER['SCRIPT_FILENAME']));
+if (!$included) :
+	require_once('includes/library.php');
+endif;
 
-if (!isset($p_title)) $p_title = pathinfo($_SERVER["PHP_SELF"], PATHINFO_BASENAME);
-if (!isset($p_url)) $p_url = pathinfo($_SERVER["PHP_SELF"], PATHINFO_DIRNAME);
+if (!isset($p_title)) $p_title = $page['full_path'];
+if (!isset($p_url)) $p_url = $page['full_path'];
 if (substr($p_url, -1) != '/') $p_url .= '/';
-$p_favicon = parse_url($p_url, PHP_URL_HOST) . '/favicon.ico';
-$p_favicon_alt = parse_url($p_url, PHP_URL_HOST) . '/favicon.gif';
+$p_favicon = 'http://' . parse_url($p_url, PHP_URL_HOST) . '/favicon.ico';
+$p_favicon_alt = 'http://' . parse_url($p_url, PHP_URL_HOST) . '/favicon.gif';
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
@@ -28,16 +31,12 @@ $p_favicon_alt = parse_url($p_url, PHP_URL_HOST) . '/favicon.gif';
 <?php /* TODO : CLOAK : Google Analytics code, for Version 03 */ ?>
 </head>
 <frameset rows="100%,*" border="0" frameborder="no">
-	<frame name="__main" src="<?php print $p_url; ?>" noresize frameborder="0" />
-	<noframes>
-		<body>
-		Please visit <a href="<?php print $p_url; ?>"><?php print $p_url; ?></a>.
-		<script type="text/javascript">  <?php /* TODO : CLOAK : move to loadscript */ ?>
-			<!--
-			window.location = "<?php print $p_url; ?>";
-			// -->
-		</script>
-		</body>
-	</noframes>
+<frame name="__main" src="<?php print $p_url; ?>" noresize frameborder="0" />
+<noframes>
+<body>
+Please visit <a href="<?php print $p_url; ?>"><?php print $p_url; ?></a>.
+<?php print loadscript("window.location = '$p_url';"); ?>
+</body>
+</noframes>
 </frameset>
 </html>

@@ -1,6 +1,10 @@
 <?php
 /**
- * @copyright  Andrew Moore
+ * This code is based on a comment by Andrew Moore on StackOverflow
+ * @copyright  Andrew Moore - wolfmicrosystems.com
+ * @author  Andrew Moore
+ * @author  Vino Rodrigues
+ * @link  http://stackoverflow.com/questions/2413754/how-to-create-uniqe-key-value-in-php
  */
 
 define('NS_DNS',     '6ba7b810-9dad-11d1-80b4-00c04fd430c8');  // FQDN
@@ -120,7 +124,7 @@ function get_uuid5($namespace = NS_ISO_OID, $name = '') {
 
 function get_uuid() {
 	global $get_uuid_func;
-	if (!isset($get_uuid_func)) $get_uuid_func = 'get_uuid4alt'; 
+	if (!isset($get_uuid_func)) $get_uuid_func = 'get_uuid4alt';
 	return call_user_func($get_uuid_func);
 }
 

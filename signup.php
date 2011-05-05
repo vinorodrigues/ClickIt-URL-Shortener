@@ -13,6 +13,7 @@ require_once('includes/library.php');
 require_once('includes/lang.' . $phpEx);
 require_once('includes/validation.' . $phpEx);
 require_once('includes/tcaptcha.' . $phpEx);
+
 initialize_settings();
 initialize_lang();
 initialize_db(TRUE);
@@ -130,37 +131,36 @@ if ($username !== FALSE) :
 
 else :
 
+	require_once('includes/thelper.' . $phpEx);
+
 	ob_start();
 
 	P('SIGNUP_HERE', array('url' => 'login.' . $phpEx), '<p>', '</p>');
+
+	global $run, $tab;
+	$run = 0;
+	$tab = 0;
 	?>
 
 <form action="signup.<?php print $phpEx; ?>" method="get" name="f">
 <table class="editlist"><tbody>
-<tr class="row_1 odd first">
-<th><label for="f_username"><?php P('USERNAME'); ?></label>:<span class="required"></span></th>
-<td><input type="text" maxlength="32" name="username" id="f_username" <?php __('size="15"', 'required="required" pattern="([a-z0-9_]+)"');?> /></td>
-<td><img src="images/ico_user_add.png" alt="" /></td>
-</tr>
-<tr class="row_2 even">
-<th><label for="f_realname"><?php P('REALNAME'); ?></label>:</th>
-<td colspan="2"><input type="text" maxlength="70" name="realname" id="f_realname" <?php __('size="15"'); ?> /></td>
-</tr>
-<tr class="row_3 odd">
-<th><label for="f_email"><?php P('EMAIL'); ?></label>:<span class="required"></span></th>
-<td colspan="2"><input type="<?php __('text', 'email'); ?>" maxlength="150" name="email" id="f_email"<?php __('size="15"', 'required="required"');?> /></td>
-</tr>
-<tr class="row_4 even">
-<th><label for="f_email2"><?php P('CONFIRM_EMAIL'); ?></label>:<span class="required"></span></th>
-<td colspan="2"><input type="<?php __('text', 'email'); ?>" maxlength="150" name="email2" id="f_email2"<?php __('size="15"', 'required="required"');?> /></td>
-</tr>
-</tbody>
 <?php
-	$captcha_code = get_captcha(FALSE, 5, TRUE, 3);
+	output_field('username', '', 'text', NULL, TRUE, FALSE,  // TODO : SIGNUP : HTML5 REGEX
+		'<img src="images/ico_user_add.png" alt="" />');  // TODO : SIGNUP : AJAX VERIFICATION
+	output_field('realname', '', 'text', NULL, FALSE, FALSE, '');
+	output_field('email', '', 'text', NULL, TRUE, FALSE, '');  // TODO : SIGNUP : AJAX VERIFICATION
+	output_field('email2', '', 'text', NULL, TRUE, FALSE, '');
+?>
+
+
+<tr class="row_1 odd first">
+<?php
+	$captcha_code = get_captcha(TRUE, 3);
 	if ($captcha_code) print $captcha_code;
 ?>
-<tfoot><tr class="<?php print ($captcha_code ? 'row_7' : 'row_5') ?> odd last"><th></th>
-<td colspan="2"><button type="submit" class="minibutton btn-subm"><span class="icon"></span><?php P('SUBMIT_USER'); ?></button></td>
+</tbody>
+<tfoot><tr class="row_<?php print $run+1 . ' ' . (is_odd($run+1) ? 'odd' : 'even'); ?> last"><th></th>
+<td colspan="2"><button type="submit" class="minibutton btn-subm" tabindex="<?php print $tab+1; ?>"><span class="icon"></span><?php P('SUBMIT_USER'); ?></button></td>
 </tr></tfoot></table>
 </form>
 

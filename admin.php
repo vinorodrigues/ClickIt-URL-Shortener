@@ -11,6 +11,7 @@
 
 require_once('includes/library.php');
 require_once('includes/lang.' . $phpEx);
+
 initialize_settings();
 initialize_db(TRUE);
 initialize_lang();
@@ -24,32 +25,38 @@ function get_new_apikey() {
 	return str_replace('-', '', get_uuid());
 }
 
-function load_file_based_settings(&$settings, &$setstorage) {
+function load_file_based_settings($s2d) {
 	/* Abstracted this out to a function so that loading config.php does not
 	 * impact on GLOBAL $settings
 	 */
 	global $phpEx;
+	$settings = array();  // NB, don't use the global
 
-	include('includes/config-default.php');
-	include('config.php');
+	include('includes/config-default.' . $phpEx);
+	if (file_exists('config.' . $phpEx)) include('config.' . $phpEx);
+	if (file_exists('~config.' . $phpEx)) include('~config.' . $phpEx);  // for Debug
 
 	foreach ($settings as $name => $value) :
-		$setstorage[$name] = -1;
+		$s2d[0][$name] = $value;
+		$s2d[1][$name] = -1;
 	endforeach;
+
+	return $s2d;
 }
 
-function load_db_based_settings($userid, &$settings, &$setstorage) {
+function load_db_based_settings($s2d, $userid = 0) {
 	global $db, $sql, $SETTINGS_TABLE;
 	$sql = 	"SELECT name, value FROM $SETTINGS_TABLE" .
 		" WHERE " . $db->sql_build_array('SELECT', array('userid' => $userid));
 	$result = $db->sql_query($sql);
 	if ($result) :
 		while ($row = $db->sql_fetchrow($result)) :
-			$settings[$row['name']] = $row['value'];
-			$setstorage[$row['name']] = $userid;
+			$s2d[0][$row['name']] = $row['value'];
+			$s2d[1][$row['name']] = $userid;
 		endwhile;
 		$db->sql_freeresult($result);
 	endif;
+	return $s2d;
 }
 
 /* -------------------- Code begins here -------------------- */
@@ -95,25 +102,28 @@ if (count($unknowns) > 0) :
 	endforeach;
 endif;
 
-$settings2 = array();  // working version of settings
-$set_store = array();  // where the settings are saved
-                       // -2=not_set, -1=config.php*, 0=db_user_0, +x=db_user_id
+/* 2 dimensional settings array,
+ * [0] settings array
+ * [1] store location; -2=not_set, -1=config.php*, 0=db_user_0, +x=db_user_id
+ */
+$settings2 = array(array(), array());
 
-load_file_based_settings($settings2, $set_store);
+$settings2 = load_file_based_settings($settings2);
 
 foreach ($settings_array as $set_name => $info) :
 	// fake out @lang elements for each setting used in output_field()
 	if (($info[AS_TYPE] != AS_T_SECTION) && ($info[AS_TYPE] != AS_T_SUBSECTION))
 		$lang['FIELD_V_' . strtoupper($set_name)] = $set_name;
 
-	if (!isset($settings2[$set_name])) :
-		$settings2[$set_name] = FALSE;
-		$set_store[$set_name] = -2;
+	// find any missing settings not set in config.php's
+	if (!isset($settings2[0][$set_name])) :
+		$settings2[0][$set_name] = FALSE;
+		$settings2[1][$set_name] = -2;
 	endif;
 endforeach;
 
-load_db_based_settings(0, $settings2, $set_store);
-if ($w_userid > 0) load_db_based_settings($w_userid, $settings2, $set_store);
+$settings2 = load_db_based_settings($settings2);
+if ($w_userid > 0) $settings2 = load_db_based_settings($settings2, $w_userid);
 
 /* ---------- Post code ---------- */
 
@@ -130,9 +140,9 @@ if (isset($_REQUEST['f']) && ($_REQUEST['f'] == 'post')) :
 		if (preg_match('/^v_/', $name)) :
 			$name = substr($name, 2);
 			// only if they've changed
-			if (!isset($_REQUEST['d_' . $name]) && ($settings2[$name] != $value)) :
+			if (!isset($_REQUEST['d_' . $name]) && ($settings2[0][$name] != $value)) :
 				// update if in users set or insert
-				if ($set_store[$name] == $w_userid) :
+				if ($settings2[1][$name] == $w_userid) :
 					$update_set[$name] = $value;
 				else :
 					$insert_set[$name] = $value;
@@ -242,11 +252,11 @@ foreach ($settings_array as $set_name => $info) :
 				$col3 .= '</a>';
 			endif;
 
-			if ($set_store[$set_name] < -1) :
+			if ($settings2[1][$set_name] < -1) :
 				$st = 'no_entry';
-			elseif ($set_store[$set_name] == -1) :
+			elseif ($settings2[1][$set_name] == -1) :
 				$st = 'php';
-			elseif ($set_store[$set_name] == 0) :
+			elseif ($settings2[1][$set_name] == 0) :
 				$st = 'database';
 			else :
 				$st = 'user';
@@ -258,7 +268,7 @@ foreach ($settings_array as $set_name => $info) :
 
 			$col3 .= '</td><td class="col_4">';
 
-			if (($set_store[$set_name] == $w_userid) && (!empty($info[AS_TYPE]))) :
+			if (($settings2[1][$set_name] == $w_userid) && (!empty($info[AS_TYPE]))) :
 				$tab++;
 				$col3 .= '<input type="checkbox" name="d_' . $set_name .
 					'" value="DELETE" title="' . T('DELETE_ITEM') .
@@ -271,13 +281,13 @@ foreach ($settings_array as $set_name => $info) :
 
 			output_field(
 				'v_' . $set_name,
-				$settings2[$set_name],
+				$settings2[0][$set_name],
 				$info[AS_TYPE],
 				(isset($info[AS_DATA]) ? $info[AS_DATA] : NULL),
 				FALSE, FALSE,
 				$col3);
 
-			if (($set_store[$set_name] >= 0) && (!empty($info[AS_TYPE])))
+			if (($settings2[1][$set_name] >= 0) && (!empty($info[AS_TYPE])))
 				$tab++;
 		endif;
 	endif;
