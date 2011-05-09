@@ -62,6 +62,7 @@ if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 			$USERS_TABLE = $dbprefix . 'users';
 			$URLS_TABLE = $dbprefix . 'urls';
 			$LOG_TABLE = $dbprefix . 'log';
+			$EVENTS_TABLE = $dbprefix . 'events';
 		endif;
 
 		if ($nextstep == 4) :  // = 4
@@ -75,7 +76,7 @@ if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 
 			// drop all first in case there are linked tables
 			if ($drop_old) :
-				$drop_list = array($LOG_TABLE, $URLS_TABLE, $USERS_TABLE, $SETTINGS_TABLE);
+				$drop_list = array($EVENTS_TABLE, $LOG_TABLE, $URLS_TABLE, $USERS_TABLE, $SETTINGS_TABLE);
 				// Drop tables - reverse order
 				foreach($drop_list as $Table) :
 					if ($tools->sql_table_exists($Table)) :
@@ -86,83 +87,14 @@ if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 				unset($drop_list);
 			endif;
 
-			$schemas = array(
-
-				// ----- Users -----
-				$USERS_TABLE => array(
-					'COLUMNS' => array(
-						'id' => array('UINT', NULL, 'auto_increment'),
-						'username' => array('CHAR:32', NULL),
-						'passwd' => array('CHAR:32', ''),
-						'token' => array('CHAR:32', ''),
-						'userlevel' => array('TINT:1', 0),
-						'realname' => array('VCHAR:70', ''),
-						'email' => array('VCHAR:150', ''),
-						'createdon' => array('TIMESTAMP', 0),  // db_tools does't do DEFAULT CURRENT_TIMESTAMP
-						'lastvisiton' => array('TIMESTAMP', 0),
-						'enabled' => array('BOOL', 0),
-						'bad_logon' => array('TINT:1', 0),
-						'analytics' => array('CHAR:32', ''),
-						),
-					'PRIMARY_KEY' => 'id',
-					'KEYS' => array(
-						'KEY_username' => array('UNIQUE', 'username'),
-						'KEY_token' => array('INDEX', 'token'),
-						),
-					),
-
-				// ----- Settings -----
-				$SETTINGS_TABLE => array(
-					'COLUMNS' => array(
-						'userid' => array('UINT', 0),
-						'name' => array('CHAR:70', NULL),
-						'value' => array('CHAR:140', ''),
-						),
-					'PRIMARY_KEY' => array('userid', 'name'),
-					'KEYS' => array(
-						'KEY_userid' => array('INDEX', 'userid'),
-						),
-					),
-
-				// ----- Urls -----
-				$URLS_TABLE => array(
-					'COLUMNS' => array(
-						'id' => array('UINT', NULL, 'auto_increment'),
-						'shorturl' => array('CHAR:25', NULL),
-						'longurl' => array('VCHAR:254', NULL),
-						'userid' => array('UINT', 0),
-						'createdon' => array('TIMESTAMP', 0),  // db_tools does't do DEFAULT CURRENT_TIMESTAMP
-						'lastvisiton' => array('TIMESTAMP', 0),
-						'enabled' => array('BOOL', 1),
-						'cloak' => array('BOOL', 0),
-						'title' => array('VCHAR:96', ''),
-						'metakeyw' => array('VCHAR:254', ''),
-						'metadesc' => array('VCHAR:254', ''),
-						'log' => array('BOOL', 0),
-						'analytics' => array('BOOL', 0),
-						),
-					'PRIMARY_KEY' => 'id',
-					'KEYS' => array(
-						'KEY_shorturl' => array('UNIQUE', 'shorturl'),
-						),
-					),
-
-				// ----- Log -----
-				$LOG_TABLE => array(
-					'COLUMNS' => array(
-						'urlid' => array('UINT', NULL),
-						'accessedon' => array('TIMESTAMP', 0),  // db_tools does't do DEFAULT CURRENT_TIMESTAMP
-						'ipaddress' => array('CHAR:15', ''),
-						'referer' => array('VCHAR:254', ''),
-						'browser' => array('CHAR:45', ''),
-						'version' => array('CHAR:10', ''),
-						'platform' => array('CHAR:45', ''),
-						),
-					'KEYS' => array(
-						'KEY_urlid' => array('INDEX', 'urlid'),
-						),
-					),
-				);
+			// **************************************************
+			// ******************** SCHEMAS! ********************
+			// **************************************************
+			include('includes/schemas.' . $phpEx);
+			$schemas = $schema_0_1 + $schema_0_4;
+			$inserts = $inserts_0_4;
+			// **************************************************
+			// **************************************************
 
 			foreach($schemas as $tablename => $schema) :
 				if (!empty($messages)) break;
@@ -176,44 +108,54 @@ if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 
 			// ===== Inital required data =====
 
-			// ----- Settings Data -----
-			if (empty($messages)) :
-				$data = array(
-					'userid' => 0,
-					'name' => 'version',
-					'value' => str_replace(array('&', ';'), array(' ', ''), CLICKIT_VER),
-					);
-				$sql = "INSERT INTO $SETTINGS_TABLE " . $db->sql_build_array('INSERT', $data);
-				$db->sql_query($sql);
+			include_once('includes/uuid.' . $phpEx);
 
-				include_once('includes/uuid.' . $phpEx);
-				$url = $page['full_path'];
+			$inserts_base = array(
 
-				$data = array(
-					'userid' => 0,
-					'name' => 'apikey',
-					'value' => str_replace('-', '', get_uuid5(NS_URL, $url)),
-					);
-				$sql = "INSERT INTO $SETTINGS_TABLE " . $db->sql_build_array('INSERT', $data);
-				$db->sql_query($sql);
+				// ----- Settings Data -----
+				array(
+					$SETTINGS_TABLE => array(
+						'userid' => 0,
+						'name' => 'version',
+						'value' => str_replace(array('&', ';'), array(' ', ''), CLICKIT_VER),
+						),
+					),
+				array(
+					$SETTINGS_TABLE => array(
+						'userid' => 0,
+						'name' => 'apikey',
+						'value' => str_replace('-', '', get_uuid5(NS_URL, $page['full_path'])),
+						),
+					),
 
-				add_outcome("Populated table <code>$SETTINGS_TABLE</code>");
-			endif;
+				// ----- Users Data -----
+				array(
+					$USERS_TABLE => array(
+						'username' => $adminuser,
+						'realname' => 'Administrator',
+						'createdon' => microtime(TRUE),
+						'enabled' => TRUE,
+						'userlevel' => USER_LEVEL_GD,
+						'passwd' => (!empty($adminpasswd) ? $adminpasswd : ''),
+						),
+					),
 
-			// ----- Users Data -----
-			if (empty($messages)) :
-				$data = array(
-					'username' => $adminuser,
-					'realname' => 'Administrator',
-					'createdon' => microtime(TRUE),
-					'enabled' => TRUE,
-					'userlevel' => USER_LEVEL_GD,
-					);
-				if (!empty($adminpasswd)) $data['passwd'] = $adminpasswd;
-				$sql = "INSERT INTO $USERS_TABLE " . $db->sql_build_array('INSERT', $data);
-				$db->sql_query($sql);
-				add_outcome("Populated table <code>$USERS_TABLE</code>");
-			endif;
+				);
+
+			// append schemas.php inserts
+			foreach ($inserts as $ins) :
+				$inserts_base[] = $ins;
+			endforeach;
+
+			foreach ($inserts_base as $ins):
+				if (empty($messages))
+					foreach ($ins as $tbl => $vars) :
+						$sql = "INSERT INTO $tbl " . $db->sql_build_array('INSERT', $vars);
+						$db->sql_query($sql);
+					endforeach;
+			endforeach;
+
+			log_event('INSTALLED');
 
 			// ----- End DB -----
 		elseif ($nextstep == 5) :
@@ -228,7 +170,6 @@ if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 					'realname' => 'Vino Rodrigues',
 					'email' => 'clickit.source' . '@' . 'tecsmith.com.au',  // just to stop source scrapers
 					'createdon' => microtime(TRUE),
-					'analytics' => 'UA-00000000-0',  // naa... not mine!
 					'enabled' => TRUE,
 					'userlevel' => USER_LEVEL_GD,
 					);
@@ -248,7 +189,6 @@ if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 					'realname' => 'Joe Blow',
 					'email' => 'root@localhost',  // hope you have a SMTP server on your PC ;)
 					'createdon' => microtime(TRUE),
-					'analytics' => 'UA-00000000-0',
 					'enabled' => TRUE,
 					'userlevel' => USER_LEVEL_CR,
 					);
@@ -266,7 +206,6 @@ if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 					'cloak' => 0,
 					'title' => 'Vino Rodrigues',
 					'log' => 1,
-					'analytics' => 1,
 					);
 				$sql = "INSERT INTO $URLS_TABLE " . $db->sql_build_array('INSERT', $data);
 				$db->sql_query($sql);

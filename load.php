@@ -10,10 +10,12 @@
  */
 
 /* ----- Includes ----- */
+
 require_once('includes/library.php');
 initialize_settings();
 
 /* ----- Offline ----- */
+
 if ($settings['offline']) :
 	header('HTTP/1.1 503 Service Unavailable');
 	include('offline.' . $phpEx);
@@ -21,6 +23,7 @@ if ($settings['offline']) :
 endif;
 
 /* ----- Get URL ----- */
+
 if (isset($_REQUEST['url'])) :
 	$expectedURL = $_REQUEST['url'];
 else :
@@ -64,12 +67,11 @@ if (empty($m)) :  // was there an error connecting
 		endswitch;
 
 		$id = (int) $row['id'];
-		$p_title = $row['title'];
+		$p_title = !empty($row['title']) ? $row['title'] : $row['longurl'];
 		$p_url = $row['longurl'];
 		if ($p_cloak && !empty($row['metakeyw'])) $p_metakeyw = $row['metakeyw'];
 		if ($p_cloak && !empty($row['metadesc'])) $p_metadesc = $row['metadesc'];
 		$p_log = (boolean) $row['log'];
-		// $p_analytics = (boolean) $row['analytics'];  // TODO : LOAD : for Version 0.3
 
 		$db->sql_freeresult($result);
 
@@ -93,13 +95,19 @@ if (empty($m)) :  // was there an error connecting
 				include_once($bf);
 				$brwsr = _get_browser($_SERVER['HTTP_USER_AGENT']);
 				$data['browser'] = $db->sql_escape($brwsr['browser']);
+				if (strcmp('unknown', $data['browser'])) :
+					$data['version'] = '';
+					$data['platform'] = '';
+					// We'd like to know so that we can update the browser table
+					log_event('Unknown browser; urlid=' . $id, $_SERVER['HTTP_USER_AGENT']);
+				else :
+					$ver = explode('.', $brwsr['version'], 3);
+					$verstr = $ver[0];
+					if (isset($ver[1])) $verstr .= '.' . $ver[1];
+					$data['version'] = $db->sql_escape($verstr);
 
-				$ver = explode('.', $brwsr['version'], 3);
-				$verstr = $ver[0];
-				if (isset($ver[1])) $verstr .= '.' . $ver[1];
-				$data['version'] = $db->sql_escape($verstr);
-
-				$data['platform'] = $db->sql_escape($brwsr['platform']);
+					$data['platform'] = $db->sql_escape($brwsr['platform']);
+				endif;
 				unset($brwsr);
 			endif;
 			unset($bf);
@@ -108,12 +116,16 @@ if (empty($m)) :  // was there an error connecting
 			$db->sql_query($sql);
 		endif;
 
-		// set visit occurance to google analitics
-		// TODO : LOAD : for Version 0.3
-		/* if ($p_analytics) :
-
-		endif; */
-
+		/* ----- Piwik integration ----- */
+		$use_pk = isset($settings['piwik_site']) &&
+			(!empty($settings['piwik_site'])) &&
+			isset($settings['piwik_id']) &&
+			(!empty($settings['piwik_id']));
+		if ($use_pk) :
+			include_once('includes/piwiklib.' . $phpEx);
+			piwik_set_host($settings['piwik_site'], $settings['piwik_id']);
+			piwik_track_page_view($p_title);
+		endif;
 	else :
 		$db->sql_freeresult($result);
 		$e = 404;
@@ -135,12 +147,11 @@ switch($p_action) :
 		initialize_settings();
 		initialize_lang();
 
-		$p_delay = 60;
-		if (isset($settings['preview_delay'])) $p_delay = $settings['preview_delay'];
+		$p_delay = isset($settings['preview_delay']) ? intval($settings['preview_delay']) : 60;
 		if ($p_delay > 0) :
 			$page['head_prefix'] = "\t<meta http-equiv=\"refresh\" content=\"$p_delay;$p_url\">\n";
 
-			$s1 = "var seconds = " . $p_delay . ";
+			$_s = "var seconds = " . $p_delay . ";
 var int = window.setInterval('countdown()', 1000);
 function countdown() {
 	seconds--;
@@ -152,8 +163,7 @@ function countdown() {
 		window.location = '" . $p_url . "';
 	}
 }";
-
-			$page['scripts'] = loadscript($s1);
+			$page['scripts'] = loadscript($_s);
 		endif;
 
 		$page['head_title'] = "$p_title ($p_url)";

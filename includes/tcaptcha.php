@@ -11,6 +11,9 @@
 
 if (!defined('IN_CLICKIT')) die('Restricted');
 
+// TODO : TCAPTCHA : Don't use CAPTCH, read http://www.90percentofeverything.com/2011/03/25/fk-captcha/
+// TODO : TCAPTCHA : Replaced the CAPTCHA with honeypot fields and timestamp analysis
+
 include_once('recaptcha-php/recaptchalib.' . $phpEx);
 include_once('lang.' . $phpEx);
 

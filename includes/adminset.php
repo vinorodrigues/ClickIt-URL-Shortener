@@ -17,6 +17,7 @@ define('AS_T_SUBSECTION', 'sub-section');
 define('AS_T_CONST', '');
 define('AS_T_BOOL', 'checkbox');
 define('AS_T_EMAIL', 'email');
+define('AS_T_URL', 'url');
 define('AS_T_TEXT', 'text');
 define('AS_T_SELECT', 'select');
 define('AS_T_RADIO', 'radio');
@@ -122,22 +123,50 @@ $settings_array = array(
 			' Seperated with comma\'s, no spaces after the comma.',
 		AS_NOT_FOR_USER => TRUE,
 		),
+	'piwik_site' => array(
+		AS_TYPE => AS_T_URL,
+		AS_HINT => 'URL of the Piwik web-site. Exclude the trailing forward-slash (\'/\'). See <a href="http://piwik.org">http://piwik.org</a>',
+		AS_NOT_FOR_USER => TRUE,
+		),
+	'piwik_site_secure' => array(
+		AS_TYPE => AS_T_URL,
+		AS_HINT => 'URL of the secure Piwik web-site. Exclude the trailing forward-slash (\'/\').',
+		AS_NOT_FOR_USER => TRUE,
+		),
+	'piwik_id' => array(
+		AS_TYPE => AS_T_TEXT,
+		AS_HINT => 'ID of this site on the Piwik web-site.',
+		AS_NOT_FOR_USER => TRUE,
+		),
+	'Home Page' => array(
+		AS_TYPE => AS_T_SUBSECTION,
+		AS_NOT_FOR_USER => TRUE,
+		),
 	'facebook_id' => array(
 		AS_TYPE => AS_T_TEXT,
 		AS_HINT => 'Facebook Application ID, see <a href="http://www.facebook.com/developers/apps.php">http://www.facebook.com/developers/apps.php</a>',
 		AS_NOT_FOR_USER => TRUE,
 		),
 	#'facebook_key',  // UNUSED
-	'google_analytics' => array(
+	'twitter_key' => array(
 		AS_TYPE => AS_T_TEXT,
-		AS_HINT => 'Google Analytics profile ID, see <a href="https://www.google.com/analytics/settings/">https://www.google.com/analytics/settings/</a>',
+		AS_HINT => 'Twitter @Anywhere API Key, see <a href="https://dev.twitter.com/apps">https://dev.twitter.com/apps</a>',
+		AS_NOT_FOR_USER => TRUE,
+		),
+	'twitter_follow_list' => array(
+		AS_TYPE => AS_T_TEXT,
+		AS_HINT => 'Comma seperated list of twitter usernames to add follow buttons for',
+		AS_NOT_FOR_USER => TRUE,
+		),
+	'ga_profile' => array(
+		AS_TYPE => AS_T_TEXT,
+		AS_HINT => 'Google Analytics profile ID of this site, see <a href="https://www.google.com/analytics/settings/">https://www.google.com/analytics/settings/</a>',
 		AS_NOT_FOR_USER => TRUE,
 		),
 
 
 	'Security Settings' => array(
 		AS_TYPE => AS_T_SECTION,
-		AS_HINT => ' ',
 		AS_NOT_FOR_USER => TRUE,
 		),
 	'mustlogin' => array(

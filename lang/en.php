@@ -253,7 +253,6 @@ $lang['FIELD_TITLE'] = 'Title';
 $lang['FIELD_METAKEYW'] = 'Meta-Keywords';
 $lang['FIELD_METADESC'] = 'Meta-Description';
 $lang['FIELD_LOG'] = 'Log Clicks';
-$lang['FIELD_ANALYTICS'] = 'Google Analitics';
 $lang['ON'] = '<img src="images/ico_checked.png" alt="Yes" />';
 $lang['OFF'] = '<img src="images/ico_unchecked.png" alt="No" />';
 $lang['EDITS_SAVED'] = 'Edits have been saved';
@@ -276,7 +275,6 @@ $lang['SIGNUP_HERE'] = array(
 	);
 $lang['SUBMIT_USER'] = 'Submit for Account';
 $lang['CONFIRM_EMAIL'] = 'Confirm Email';
-$lang['GOOGLE_ANALYTICS_ACC'] = 'Google Analytics Acc#';
 $lang['CAPTCHA_FAILED'] = 'CAPTCHA code not accepted';
 $lang['USERNAME_NOT_AVAIL'] = 'Username not available for use';
 $lang['USERNAME_TOO_SHORT'] = 'Username too short';
@@ -340,7 +338,6 @@ $lang['FIELD_EMAIL'] = $lang['EMAIL'];
 $lang['FIELD_CREATEDON'] = 'Member Since';
 $lang['FIELD_LASTVISITON'] = 'Last visit on';
 $lang['FIELD_ENABLED'] = 'Enabled';
-$lang['FIELD_ANALYTICS'] = 'Google Analytics Account';
 $lang['NOT_SET'] = '<span class="red">--</span>';
 
 $lang['SHOW_USER'] = 'Show User';
@@ -466,7 +463,7 @@ $lang['SHORTURL_TAKEN_DESC'] = '<span class="warning">Exists already</span>';
 
 $lang['PREVIEW'] = '<i>Preview:</i>';
 $lang['SEC_PREFIX'] = ' - in ';
-$lang['SEC_SUFIX'] = ' seconds';
+$lang['SEC_SUFIX'] = ' seconds <img src="images/loading.gif" />';
 $lang['REDIRECTING_TO'] = 'Redirecting to <a href="*|url|*">*|url|*</a>';
 
 ?>

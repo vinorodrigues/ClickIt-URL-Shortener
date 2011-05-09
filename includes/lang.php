@@ -5,9 +5,11 @@
  * @copyright  Tecsmith.com.au
  *   See LICENSE.TXT for copyright notice and details.
  * @license    Creative Commons Attribution-ShareAlike 3.0 Unported License
- * @author     Vino Rodrigues 
+ * @author     Vino Rodrigues
  *   clickit [dot] source [at] mail [dot] vinorodrigues [dot] com
  */
+
+if (!defined('IN_CLICKIT')) die('Restricted');
 
 global $lang;
 $lang = array();
@@ -26,7 +28,7 @@ function T($str, $params = NULL, $prefix = '', $suffix = '') {
 			if (($prefix == '') && ($suffix == '')) $suffix = ' ';
 			foreach ( $lang[$str] as $s ) $txt .= $prefix . $s . $suffix;
 		else :
-			$txt = $prefix . $lang[$str] . $suffix; 
+			$txt = $prefix . $lang[$str] . $suffix;
 		endif;
 	else :
 		$txt = $prefix . str_replace('_', ' ', $str) . $suffix;
@@ -45,7 +47,7 @@ function T($str, $params = NULL, $prefix = '', $suffix = '') {
 			foreach ( $params as $s => $r ) :
 				$txt .= ', ' . $s . ' => ' . $r;
 			endforeach;
-		endif;  
+		endif;
 	endif;
 
 	return $txt;

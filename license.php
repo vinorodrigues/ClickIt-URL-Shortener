@@ -39,18 +39,18 @@ ob_start();
 <tbody>
 <tr>
 <td class="l">
-<a rel="source" href="http://github.com/vinorodrigues/ClickIt-URL-Shortener"><img alt="c1k.it code" src="images/c1kit-80x15.png" /></a><br />
+<a rel="source" href="http://c1k.it/code"><img alt="c1k.it code" src="images/c1kit-80x15.png" /></a><br />
 <br />
-<a rel="source" href="http://github.com/vinorodrigues/ClickIt-URL-Shortener"><img alt="c1k.it code" src="images/c1kit-88x31.png" /></a><br />
+<a rel="source" href="http://c1k.it/code"><img alt="c1k.it code" src="images/c1kit-88x31.png" /></a><br />
 <br />
 <a rel="author" href="http://tecsmith.com.au"><img alt="Tecsmith" src="images/tecsmith-88x31.png" /></a><br />
 <br />
 <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/"><img alt="Creative Commons License" src="http://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a><br />
 <br />
-<a rel="source" href="http://github.com/vinorodrigues/ClickIt-URL-Shortener"><img alt="GitHub" src="images/github-88x31.png" /></a><br />
+<a rel="source" href="http://c1k.it/code"><img alt="GitHub" src="images/github-88x31.png" /></a><br />
 </td>
 <td class="r">
-<p>c1k.it is an open source project - it's source is free (as in freedom) and free (as in no-cost). Its source is hosted on <a rel="source" href="http://github.com/vinorodrigues/ClickIt-URL-Shortener">GitHub</a>.</p>
+<p>c1k.it is an open source project - it's source is free (as in freedom) and free (as in no-cost). Its source is hosted on <a rel="source" href="http://c1k.it/code">GitHub</a>.</p>
 <p>It is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.</p>
 <p class="indent">Basically, that means that you can use its source for your own work, including commercial uses.  But...</p>
 <ul>
@@ -88,6 +88,7 @@ Copyright &copy; 2011, Yahoo! Inc.<br />
 <td class="l s">
 <img alt="" src="images/google-88x31.png" /><br /><br />
 <img alt="" src="images/facebook-88x31.png" /><br /><br />
+<img alt="" src="images/twitter-88x31.png" /><br /><br />
 <img alt="" src="images/apple-88x31.png" />
 </td>
 <td class="r s">
@@ -103,6 +104,7 @@ Copyright &copy; 2011, Yahoo! Inc.<br />
 	<li class="indent">Analitics <i>by</i> Google</li>
 	<li class="indent">Chart API <i>by</i> Google</li>
 	<li class="indent">Facebook Lib <i>by</i> Facebook</li>
+	<li class="indent">Twitter API <i>by</i> Twitter</li>
 	<li class="indent">iPhone integration <i>by</i> Apple Developer</li>
 </ul>
 </td></tr>

@@ -1,0 +1,26 @@
+/*
+ * @copyright  Tecsmith.com.au
+ *   See LICENSE.TXT for copyright notice and details.
+ */
+ 
+@IMPORT url('http://fonts.googleapis.com/css?family=Coming+Soon');
+@IMPORT url('http://fonts.googleapis.com/css?family=Droid+Sans+Mono');
+
+body {
+	font-family: 'Coming Soon', arial, serif;
+}
+
+tt, code, kbd, samp, pre {
+	font-family: 'Droid Sans Mono', arial, serif;
+}
+
+#box {
+	-webkit-transform: scale(1) rotate(-2deg) translate(0px, 0px) skew(0deg, 0deg);
+	-webkit-transform-origin: 50% 50%;
+	-moz-transform: scale(1) rotate(-2deg) translate(0px, 0px) skew(0deg, 0deg);
+	-moz-transform-origin: 50% 50%;
+	-o-transform: scale(1) rotate(-2deg) translate(0px, 0px) skew(0deg, 0deg);
+	-o-transform-origin: 50% 50%;
+	transform: scale(1) rotate(-2deg) translate(0px, 0px) skew(0deg, 0deg);
+	transform-origin: 50% 50%; }
+}

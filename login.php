@@ -30,7 +30,7 @@ else :
 
 	ob_start();	?>
 
-<form method="post" name="f">
+<form action="<?php print $_SERVER['REQUEST_URI']; ?>"method="post" name="f">
 <input type="hidden" name="referer" value="<?php print $http_referer; ?>" />
 <?php __('<table align="center"><tr>', '<table align="center"><tr><td>'); ?>
 <?php __('<th><label for="un">' . T('USERNAME') . '</label>:<span class="required"></span></th><td>'); ?>

@@ -13,7 +13,7 @@
 /* ----- Application related ----- */
 
 define('IN_CLICKIT', TRUE);
-define('CLICKIT_VER', '0.3&beta;');
+define('CLICKIT_VER', '0.4.1&beta;');
 define('CLICKIT_BUILD', '$Id$');
 define('TEMPLATE', 'template');
 
@@ -21,7 +21,7 @@ global $phpEx;
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include_once('lang.' . $phpEx);
 
-
+@ini_set('session.name', 'C1K_IT_SESSID');  // Session Cookie name
 
 /* ----- Helper function ----- */
 
@@ -89,17 +89,16 @@ $phpbb_root_path = './';
 
 /* ----- Settings array ----- */
 
-global $settings, $__loaded_settings;
+global $settings;
 $settings = array('version' => CLICKIT_VER);
-$__loaded_settings = FALSE;
 
 /**
  * Loads the settings files
  * @param boolean $loaduserset
  */
 function initialize_settings($is_install = FALSE) {
-	global $__loaded_settings;
-	if ($__loaded_settings) return FALSE;
+	global $__loaded_settings;  // singleton
+	if (isset($__loaded_settings) && $__loaded_settings) return FALSE;
 	$__loaded_settings = TRUE;
 
 	global $settings, $phpEx;
@@ -110,11 +109,13 @@ function initialize_settings($is_install = FALSE) {
 		include_once('~config.' . $phpEx);  // for debugging
 
 	/* -- Tables -- */
-	global $SETTINGS_TABLE, $USERS_TABLE, $URLS_TABLE, $LOG_TABLE;
+	global $SETTINGS_TABLE, $USERS_TABLE, $URLS_TABLE, $LOG_TABLE,
+		$EVENTS_TABLE;  // singletons
 	$SETTINGS_TABLE = $settings['dbprefix'] . 'settings';
 	$USERS_TABLE = $settings['dbprefix'] . 'users';
 	$URLS_TABLE = $settings['dbprefix'] . 'urls';
 	$LOG_TABLE = $settings['dbprefix'] . 'log';
+	$EVENTS_TABLE = $settings['dbprefix'] . 'events';
 
 	/* -- */
 	if ((!$is_install) && isset($settings['offline']) && $settings['offline']) :
@@ -173,6 +174,7 @@ function initialize_db($load_settings = TRUE) {
 			endif;
 			$db->sql_freeresult($result);
 
+			// lockout if off line
 			if (isset($settings['offline']) && $settings['offline']) :
 				global $page;
 				header('HTTP/1.1 503 Service Unavailable');
@@ -183,6 +185,25 @@ function initialize_db($load_settings = TRUE) {
 	endif;
 
 	return $db;
+}
+
+function log_event($msg, $data = NULL) {
+	global $db, $sql, $EVENTS_TABLE;
+	if (!$db) $db = initialize_db();
+
+	$ins_data = array(
+		'eon' => microtime(TRUE),
+		'uri' => $db->sql_escape($_SERVER['REQUEST_URI']),
+		'ipaddress' => $db->sql_escape($_SERVER['REMOTE_ADDR']),
+		'referer' => isset($_SERVER['HTTP_REFERER']) ? $db->sql_escape($_SERVER['HTTP_REFERER']) : '',
+		'msg' => $db->sql_escape($msg),
+	);
+
+	if (isset($data)) $ins_data['data'] = $db->sql_escape($data);
+
+	$sql = "INSERT INTO $EVENTS_TABLE " .
+		$db->sql_build_array('INSERT', $ins_data);
+	$db->sql_query($sql);
 }
 
 function get_long($shortURL) {
@@ -343,12 +364,9 @@ function exception_handler($exception) {
 
 /* ----- HTML 5 Support ----- */
 
-global $__htmlver;
-$__htmlver = FALSE;
-
 function __get_htmlver() {
 	// User-Agent strings start with "Mozilla/5.0 {...}",
-	// the version string seems to be the HTML version supported
+	// the version string after '/' seems to be the HTML version supported
 	// {unverified assumption}
 	$ua = $_SERVER['HTTP_USER_AGENT'];
 	$i = strpos($ua, '/');
@@ -356,7 +374,8 @@ function __get_htmlver() {
 	$j = strpos($ua, ' ', $i);
 	if (!$j) return 1;
 	$u = substr($ua, $i+1, $j-$i-1 );
-	if (($u >= 5) and (strpos($ua, 'MSIE ') !== FALSE)) $u = 4;  // IE has crap support for HTML 5
+	// IE has crap support for HTML 5, so revert to HTML 4
+	if (($u >= 5) and (strpos($ua, 'MSIE ') !== FALSE)) $u = 4;
 	return intval($u);
 }
 
@@ -366,8 +385,8 @@ function __get_htmlver() {
  * @param string $str5 String if User-Agent supports HTML 5.0 +
  */
 function __($str4, $str5 = '', $return_only = FALSE) {
-	global $__htmlver;
-	if (!$__htmlver) $__htmlver = __get_htmlver();
+	global $__htmlver;  // singleton
+	if (!isset($__htmlver)) $__htmlver = __get_htmlver();
 	if ($return_only) :
 		return ($__htmlver >= 5) ? $str5 : $str4;
 	elseif ($__htmlver >= 5) :
@@ -382,11 +401,10 @@ function __($str4, $str5 = '', $return_only = FALSE) {
 /* ----- User Management ----- */
 
 
-global $userid, $userlevel, $username, $__loaded_security;
+global $userid, $userlevel, $username;
 $userid = 0;
 $userlevel = -1;  // invalid
 $username = '';
-$__loaded_security = FALSE;
 
 /**
  * $userlevel - User Levels Caoabilities
@@ -432,8 +450,8 @@ function get_user_levels() {
 }
 
 function initialize_security($must_login = FALSE) {
-	global $__loaded_security;
-	if ($__loaded_security) return TRUE;  // already initialized
+	global $__loaded_security;  // singleton
+	if (isset($__loaded_security) && $__loaded_security) return TRUE;  // already initialized
 	$__loaded_security = TRUE;
 
 	global $db, $userid, $userlevel, $username, $settings, $phpEx;

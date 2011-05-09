@@ -225,7 +225,6 @@ if ($longURL !== FALSE) :  // iether edit or create
 		$metakeyw = isset($_REQUEST['metakeyw']) ? $_REQUEST['metakeyw'] : FALSE;
 		$metadesc = isset($_REQUEST['metadesc']) ? $_REQUEST['metadesc'] : FALSE;
 		$log = isset($_REQUEST['log']) ? $_REQUEST['log'] : FALSE;
-		$analytics = isset($_REQUEST['analytics']) ? $_REQUEST['analytics'] : FALSE;
 
 		$data = array();
 
@@ -246,8 +245,6 @@ if ($longURL !== FALSE) :  // iether edit or create
 			$data['metadesc'] = $metadesc;
 		if ($log != boolval($row['log']))
 			$data['log'] = $log;
-		if ($analytics != boolval($row['analytics']))
-			$data['analytics'] = $analytics;
 		unset($row);
 
 		if (count($data) > 0) :
@@ -313,7 +310,6 @@ output_field('title', $row['title'], (($userlevel >= USER_LEVEL_CR) ? 'text' : '
 output_field('metakeyw', $row['metakeyw'], (($userlevel >= USER_LEVEL_EL) ? 'textarea' : ''));
 output_field('metadesc', $row['metadesc'], (($userlevel >= USER_LEVEL_EL) ? 'textarea' : ''));
 output_field('log', $row['log'], (($userlevel >= USER_LEVEL_EL) ? 'checkbox' : 'bool'));
-output_field('analytics', $row['analytics'], (($userlevel >= USER_LEVEL_EL) ? 'checkbox' : 'bool'));
 ?>
 </tbody>
 <tfoot>

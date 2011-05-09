@@ -24,6 +24,7 @@ $settings['func_getbrowser'] = 'browser/chrisschuld.' . $phpEx;
 $settings['func_lang'] = 'en.' . $phpEx;
 $settings['cdn'] = 'local';
 $settings['force302'] = FALSE;
+$settings['cron_auto'] = TRUE;
 $settings['mustlogin'] = TRUE;
 $settings['badlogonmax'] = 3;
 $settings['shortminlength'] = 4;
@@ -34,7 +35,12 @@ $settings['recaptcha_private'] = '';
 $settings['meta_description'] = "c1k.it is a URL Shortening service, or URL shortener, hosted by Tecsmith.com.au for it's internet marketing clients";
 $settings['meta_keywords'] = "URL shortening,URL shortener,Clean URL,Link rot,Semantic URL,URL redirection,Vanity domain,Vanity URL,internet marketing,online marketing,marketing";
 $settings['facebook_id'] = '';
-$settings['google_analytics'] = '';
+$settings['twitter_key'] = '';
+$settings['twitter_follow_list'] = 'tcsmth';
+$settings['piwik_site'] = '';
+$settings['piwik_site_secure'] = '';
+$settings['piwik_id'] = '';
+$settings['ga_profile'] = '';
 
 /* ----- Database Settings (overrides set by install.php in ../config.php) ----- */
 

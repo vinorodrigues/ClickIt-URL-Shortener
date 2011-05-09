@@ -67,7 +67,6 @@ switch ($function) :
 		output_field('email', $row['email'], __('text','email',TRUE), array('maxlength' => 150), TRUE);
 	if (($userlevel >= USER_LEVEL_AD) && ($w_userid != $userid))
 		output_field('anabled', $row['enabled'], 'checkbox');
-	output_field('analytics', $row['analytics'], 'text', array('maxlength' => 32));
 ?>
 </tbody><tfoot>
 <tr class="<?php print 'row_' . $run . ' ' . (is_odd($run) ? 'odd' : 'even') . ' last' ?>">
@@ -137,10 +136,6 @@ switch ($function) :
 		$realname = $_REQUEST['realname'];
 		if (strcmp($realname, $row['realname']) !== 0)
 			$data['realname'] = $realname;
-
-		$analytics = $_REQUEST['analytics'];
-		if (strcmp($analytics, $row['analytics']) !== 0)
-			$data['analytics'] = $analytics;
 
 		if (count($data) > 0) :
 			$sql = "UPDATE $USERS_TABLE SET " .
@@ -482,8 +477,6 @@ switch ($function) :
 			' - ' . $elapsed) );
 		output_field('enabled', $row['enabled'], 'bool');
 	endif;
-	output_field('analytics', (empty($row['analytics']) ? T('NOT_SET') : $row['analytics']) ,
-		'', NULL, FALSE, TRUE);
 ?>
 </tbody></table>
 

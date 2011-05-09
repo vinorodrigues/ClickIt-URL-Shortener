@@ -28,7 +28,7 @@ $p_favicon_alt = 'http://' . parse_url($p_url, PHP_URL_HOST) . '/favicon.gif';
 	<link rel="icon" href="<?php print $p_favicon_alt; ?>" type="image/gif" />
 <?php if (isset($p_metadesc)) print "\t<meta name=\"description\" content=\"$p_metadesc\" />\n" ?>
 <?php if (isset($p_metakeyw)) print "\t<meta name=\"keywords\" content=\"$p_metakeyw\" />\n" ?>
-<?php /* TODO : CLOAK : Google Analytics code, for Version 03 */ ?>
+<?php /* TODO : CLOAK : Piwik code, for Version 03 */ ?>
 </head>
 <frameset rows="100%,*" border="0" frameborder="no">
 <frame name="__main" src="<?php print $p_url; ?>" noresize frameborder="0" />

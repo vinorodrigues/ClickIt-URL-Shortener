@@ -34,6 +34,11 @@ endif;
 
 $use_fb = (isset($settings['facebook_id']) && (!empty($settings['facebook_id'])));
 
+// if this is not the root file then append page title to html head title
+$page_title = ((strpos($_SERVER['REQUEST_URI'], '.' . $phpEx) === FALSE) ||
+	(strcmp($page['head_title'], $page['title']) === 0)) ?
+		$page['head_title'] : $page['head_title'] . ' - ' . $page['title'];
+
 print __('<?xml version="1.0" encoding="UTF-8"?>' . "\n");
 print __('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
 	'<!DOCTYPE html>') . "\n";
@@ -44,7 +49,7 @@ print __('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http:/
 ?>>
 <head>
 <?php if (isset($page['head_prefix'])) print $page['head_prefix']; ?>
-	<title><?php print $page['head_title']; ?></title>
+	<title><?php print $page_title; ?></title>
 	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
 	<link rel="icon" type="image/gif" href="favicon.gif" />
 	<base href="<?php @print $page['full_path']; ?>" />
@@ -55,13 +60,17 @@ print __('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http:/
 <?php
 	print loadscript("if (window.screen.colorDepth >= 24) document.documentElement.setAttribute('high-color-depth', 'yes');");
 	if (isset($page['head_suffix'])) print $page['head_suffix'];
+
+	/* Easter Egg */
+	if ((date('m') == 12) && (date('j') == 3))
+		print "\t<link rel=\"stylesheet\" href=\"" . $page['base_path'] . "css/easteregg.css\" type=\"text/css\" />" . PHP_EOL;
 ?>
 </head>
 <body>
 <div id="cell"><div id="box"><div id="frame" class="rounded shadow">
 <div id="branding" class="branding clearfix rounded-top">
-<a href="<?php print $page['base_path']; ?>" id="logo-link"><img src="<?php print $page['base_path'] . $page['logo']?>" alt="<?php print $page['site_name']; ?>" id="logo-image" /></a>
-<b class="red" style="float:right"><?php print CLICKIT_VER; ?></b>
+<a href="<?php print $page['base_path']; ?>" id="logo-link"><img src="<?php print $page['base_path'] . $page['logo']?>" alt="<?php print $page['site_name']; ?>" id="logo-image" class="logo" /></a>
+<b class="sublogo"><?php print CLICKIT_VER; ?></b>
 </div>
 <?php if (isset($page['navigation']) && (!empty($page['navigation']))) : ?>
 <div id="navigation" class="navigation clearfix"><?php print $page['navigation']; ?></div>
@@ -88,6 +97,6 @@ endif;
 ?></div>
 <?php if (isset($page['footer'])) print $page['footer']; ?>
 </div></div>
-<?php if (isset($page['scripts'])) print $page['scripts']; ?>
+<?php if (isset($page['scripts'])) print str_replace("\t", "", $page['scripts']); ?>
 </body>
 </html>

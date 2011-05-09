@@ -13,7 +13,7 @@ require_once('includes/library.php');
 require_once('includes/lang.' . $phpEx);
 
 initialize_settings();
-initialize_db(TRUE);
+$db = initialize_db(TRUE);
 initialize_lang();
 initialize_security($settings['mustlogin']);
 
@@ -245,7 +245,9 @@ foreach ($settings_array as $set_name => $info) :
 			$col3 = '';
 
 			if (isset($info[AS_HINT])) :
-				$col3 .= '<a href="javascript:void(0)" onclick="alert(\'' . strip_tags($info[AS_HINT]) . '\')">';
+				$col3 .= '<a href="javascript:void(0)" onclick="alert(\'' .
+					str_replace( array('"', '\''), array('\\\'', '\\\''), strip_tags($info[AS_HINT]) ) .
+					'\')">';
 				$col3 .= '<img src="images/ico_help.png" title="' .
 					strip_tags($info[AS_HINT]) . '" alt="' .
 					strip_tags($info[AS_HINT]) . '" /><br />';

@@ -44,6 +44,7 @@ function output_field($field, $value,
 		case 'email' :
 		case 'password' :
 		case 'number' :
+		case 'url' :
 		case 'text' :
 			print '<input type="' . __('text', $type, TRUE) . '" id="f_' .
 				$field . '" name="' . $field . '" value="' . $value .

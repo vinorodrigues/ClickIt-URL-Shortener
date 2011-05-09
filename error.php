@@ -5,7 +5,7 @@
  * @copyright  Tecsmith.com.au
  *   See LICENSE.TXT for copyright notice and details.
  * @license    Creative Commons Attribution-ShareAlike 3.0 Unported License
- * @author     Vino Rodrigues 
+ * @author     Vino Rodrigues
  *   clickit [dot] source [at] mail [dot] vinorodrigues [dot] com
  */
 
@@ -15,6 +15,7 @@ include_once('includes/lang.' . $phpEx);
 // don't call initialize_settings(), just do the simple config inclusion
 require_once('includes/config-default.' . $phpEx);
 if (file_exists('config.' . $phpEx)) include_once('config.' . $phpEx);
+if (file_exists('~config.' . $phpEx)) include_once('~config.' . $phpEx);
 
 initialize_lang();
 
@@ -51,7 +52,7 @@ $errors = array(
 	504 => "Gateway Timeout",
 	505 => "HTTP Version not supported",
 	);
-  
+
 if (!isset($e)) :  // may come from include, so $e may already be set
 	if (isset($_REQUEST['e'])) :
 		$e = intval(trim($_REQUEST['e']));
@@ -66,7 +67,7 @@ if (isset($lang[$err])) :
 		$err = '';
 		foreach ( $lang[$err] as $s ) $err .= $s . '<br />';
 	else :
-		$err = $lang[$err]; 
+		$err = $lang[$err];
 	endif;
 else :
 	if (isset($errors[$e])) :
@@ -74,7 +75,7 @@ else :
 	else :
 		$err = '';
 	endif;
-endif; 
+endif;
 
 header('HTTP/1.0 ' . $e . ' ' . $err, TRUE, $e);
 

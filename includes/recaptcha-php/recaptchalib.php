@@ -43,6 +43,7 @@ define("RECAPTCHA_API_SERVER", "http://www.google.com/recaptcha/api");
 define("RECAPTCHA_API_SECURE_SERVER", "https://www.google.com/recaptcha/api");
 define("RECAPTCHA_VERIFY_SERVER", "www.google.com");
 define("RECAPTCHA_VERIFY_URL", "/recaptcha/api/verify");
+define("RECAPTCHA_TIMEOUT", 10);
 
 /**
  * curl_config : allows configurate cURL service
@@ -54,7 +55,7 @@ define("RECAPTCHA_VERIFY_URL", "/recaptcha/api/verify");
  * $GLOBALS['curl_config'][CURLOPT_PROXY] = "proxy.mydomain.com";
  * $GLOBALS['curl_config'][CURLOPT_PROXYPORT] = "8181";
  */
-$GLOBALS['curl_config'] = array();
+if (!isset($GLOBALS['curl_config'])) $GLOBALS['curl_config'] = array();
 
 /**
  * Encodes the given data into a query string format
@@ -82,11 +83,9 @@ function _recaptcha_qsencode($data) {
  * @param int port
  * @return array response
  */
-
 function _recaptcha_http_post($host, $path, $data, $port = 80)
 {
 	$m = 'fsockopen';  // fallback, slowest
-
 	if (function_exists('curl_init') && function_exists('curl_exec')) {
 		$m = 'curl';  // fastest
 	} elseif (function_exists('fopen') && ini_get('allow_url_fopen'))
@@ -113,7 +112,7 @@ function _recaptcha_http_post_curl($host, $path, $data, $port = 80)
 	$__config = array(
 		CURLOPT_POST => true,
 		CURLOPT_RETURNTRANSFER => true,
-		CURLOPT_CONNECTTIMEOUT => 10,
+		CURLOPT_CONNECTTIMEOUT => RECAPTCHA_TIMEOUT,
 		CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_0,
 		CURLOPT_USERAGENT => "reCAPTCHA/PHP",
 		CURLOPT_HEADER => true
@@ -157,11 +156,11 @@ function _recaptcha_http_post_fopen($host, $path, $data, $port = 80)
 			'method' => 'POST',
 			'content' => _recaptcha_qsencode($data),
 			'header' => $optional_headers,
+			'timeout' => RECAPTCHA_TIMEOUT,  // PHP > 5.2.1
             )
 		);
 
 	$url = 'http://' . $host . (($port != 80) ? ':' . $port : '') . $path;
-
 	$ctx = stream_context_create($params);
 
 	$handle = @fopen($url, 'rb', false, $ctx);
@@ -176,7 +175,7 @@ function _recaptcha_http_post_fopen($host, $path, $data, $port = 80)
 	if ($response === false)
 		trigger_error("Problem reading data from $url, $php_errormsg", E_USER_ERROR);
 
-	// fopen on returns the content part, so create an array so the the
+	// fopen on returns the content part, so create an array so that the
 	// response is at array index [1]
 	$response = array('', $response);
 
@@ -197,9 +196,9 @@ function _recaptcha_http_post_fsockopen($host, $path, $data, $port = 80)
 	$http_request .= "\r\n";
 	$http_request .= $req;
 
-	$response = '';
-	if ( false == ( $fs = @fsockopen($host, $port, $errno, $errstr, 10) ) ) {
-		trigger_error('Could not open socket', E_USER_ERROR);
+	$response = '';  $errno = NULL;  $errstr = NULL;
+	if ( false == ( $fs = @fsockopen($host, $port, $errno, $errstr, RECAPTCHA_TIMEOUT) ) ) {
+		trigger_error("Could not open socket: $errno - $errstr", E_USER_ERROR);
 		return false;
 	}
 

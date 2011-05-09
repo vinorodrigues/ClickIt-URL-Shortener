@@ -5,9 +5,12 @@
  * @copyright  Tecsmith.com.au
  *   See LICENSE.TXT for copyright notice and details.
  * @license    Creative Commons Attribution-ShareAlike 3.0 Unported License
- * @author     Vino Rodrigues 
+ * @author     Vino Rodrigues
  *   clickit [dot] source [at] mail [dot] vinorodrigues [dot] com
  */
+
+// comment this line out to allow the __self_generate() function
+if (!defined('IN_CLICKIT')) die('Restricted');  
 
 global $hashbase, $hashhash;
 
@@ -17,23 +20,23 @@ $hashbase = '0123456789cdfghkmnpqrtvwxy';  // BASE26 :)
 # they act as find markers in the __self_generate() function
 # [[[[[
 $hashhash = array(
-	'7cw3gvxrqp024fntm6ky89d15h',
-	'mrc02ftw7xk614phyqdgv835n9',
-	'8324795c0ypngfm1xwtvhkr6qd',
-	'x20vcydt59m1fkp7rwng634h8q',
-	'mntqyr0xhp89cv2d64g13k57wf',
-	'g7v8620cpfdqwrmy39h41kn5tx',
-	'p4wk0xvnt8hgq391crmy67f5d2',
-	'58wvx497k23p16yncfgmhqr0td',
-	'dpw2cgn14r7mxyhq9k0v8356ft',
-	'xmk0ftqv38crh54ny9gdwp7216',
+	'h2wqpn5rdg9kt36mcvy8x1470f',
+	'tdymvfn6qr813x4hk72g950wpc',
+	'k20gdm59v8wqfn716xp4c3tyhr',
+	'v4f35r0thgpkq6xc9n71d28ywm',
+	'ygf0r4x23m6vcd1t98k7pqn5hw',
+	'wvfm9ktc4n27r1pqx350g6yd8h',
+	'r7358hq06g9npy4t1xkwfv2mcd',
+	'xdrvpth086y1nmq45gwf93c7k2',
+	'fdt42x90gm856ycrnkqhvp73w1',
+	'3f6759xhm1nqc80v4yrpdg2wkt',
 	);
 # ]]]]]
 
 /*
 Why some letter are omitted
 ---------------------------
-A vowel 
+A vowel
 B looks like 8
 E vowel
 I vowel, looks like L(l), or 1
@@ -44,14 +47,14 @@ S looks like 5
 U vowel, looks like V
 Z looks like 2
 */
-	
+
 function hash_numeric($in, $length = 0) {
 	if (!is_numeric($in)) trigger_error('Non numeric value ' . $in, E_USER_ERROR);
 
 	global $hashhash;
 	$index = $hashhash[$in % 10];
-	if ($length > 1) $in = $in + pow(strlen($index), $length-1); 
-	
+	if ($length > 1) $in = $in + pow(strlen($index), $length-1);
+
 	if ($in === 0) :
 		$out = substr($index, 0, 1);
 	else :
@@ -73,12 +76,12 @@ function hash_random($length) {
 	if ($length < 1) $length = 1;
 	$out = '';
 	for ($i = 0; $i < $length; $i++ ) $out .= substr($hashbase, rand(0, strlen($hashbase)-1), 1);
-	return $out;  
+	return $out;
 }
-	
+
 function __self_generate($hashbase) {
 	$len = strlen($hashbase);
-	$s = "\n\$hashhash = array(\n";
+	$s =  PHP_EOL . "\$hashhash = array(". PHP_EOL;
 
 	for ($d = 1; $d <= 10; $d++) :
 		for ($i = 0; $i <= rand(10000, 100000); $i++) :
@@ -90,36 +93,36 @@ function __self_generate($hashbase) {
 				$hashbase = substr_replace( substr_replace($hashbase, $bb, $a, 1), $aa, $b, 1);
 			endif;
 		endfor;
-		$s .= "\t'$hashbase',\n";
+		$s .= "\t'$hashbase'," . PHP_EOL;
 	endfor;
 
-	$s .= "\t);\n";
-	
+	$s .= "\t);" . PHP_EOL;
+
 	print "<pre>$s</pre>";
-	
+
 	$handle = fopen(__FILE__, "r");
 	$contents = fread($handle, filesize(__FILE__));
 	fclose($handle);
-	
+
 	$a = strpos($contents, str_pad('', 5, '[')) + 5;
 	$b = strpos($contents, str_pad('', 5, ']')) - 2;
-	
+
 	if (($a > 0) && ($b > $a)) :
-	
+
 		$aa = substr($contents, 0, $a);
 		$bb = substr($contents, $b);
-	
+
 		$handle = fopen(__FILE__, "w+");
 		fwrite($handle, $aa);
 		fwrite($handle, $s);
 		fwrite($handle, $bb);
 		fclose($handle);
-	
+
 		print 'OK';
 	else :
 		print 'ERROR';
 	endif;
-}	
+}
 
 /**
  * If you run this file standalone it will regenerate it's own hash table.
