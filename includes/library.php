@@ -13,7 +13,7 @@
 /* ----- Application related ----- */
 
 define('IN_CLICKIT', TRUE);
-define('CLICKIT_VER', '0.4.1&beta;');
+define('CLICKIT_VER', '0.4.2&beta;');
 define('CLICKIT_BUILD', '$Id$');
 define('TEMPLATE', 'template');
 
@@ -187,12 +187,12 @@ function initialize_db($load_settings = TRUE) {
 	return $db;
 }
 
-function log_event($msg, $data = NULL) {
+function log_event($msg, $data = NULL, $time = NULL) {
 	global $db, $sql, $EVENTS_TABLE;
 	if (!$db) $db = initialize_db();
 
 	$ins_data = array(
-		'eon' => microtime(TRUE),
+		'eon' => ((isset($time) && !empty($time)) ? $time : microtime(TRUE)),
 		'uri' => $db->sql_escape($_SERVER['REQUEST_URI']),
 		'ipaddress' => $db->sql_escape($_SERVER['REMOTE_ADDR']),
 		'referer' => isset($_SERVER['HTTP_REFERER']) ? $db->sql_escape($_SERVER['HTTP_REFERER']) : '',

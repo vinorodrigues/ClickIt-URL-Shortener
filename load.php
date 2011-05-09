@@ -95,11 +95,11 @@ if (empty($m)) :  // was there an error connecting
 				include_once($bf);
 				$brwsr = _get_browser($_SERVER['HTTP_USER_AGENT']);
 				$data['browser'] = $db->sql_escape($brwsr['browser']);
-				if (strcmp('unknown', $data['browser'])) :
+				if (strcmp('unknown', $data['browser']) === 0) :
 					$data['version'] = '';
 					$data['platform'] = '';
 					// We'd like to know so that we can update the browser table
-					log_event('Unknown browser; urlid=' . $id, $_SERVER['HTTP_USER_AGENT']);
+					log_event('Unknown browser; urlid=' . $id, $_SERVER['HTTP_USER_AGENT'], $data['accessedon']);
 				else :
 					$ver = explode('.', $brwsr['version'], 3);
 					$verstr = $ver[0];

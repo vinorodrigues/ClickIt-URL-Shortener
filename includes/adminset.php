@@ -123,6 +123,10 @@ $settings_array = array(
 			' Seperated with comma\'s, no spaces after the comma.',
 		AS_NOT_FOR_USER => TRUE,
 		),
+	'Tracking' => array(
+		AS_TYPE => AS_T_SUBSECTION,
+		AS_NOT_FOR_USER => TRUE,
+		),
 	'piwik_site' => array(
 		AS_TYPE => AS_T_URL,
 		AS_HINT => 'URL of the Piwik web-site. Exclude the trailing forward-slash (\'/\'). See <a href="http://piwik.org">http://piwik.org</a>',

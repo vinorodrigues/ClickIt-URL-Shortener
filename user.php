@@ -66,7 +66,7 @@ switch ($function) :
 	if ($userlevel >= USER_LEVEL_GD)
 		output_field('email', $row['email'], __('text','email',TRUE), array('maxlength' => 150), TRUE);
 	if (($userlevel >= USER_LEVEL_AD) && ($w_userid != $userid))
-		output_field('anabled', $row['enabled'], 'checkbox');
+		output_field('enabled', $row['enabled'], 'checkbox');
 ?>
 </tbody><tfoot>
 <tr class="<?php print 'row_' . $run . ' ' . (is_odd($run) ? 'odd' : 'even') . ' last' ?>">
