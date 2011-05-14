@@ -47,8 +47,10 @@ else :
 <?php
 	$page['content'] .= ob_get_clean();
 	$page['navigation'] = T('[');
-	$page['navigation'] .= T('DONT_HAVE_ACCOUNT', array('url' => 'signup.' . $phpEx));
-	$page['navigation'] .= T('|');
+	if (isset($settings['allow_signup']) && $settings['allow_signup']) :
+		$page['navigation'] .= T('DONT_HAVE_ACCOUNT', array('url' => 'signup.' . $phpEx));
+		$page['navigation'] .= T('|');
+	endif;
 	$page['navigation'] .= T('FORGOT_PASSWORD', array('url' => 'forgot.' . $phpEx));
 	$page['navigation'] .= T(']');
 	$included = strtolower(realpath(__FILE__)) != strtolower(realpath($_SERVER['SCRIPT_FILENAME']));

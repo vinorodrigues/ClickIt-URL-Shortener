@@ -123,6 +123,11 @@ $settings_array = array(
 			' Seperated with comma\'s, no spaces after the comma.',
 		AS_NOT_FOR_USER => TRUE,
 		),
+	'support_url' => array(
+		AS_TYPE => AS_T_URL,
+		AS_HINT => 'URL for support of this site.',
+		AS_NOT_FOR_USER => TRUE,
+		),
 	'Tracking' => array(
 		AS_TYPE => AS_T_SUBSECTION,
 		AS_NOT_FOR_USER => TRUE,
@@ -177,6 +182,11 @@ $settings_array = array(
 		AS_TYPE => AS_T_BOOL,
 		AS_HINT => 'User\'s must have an account to create Short URL\'s.' .
 			' Setting to OFF enables anonymous use.',
+		AS_NOT_FOR_USER => TRUE,
+		),
+	'allow_signup' => array(
+		AS_TYPE =>  AS_T_BOOL,
+		AS_HINT => 'Anonymous user\'s are permitted to sign up for an account.',
 		AS_NOT_FOR_USER => TRUE,
 		),
 	'badlogonmax' => array(

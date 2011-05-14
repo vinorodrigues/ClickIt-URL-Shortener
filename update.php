@@ -14,7 +14,7 @@ $included = strtolower(realpath(__FILE__)) != strtolower(realpath($_SERVER['SCRI
 /**
  * Sequence of updates seperated by commas, no spaces.  Do not skip versions.
  */
-define('CLICKIT_UPDATES', '0.2,0.3,0.4');
+define('CLICKIT_UPDATES', '0.2,0.3,0.4,0.5');
 
 /**
  * Parse the CLICKIT_UPDATES const and run the independent update functions
@@ -114,6 +114,11 @@ function perform_update_0_4() {
 	endif;
 
 
+	return TRUE;
+}
+
+function perform_update_0_5() {
+	perform_update_meta_version('0.5 beta');
 	return TRUE;
 }
 

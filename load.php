@@ -26,12 +26,16 @@ endif;
 
 if (isset($_REQUEST['url'])) :
 	$expectedURL = $_REQUEST['url'];
+elseif (isset($_REQUEST['q'])) :
+	$expectedURL = $_REQUEST['q'];
 else :
 	$e = 404;
 	include('error.' . $phpEx);
 	die(404);
 endif;
-$shortURL = strtolower( preg_replace("/[^a-z0-9_]+/i", "", $expectedURL) );
+
+$action = preg_replace("/[a-z0-9_]+/i", "", $expectedURL, 1);
+$shortURL = strtolower( str_replace($action, "", $expectedURL) );
 // test for file existance of urls like "about" and redirect to 'about'
 if (file_exists($shortURL . '.' . $phpEx)) :
 	// make sure it's not this file or else we'll go into a infinite loop
@@ -40,7 +44,9 @@ if (file_exists($shortURL . '.' . $phpEx)) :
 		die( redirect($shortURL . '.' . $phpEx) );
 	endif;
 endif;
-$actionURL = substr( preg_replace("/[a-z0-9_]/i", "", $expectedURL), 0, 1);
+$actionBit = substr($action, 0, 1);
+$actionData = substr($action, 1);
+unset($action);
 
 /* ---- find url ----- */
 $isShortURL = FALSE;
@@ -50,7 +56,19 @@ set_exception_handler('exception_handler');
 
 $db = initialize_db();
 
-if (empty($m)) :  // was there an error connecting
+/* ----- Offline (from DB) ----- */
+
+if ($settings['offline']) :
+	restore_exception_handler();
+	restore_error_handler();
+	header('HTTP/1.1 503 Service Unavailable');
+	include('offline.' . $phpEx);
+	die(503);
+endif;
+
+/* ----- Find Short Bit ----- */
+
+if (empty($messages)) :  // was there an error connecting
 	$sql = 	"SELECT * FROM $URLS_TABLE" .
 		" WHERE " . $db->sql_build_array('SELECT', array(
 			'shorturl' => $shortURL,
@@ -60,9 +78,11 @@ if (empty($m)) :  // was there an error connecting
 	$row = $db->sql_fetchrow($result);
 	if ($row) :
 		$p_cloak = (boolean) $row['cloak'];
-		switch ($actionURL) :
+		switch ($actionBit) :
 			case '-' : $p_action = 'preview'; break;
-			// case '@' : $p_action = 'data'; break; // TODO : LOAD : for Version 0.3
+			case '@' : $p_action = 'mobile'; break;
+			case ' ' : $p_action = 'info'; break;  // use '+' in the url
+			case '^' : $p_action = 'cloak'; break;  // force a cloak
 			default : $p_action = $p_cloak ? 'cloak' : 'redir';
 		endswitch;
 
@@ -128,7 +148,7 @@ if (empty($m)) :  // was there an error connecting
 		endif;
 	else :
 		$db->sql_freeresult($result);
-		$e = 404;
+		$e = 404;  // Not found
 	endif;
 endif;
 
@@ -136,14 +156,17 @@ $db->sql_close();
 
 restore_exception_handler();
 restore_error_handler();
-if (!empty($m) || (isset($e))) :  // Opps!  Something went wrong
+
+if (!empty($messages) || (isset($e))) :  // Opps!  Something went wrong
 	if (!isset($e)) $e = 500;
 	include('error.' . $phpEx);
 	die();
 endif;
 
+$p_short = $page['full_path'] . $row['shorturl'];
+
 switch($p_action) :
-	case 'preview' :
+	case 'preview' :  // '-'
 		initialize_settings();
 		initialize_lang();
 
@@ -168,14 +191,39 @@ function countdown() {
 
 		$page['head_title'] = "$p_title ($p_url)";
 		$page['title'] = T('PREVIEW') . ' ' . $p_title;
-		$page['content'] = T('REDIRECTING_TO', array('url' => $p_url));
+		$page['content'] = '<p>' . T('REDIRECTING_TO', array('url' => $p_url));
 		if ($p_delay > 0) $page['content'] .= " <small><span id=\"countdown\"></span></small>";
+		$page['content'] .= '</p><hr /><p>';
+
+		include_once('includes/clippy/clippy.' . $phpEx);
+		$page['content'] .= T('LINK', array(
+			'url' => $p_short,
+			'copy' => clippy_get_html($p_short),
+			));
+		$page['content'] .= '</p><p>';
+		$page['content'] .= T('LINK_M', array(
+			'url' => $p_short . '@',
+			'copy' => clippy_get_html($p_short . '@'),
+			));
+		$page['content'] .= '<br /><img src="' . CHART_API_SERVER . '?cht=qr&chs=300x300&chl=' . urlencode($p_short) . '" alt="' . $p_title . '" style="display:block;margin:auto" />';
+
+		$page['content'] .= '</p>';
 		include('includes/' . TEMPLATE . '.' . $phpEx);
 		break;
 
-	case 'cloak' :
+	case 'cloak' :  // in db or '^'
 		include('cloak.' . $phpEx);
 		break;
+
+	case 'mobile' :  // '@'
+		// requires $p_short
+		include('mobile.' . $phpEx);
+		break;
+
+	/* case 'info' :  // TODO : LOAD : Info page
+		print 'INFO';
+		die();
+		break; */
 
 	default : // 'redir'
 		die( redirect($p_url, TRUE) );

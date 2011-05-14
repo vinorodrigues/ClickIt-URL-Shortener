@@ -10,33 +10,25 @@
  */
 
 $included = strtolower(realpath(__FILE__)) != strtolower(realpath($_SERVER['SCRIPT_FILENAME']));
-if (!$included) :
-	require_once('includes/library.php');
-endif;
+if (!$included) die('Restricted');
+if (!isset($p_url)) die('Restricted');
 
-if (!isset($p_title)) $p_title = $page['full_path'];
-if (!isset($p_url)) $p_url = $page['full_path'];
 if (substr($p_url, -1) != '/') $p_url .= '/';
 $p_favicon = 'http://' . parse_url($p_url, PHP_URL_HOST) . '/favicon.ico';
 $p_favicon_alt = 'http://' . parse_url($p_url, PHP_URL_HOST) . '/favicon.gif';
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head>
-	<title><?php print $p_title; ?></title>
-	<link rel="shortcut icon" href="<?php print $p_favicon; ?>" type="image/x-icon" />
-	<link rel="icon" href="<?php print $p_favicon_alt; ?>" type="image/gif" />
-<?php if (isset($p_metadesc)) print "\t<meta name=\"description\" content=\"$p_metadesc\" />\n" ?>
-<?php if (isset($p_metakeyw)) print "\t<meta name=\"keywords\" content=\"$p_metakeyw\" />\n" ?>
-<?php /* TODO : CLOAK : Piwik code, for Version 03 */ ?>
+<html><head>
+<?php if (isset($p_title)) print "<title>$p_title</title>" . PHP_EOL; ?>
+<link rel="shortcut icon" href="<?php print $p_favicon; ?>" type="image/x-icon" />
+<link rel="icon" href="<?php print $p_favicon_alt; ?>" type="image/gif" />
+<?php if (isset($p_metadesc)) print "<meta name=\"description\" content=\"$p_metadesc\" />\n" ?>
+<?php if (isset($p_metakeyw)) print "<meta name=\"keywords\" content=\"$p_metakeyw\" />\n" ?>
 </head>
 <frameset rows="100%,*" border="0" frameborder="no">
 <frame name="__main" src="<?php print $p_url; ?>" noresize frameborder="0" />
-<noframes>
-<body>
+<noframes><body>
 Please visit <a href="<?php print $p_url; ?>"><?php print $p_url; ?></a>.
 <?php print loadscript("window.location = '$p_url';"); ?>
-</body>
-</noframes>
-</frameset>
-</html>
+</body></noframes>
+</frameset></html>

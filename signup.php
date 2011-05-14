@@ -18,6 +18,13 @@ initialize_settings();
 initialize_lang();
 initialize_db(TRUE);
 
+if (!isset($settings['allow_signup']) || !$settings['allow_signup']) :
+	access_denied();
+	$page['content'] = T('SIGNUPS_DISABLED');
+	include('includes/' . TEMPLATE . '.' . $phpEx);
+	die(403);
+endif;
+
 $username = isset($_REQUEST['username']) ? strtolower($_REQUEST['username']) : FALSE;
 if ($username !== FALSE) :
 	$check = check_captcha();

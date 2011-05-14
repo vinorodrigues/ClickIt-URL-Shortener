@@ -69,6 +69,7 @@ $lang['STATUS_504'] = 'Gateway Timeout';
 
 // template page
 
+$lang['-'] = ' - ';  // title and post copyright
 $lang['['] = '';  // nav-menu
 $lang['|'] = ' | ';  // nav-menu
 $lang[']'] = '';  // nav-menu
@@ -85,6 +86,7 @@ $lang['COPYRIGHT'] = 'Copyleft <small>(CC)</small> 2011 <a href="*|url|*">Tecsmi
 $lang['LICENSE'] = '<a rel="license" href="*|url|*">Some rights reserved</a>';
 $lang['TERMSOS'] = '<a rel="toc" href="*|url|*">Terms of Service</a>';
 $lang['PRIVACY'] = '<a rel="privacy" href="*|url|*">Privacy Policy</a>';
+$lang['SUPPORT'] = '<a rel="support" href="*|url|*">Help!</a>';
 
 $lang['YOU_MUST_LOGIN'] = 'You need to login to access this resource.';
 
@@ -236,7 +238,8 @@ $lang['SHORT_CREATED'] = 'Short Created';
 $lang['SHORT_CREATED_OK'] = 'Short created as \'*|short|*\'';
 $lang['SHORT_CREATED_DESCRIPTIVE'] = array(
 	'The short URL has been created.',
-	'The URI you can use to access this service is: <br/><code>*|fullshorturl|*</code>',
+	'The URI you can use to access this service is: <br/><code>*|fullshorturl|*</code> *|copy|*' .
+		'<br />Or preview <a href="*|previewurl|*">here</a>.',
 	);
 
 $lang['UNKNOWN_ACTION'] = 'Don\'t know what to do with that request';
@@ -273,6 +276,7 @@ $lang['SIGNUP_HERE'] = array(
 	'Your c1k.it account gives you access to create and edit short URL\'s.',
 	'If you already have a c1k.it account, you can <a href="*|url|*">log in here</a>.'
 	);
+$lang['SIGNUPS_DISABLED'] = 'Signup\'s to this site are disabled';
 $lang['SUBMIT_USER'] = 'Submit for Account';
 $lang['CONFIRM_EMAIL'] = 'Confirm Email';
 $lang['CAPTCHA_FAILED'] = 'CAPTCHA code not accepted';
@@ -465,5 +469,7 @@ $lang['PREVIEW'] = '<i>Preview:</i>';
 $lang['SEC_PREFIX'] = ' - in ';
 $lang['SEC_SUFIX'] = ' seconds <img src="images/loading.gif" />';
 $lang['REDIRECTING_TO'] = 'Redirecting to <a href="*|url|*">*|url|*</a>';
+$lang['LINK'] = 'Copy URL: <code>*|url|*</code> *|copy|*';
+$lang['LINK_M'] = 'Scannable URL: <code>*|url|*</code> *|copy|*';
 
 ?>

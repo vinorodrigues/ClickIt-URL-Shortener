@@ -87,6 +87,7 @@ if ($longURL !== FALSE) :  // iether edit or create
 	if (substr($longURL, -1) == '/') $longURL = substr($longURL, 0, -1);
 
 	$shortURL = isset($_REQUEST['shortURL']) ? $_REQUEST['shortURL'] : FALSE;
+	if (isset($_REQUEST['shortURL']) && empty($shortURL)) $shortURL = FALSE;
 	$is_custom = ($shortURL !== FALSE);
 
 	if ($urlid !== FALSE) :  // edit only
@@ -203,8 +204,12 @@ if ($longURL !== FALSE) :  // iether edit or create
 
 		header_code(201);  // Created
 		poke_success(T('SHORT_CREATED_OK', array('short' => $shortURL)));
-		$page['content'] = T('SHORT_CREATED_DESCRIPTIVE',
-			array('fullshorturl' => $page['full_path'].$shortURL), '<p>', '</p>');
+		include_once('includes/clippy/clippy.' . $phpEx);
+		$page['content'] = T('SHORT_CREATED_DESCRIPTIVE', array(
+			'fullshorturl' => $page['full_path'] . $shortURL,
+			'previewurl' => $page['full_path'] . $shortURL . '-',
+			'copy' => clippy_get_html($page['full_path'] . $shortURL),
+			), '<p>', '</p>');
 		$page['title'] = T('SHORT_CREATED');
 		include('includes/' . TEMPLATE . '.' . $phpEx);
 		die(201);

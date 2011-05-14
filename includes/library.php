@@ -13,9 +13,11 @@
 /* ----- Application related ----- */
 
 define('IN_CLICKIT', TRUE);
-define('CLICKIT_VER', '0.4.2&beta;');
+define('CLICKIT_VER', '0.5&beta;');
 define('CLICKIT_BUILD', '$Id$');
 define('TEMPLATE', 'template');
+
+define('CHART_API_SERVER', 'http://chart.apis.google.com/chart');
 
 global $phpEx;
 $phpEx = substr(strrchr(__FILE__, '.'), 1);

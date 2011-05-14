@@ -6,9 +6,16 @@ c1k.it <http://c1k.it> is URL shortening service.  This is it's source code.
 Similar to other public shortening services – like the grandfather of shorteners
 <http://tinyurl.com>, the father <http://bit.ly> or more the more modern
 <http://goo.gl>, <http://tr.im>, <http://ow.ly>, <http://is.gd>, <http://su.pr>
-and others – It is run by tecsmith.com.au for its online marketing clients. 
+and others – It is run by tecsmith.com.au for its online marketing clients.
+
+Open source means you can use it to create your own shortener, like Harvard
+Business Review does with <http://s.hbr.org>, or The Economist does with
+<http://econ.st>.  Unlike some of the others it allows you to change the Long
+URL, so over time your short can point to different content, like a price list,
+without having to change your short bit and republishing.
 
 We hope you enjoy learning, or even using, this source.
+
 
 Releases
 --------
@@ -32,10 +39,13 @@ Releases
            Automated update process
            (Released 9 May 2011)
 
+0.5 Beta - Mobile links (QR-Code)
+		   Clipboad copy Flash (clippy.swf)
+		   (Released 14 May 2011)
+
+
 Upcomming milestones
 --------------------        
-
-0.5 Beta - Mobile links (QR-Code)
 
 0.6 Beta - Basic Reporting
 
@@ -48,6 +58,7 @@ Upcomming milestones
 (1.2) - Drupal plugin
 
 (1.3) - Wordpress plugin
+
 
 Get Involved
 ------------

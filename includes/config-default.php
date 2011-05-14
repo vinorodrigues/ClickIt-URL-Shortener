@@ -26,6 +26,7 @@ $settings['cdn'] = 'local';
 $settings['force302'] = FALSE;
 $settings['cron_auto'] = TRUE;
 $settings['mustlogin'] = TRUE;
+$settings['allow_signup'] = TRUE;
 $settings['badlogonmax'] = 3;
 $settings['shortminlength'] = 4;
 $settings['default_user_level'] = 1;

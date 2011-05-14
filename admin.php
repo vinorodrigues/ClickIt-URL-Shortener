@@ -151,6 +151,19 @@ if (isset($_REQUEST['f']) && ($_REQUEST['f'] == 'post')) :
 		endif;
 	endforeach;
 
+	// HTTP checkboxes are not posted, so parse settings array and find the
+	// missing ones.
+	foreach ($settings_array as $name => $info) :
+ 		if (($info[AS_TYPE] == AS_T_BOOL) && (!isset($_REQUEST['v_' . $name])))
+ 			if ($settings2[0][$name] != FALSE) :
+				if ($settings2[1][$name] == $w_userid) :
+					$update_set[$name] = FALSE;
+				else :
+					$insert_set[$name] = FALSE;
+				endif;
+ 			endif;
+	endforeach;
+
 	$run = 0;
 	$db->sql_transaction('begin');
 

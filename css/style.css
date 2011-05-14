@@ -4,6 +4,7 @@
  */
 
 @IMPORT url('http://fonts.googleapis.com/css?family=Ubuntu');
+@IMPORT url('http://fonts.googleapis.com/css?family=Inconsolata');
 @IMPORT url('../fonts/silkscr/silkscr.css');
 @IMPORT url('minibutton.css');
 
@@ -21,7 +22,7 @@ body {
 }
 
 tt, code, kbd, samp, pre {
-	font-family: 'Courier New', monospace;
+	font-family: Inconsolata, 'Courier New', monospace;
 	font-size: 1em;
 }
 
@@ -81,13 +82,13 @@ hr {
 
 #footer {
 	font-family: 'Silkscreen';
-	font-size: 8px;
+	font-size: 9px;
 	-webkit-font-smoothing: subpixel-antialiased;
 	
 	margin-top: 16px;
 	text-align: center;
 	padding: 0 auto;
-	color: #BBB;
+	color: #777;
 	text-shadow: #DDD 0 1px 0;
 }
 

@@ -9,6 +9,11 @@
  *   clickit [dot] source [at] mail [dot] vinorodrigues [dot] com
  */
 
+if (isset($_GET['url']) || isset($_GET['q'])) :
+	include('load.php');
+	die();
+endif;
+
 require_once('includes/library.php');
 require_once('includes/lang.' . $phpEx);
 
