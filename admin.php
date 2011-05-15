@@ -158,7 +158,7 @@ if (isset($_REQUEST['f']) && ($_REQUEST['f'] == 'post')) :
  			if ($settings2[0][$name] != FALSE) :
 				if ($settings2[1][$name] == $w_userid) :
 					$update_set[$name] = FALSE;
-				else :
+				elseif (!$info[AS_NOT_FOR_USER]) :
 					$insert_set[$name] = FALSE;
 				endif;
  			endif;

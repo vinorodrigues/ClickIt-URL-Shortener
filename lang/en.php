@@ -436,7 +436,7 @@ $lang['DELETE'] = '<img src="images/ico_arch.png" title="Check to delete item if
 $lang['DELETE_ITEM'] = 'Delete item';
 $lang['CHANGE_SITEWIDE'] = 'Sitewide / For all users';
 $lang['CHANGE_FOR_USER'] = 'Only for user ID *|userid|*, *|username|* (*|realname|*)';
-$lang['CHANGES_MADE'] = '*|cnt|* changes made';
+$lang['CHANGES_MADE'] = '*|cnt|* change(s) made';
 $lang['SETTING_DELETED'] = 'Setting <b>*|name|*</b> deleted';
 $lang['SETTING_UPDATED'] = 'Setting <b>*|name|*</b> updated';
 $lang['SETTING_INSERTED'] = 'Setting <b>*|name|*</b> inserted';

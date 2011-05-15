@@ -63,8 +63,9 @@ if (!isset($GLOBALS['curl_config'])) $GLOBALS['curl_config'] = array();
  * @return string - encoded request
  */
 function _recaptcha_qsencode($data) {
-	$v = explode('.', phpversion());
-	if ($v[0] >= 5) return http_build_query($data);
+	// PHP 5+
+	if (version_compare(PHP_VERSION, '5.0.0', '>=') )
+		return http_build_query($data);
 
 	// PHP 4
 	$req = "";
