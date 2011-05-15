@@ -1,8 +1,7 @@
 [![c1k.it](http://c1k.it/images/logo2.png)](http://c1k.it)
 
 
-## Introduction
----------------
+# Introduction
 
 c1k.it <http://c1k.it> is URL shortening service.  This is it's source code.
 
@@ -20,52 +19,53 @@ without having to change your short bit and republishing.
 We hope you enjoy learning, or even using, this source.
 
 
-## Releases
------------
+# Releases
 
-0.1 Beta - Basic site functionality, installer and template engine
-           Database access external, you'll need to use someting like phpMyAdmin
-           (Released 14 Mar 2011)
+* 0.1 Beta
+	* Basic site functionality, installer and template engine
+	* Database access external, you'll need to use someting like phpMyAdmin
+	* _Released 14 Mar 2011_
         
-0.2 Beta - Basic user functionality like sign-on and URL creation
-           Hash-tag engine, internationalization
-           Home page intergration with Facebook and Google Analytics
-           (Released 21 Apr 2011)
+* 0.2 Beta
+	* Basic user functionality like sign-on and URL creation
+	* Hash-tag engine, internationalization
+	* Home page intergration with Facebook and Google Analytics
+	* _Released 21 Apr 2011_
            
-0.3 Beta - User management & settings management
-           (Released 4 May 2011)
+* 0.3 Beta
+	* User management & settings management
+	* _Released 4 May 2011_
            
-0.4 Beta - ShortURL integration with Piwik
-             (we could not get serverside GA to work)
-           Home page integration with Piwik and Twitter
-           Events table for extra debug info on some exceptions (for debugging)
-           Automated update process
-           (Released 9 May 2011)
+* 0.4 Beta
+	* ShortURL integration with Piwik (we could not get serverside GA to work)
+	* Home page integration with Piwik and Twitter
+	* Events table for extra debug info on some exceptions (for debugging)
+	* Automated update process
+	* _Released 9 May 2011_
 
-0.5 Beta - Mobile links (QR-Code)
-           Clipboad copy Flash (clippy.swf)
-           (Released 14 May 2011)
+* 0.5 Beta
+	* Mobile links (QR-Code) - prepend "@" to your short URL
+	* Copy to clipboad (using clippy.swf)
+	* _Released 14 May 2011_
 
 
 ## Upcomming milestones
------------------------
 
-0.6 Beta - Basic Reporting
+* 0.6 Beta - Basic Reporting
 
-0.9 RC1 - Basic cleanups for release candidate
+* 0.9 RC1 - Basic cleanups for release candidate
 
-1.0 - Feature freez
+* 1.0 - Feature freez
 
-1.1 - Jason and XML API's
+* 1.1 - Jason and XML API's
 
-(1.2) - Drupal plugin
+* (1.2) - Drupal plugin
 
-(1.3) - Wordpress plugin
+* (1.3) - Wordpress plugin
 
 
-## Get Involved
----------------
+# Get Involved
 
-Co-maintainers welcome, please email author via GitHub.
+Co-maintainers are most welcome (actually needed), please email author via GitHub.
 
--Vino Rodrigues ;)
+- [Vino Rodrigues](http://www.tecsmith.com.au) ;)
