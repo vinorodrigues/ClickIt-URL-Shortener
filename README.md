@@ -1,4 +1,4 @@
-[![c1k.it](http://c1k.it/images/logo.png)](http://c1k.it)
+[![c1k.it](http://c1k.it/images/logo2.png)](http://c1k.it)
 
 
 ## Introduction
