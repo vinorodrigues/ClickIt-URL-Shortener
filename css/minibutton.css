@@ -26,46 +26,6 @@ button.minibutton::-moz-focus-inner{margin:-1px -3px;}
 .minibutton.green:hover,.minibutton.green:focus{color:#fff;text-decoration:none;text-shadow:-1px -1px 0 rgba(0,0,0,0.3);border-color:#51c68c;border-bottom-color:#2aa065;background:#59dc9b;filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#59dc9b',endColorstr='#30b372');background:-webkit-gradient(linear,left top,left bottom,from(#59dc9b),to(#30b372));background:-moz-linear-gradient(top,#59dc9b,#30b372);}
 .minibutton.green.mousedown{border-color:#2aa065;border-bottom-color:#51c68c;background:#30b372;filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#30b372',endColorstr='#59dc9b');background:-webkit-gradient(linear,left top,left bottom,from(#30b372),to(#59dc9b));background:-moz-linear-gradient(top,#30b372,#59dc9b);}
 
-/* icons, modified for this site */
-/**
- * Icons used in CSS3 Buttons are from the excellent "Iconic pack" by
- * "some random dude"! (P.J. Onori)
- * http://somerandomdude.com/projects/iconic/
- * http://somerandomdude.com/ 
- */
-.minibutton span.icon{display:inline-block;width:12px;height:12px;margin:auto 4px auto 0;position:relative;top:2px;*top:0px;background-image:url('minibutton_icons.png');background-repeat:no-repeat}
-.btn-edit span.icon{background-position:-12px 0;}
-.btn-edit:hover span.icon{background-position:-12px -12px;}
-
-.btn-arch span.icon{background-position:-24px 0;}
-.btn-arch.danger span.icon{background-position:-24px -24px;}
-.btn-arch:hover span.icon{background-position:-24px -12px;}
-
-.btn-anon span.icon{background-position:-36px 0;}
-.btn-anon.danger span.icon{background-position:-36px -24px;}
-.btn-anon:hover span.icon{background-position:-36px -12px;}
-
-.btn-rstr span.icon{background-position:-48px 0;}
-.btn-rstr:hover span.icon{background-position:-48px -12px;}
-
-.btn-back span.icon{background-position:-60px 0;}
-.btn-back.silver span.icon{background-position:-60px -36px;}
-.btn-back.green span.icon{background-position:-60px -48px;}
-.btn-back:hover span.icon{background-position:-60px -12px;}
-
-.btn-subm span.icon{background-position:-72px 0;}
-.btn-subm:hover span.icon{background-position:-72px -12px;}
-
-.btn-rset span.icon{background-position:-84px 0;}
-.btn-rset.danger span.icon{background-position:-84px -24px;}
-.btn-rset:hover span.icon{background-position:-84px -12px;}
-
-.btn-lock span.icon{background-position:-96px 0;}
-.btn-lock:hover span.icon{background-position:-96px -12px;}
-
-.btn-mail span.icon{background-position:-108px 0;}
-.btn-mail:hover span.icon{background-position:-108px -12px;}
-
 /* shadow */
 .minibutton{margin-bottom:2px;-webkit-box-shadow:1px 1px 2px #777;-moz-box-shadow:1px 1px 2px #777;box-shadow:1px 1px 2px #777;}
 .minibutton.mousedown{-webkit-box-shadow:0 0 0;-moz-box-shadow:0 0 0;box-shadow:0 0 0;}

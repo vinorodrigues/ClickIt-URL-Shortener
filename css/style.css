@@ -1,12 +1,18 @@
-/*
+﻿/*
  * @copyright  Tecsmith.com.au
  *   See LICENSE.TXT for copyright notice and details.
  */
 
 @IMPORT url('http://fonts.googleapis.com/css?family=Ubuntu');
-@IMPORT url('http://fonts.googleapis.com/css?family=Inconsolata');
-@IMPORT url('../fonts/silkscr/silkscr.css');
+@IMPORT url('http://fonts.googleapis.com/css?family=Ubuntu+Mono');
+@IMPORT url('http://fonts.googleapis.com/css?family=Architects+Daughter');
 @IMPORT url('minibutton.css');
+@IMPORT url('minibutton_icons.css');
+
+/* PixelMix font is *NOT* authorised for commercial use – please edit out its
+ * use if you claim commercial benefit from c1k.it’s source.
+ */
+@IMPORT url('../fonts/pixelmix/pixelmix.css');
 
 html, body {
 	height: 100%;
@@ -22,7 +28,7 @@ body {
 }
 
 tt, code, kbd, samp, pre {
-	font-family: Inconsolata, 'Courier New', monospace;
+	font-family: 'Ubuntu Mono', 'Courier New', monospace;
 	font-size: 1em;
 }
 
@@ -59,6 +65,7 @@ a:visited {
 th, td { border: none; }
 
 blockquote {
+	font-family: 'Architects Daughter', cursive;
 	font-style: italic;
 }
 
@@ -81,15 +88,19 @@ hr {
 #frame { }
 
 #footer {
-	font-family: 'Silkscreen';
-	font-size: 9px;
-	-webkit-font-smoothing: subpixel-antialiased;
+	font-family: 'pixelmix';
+	font-size: 6pt;
 	
 	margin-top: 16px;
+	padding-bottom: 8px;
 	text-align: center;
 	padding: 0 auto;
 	color: #777;
-	text-shadow: #DDD 0 1px 0;
+	
+	-webkit-font-smoothing: antialiased;
+	-moz-font-smoothing: antialiased;
+	font-smoothing: antialiased;
+	text-shadow: 0 0 1px rgba(119,119,119,0.3);
 }
 
 #footer a, #footer a:hover, #footer a:focus {
@@ -306,12 +317,7 @@ table.editlist span.shorturl, table.editlist a.shorturl { color: #777; font-size
 table.editlist span.date { color: #700; font-size: 77%; padding-left: 20px; }
 table.editlist div.editbuttons { margin-top: 0.5em; }
 
-table.editlist input[type='text'],
-table.editlist input[type='password'],
-table.editlist input[type='email'],
-table.editlist input[type='number'],
-table.editlist select, 
-table.editlist textarea {
+table.editlist input[type=text], table.editlist input[type=password], table.editlist input[type=email], table.editlist input[type=number], table.editlist select, table.editlist textarea {
 	width: 100%
 }
 
@@ -403,6 +409,14 @@ fieldset.install {
 	-moz-border-radius: 0.5em;
 	border-radius: 0.5em;	
 }
+
+.clippy {
+	display: block;
+	width: 110px;
+	height: 14px;
+	background: url('../includes/clippy/clippy.png') top left no-repeat;
+}
+
 
 
 /* See http://positioniseverything.net/easyclearing.html for a description of this code. */
