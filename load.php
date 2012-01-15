@@ -17,8 +17,7 @@ initialize_settings();
 /* ----- Offline ----- */
 
 if ($settings['offline']) :
-	// header('HTTP/1.1 503 Service Unavailable');
-	header_code(503);
+	header_code(503);  // Service Unavailable
 	include('offline.' . $phpEx);
 	die();
 endif;
@@ -63,8 +62,7 @@ $db = initialize_db();
 if ($settings['offline']) :
 	restore_exception_handler();
 	restore_error_handler();
-	// header('HTTP/1.1 503 Service Unavailable');
-	header_code(503);
+	header_code(503);  // Service Unavailable
 	include('offline.' . $phpEx);
 	die();
 endif;

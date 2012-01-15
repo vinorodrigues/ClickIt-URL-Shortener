@@ -91,9 +91,14 @@ $settings_array = array(
 		AS_NOT_FOR_USER => TRUE,
 		),
 	'force302' => array(
-		AS_TYPE => AS_T_BOOL,
-		AS_HINT => 'Use older HTTP/1.1 302 for redirects. 303 (internal) and' .
-			' 307 (external) are the prefered methods.',
+		AS_DATA => array(
+			'0' => 'Use Defaults',
+			'1' => 'Use 302',
+			'2' => 'Use 301',
+			),
+		AS_TYPE => AS_T_RADIO,
+		AS_HINT => 'Use older HTTP/1.1 302 (Found) or 301 (Moved Permanently) for redirects.' .
+			' The defaults 303 (See Other) (internal) and 307 (Temporary Redirect) (external) are the prefered methods.',
 		AS_NOT_FOR_USER => TRUE,
 		),
 	'URLs' => array(

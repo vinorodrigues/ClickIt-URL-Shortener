@@ -3,7 +3,7 @@
 
 # Introduction
 
-c1k.it <http://c1k.it> is URL shortening service.  This is it's source code.
+c1k.it <http://c1k.it> is an URL shortening service.  This is it's source code.
 
 Similar to other public shortening services - like the grandfather of shorteners
 <http://tinyurl.com>, the father <http://bit.ly> or more the more modern
@@ -71,4 +71,5 @@ We hope you enjoy learning, or even using, this source.
 Co-maintainers are most welcome (actually needed), please email author.
 
 - [Vino Rodrigues](http://www.tecsmith.com.au) ;)
+
 clickit [dot] source [at] mail [dot] vinorodrigues [dot] com

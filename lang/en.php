@@ -173,11 +173,7 @@ $lang['TOKEN_NOT_FOUND'] = 'Token not found or check mismatch';
 // index page
 
 $lang['WELCOME'] = 'Welcome to c1k.it!';
-$lang['PREFACE'] = array(
-	'c1k.it is URL shortening service.',
-	'',
-	'Similar to other public shortening services, it is run by <a href="http://tecsmith.com.au">tecsmith.com.au</a> for its online marketing clients.',
-	);
+$lang['PREFACE'] = '';  // Write a welcoming note here
 $lang['ENTERLONG'] = 'Enter a long URL to make short';
 $lang['ENTERSHORT'] = 'Custom short <i>(optional)</i>';
 $lang['MAY_CONTAIN_LETTERS'] = 'May contain letters, numbers and underscores';

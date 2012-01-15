@@ -60,7 +60,7 @@ $page['content'] = '';
 function header_code($code) {
 	global $page;
 	header('HTTP/1.0 ' . $code . ' ' . T('STATUS_' . $code), TRUE, $code);
-	$page['title'] = T('STATUS_' . $code);
+	if (($code < 200) || ($code > 299)) $page['title'] = T('STATUS_' . $code);
 }
 
 function access_denied($code = 403) {
@@ -121,8 +121,7 @@ function initialize_settings($is_install = FALSE) {
 	/* -- */
 	if ((!$is_install) && isset($settings['offline']) && $settings['offline']) :
 		global $page;
-		// header('HTTP/1.1 503 Service Unavailable');
-		header_code(503);
+		header_code(503);  // Service Unavailable
 		include('offline.' . $phpEx);
 		die();
 	endif;
@@ -179,8 +178,7 @@ function initialize_db($load_settings = TRUE) {
 			// lockout if off line
 			if (isset($settings['offline']) && $settings['offline']) :
 				global $page;
-				// header('HTTP/1.1 503 Service Unavailable');
-				header_code(503);
+				header_code(503);  // Service Unavailable
 				include('offline.' . $phpEx);
 				die();
 			endif;
@@ -640,8 +638,7 @@ function initialize_security($must_login = FALSE) {
 		global $page, $messages, $phpEx;
 		$page['content'] .= T('YOU_MUST_LOGIN', NULL, '<p class="loginrequired">', '</p>' . PHP_EOL);
 		$http_referer = $_SERVER['REQUEST_URI'];
-		// header('HTTP/1.1 206 Partial Content');
-		header_code(206);
+		header_code(203);  // Non-Authoritative Information
 		include('login.' . $phpEx);
 		die();
 	endif;
@@ -768,14 +765,18 @@ function loadscript($script) {
 
 function redirect($url, $external = FALSE) {
 	global $settings, $page;
-	if (isset($settings['force302']) && $settings['force302']) :
-		$code = 302;
-	else :
-		$code = $external ? 307 : 303;
+	$code = $external ? 307 : 303;
+	if (isset($settings['force302'])) :
+		switch ($settings['force302']) :
+			case 1: $code = 302; break;
+			case 2: $code = 301; break;
+		endswitch;
 	endif;
 	header('HTTP/1.1 ' . $code . ' ' . T('STATUS_' .  $code));
-	header('Cache-Control: no-cache, must-revalidate'); // HTTP/1.1, ask me again next time
-	header('Expires: ' . date(DATE_RFC822));  // expire now
+	if ($code != 301) :
+		header('Cache-Control: no-cache, must-revalidate'); // HTTP/1.1, ask me again next time
+		header('Expires: ' . date(DATE_RFC822));  // expire now
+	endif;
 	if ($external) :
 		$ref_path = $page['full_path'] . str_replace($page['base_path'], '', $_SERVER['REQUEST_URI']);
 		header("Referer: $ref_path");  // be nice and tell the other server where you came from
