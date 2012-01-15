@@ -54,7 +54,7 @@ function load_row($urlid, &$row) {
 		header_code(404);
 		poke_error(T('RECORD_NOT_FOUND', array('id' => $urlid)));
 		include('includes/' . TEMPLATE . '.' . $phpEx);
-		die(404);
+		die();
 	endif;
 	return $result;
 }
@@ -64,7 +64,7 @@ function load_row($urlid, &$row) {
 if ($userlevel < USER_LEVEL_MAGIC) :  // 1st level check - create rights
 	access_denied();
 	include('includes/' . TEMPLATE . '.' . $phpEx);
-	die(403);
+	die();
 endif;
 
 $longURL = isset($_REQUEST['longURL']) ? $_REQUEST['longURL'] : FALSE;
@@ -76,7 +76,7 @@ if ((!$longURL) && (!$urlid)) :  // don't know what to do
 	poke_validation(T('INAPPROPRIATE'));
 	$page['navigation'] = T('HOME', array('url' => $page['base_path']));
 	include('includes/' . TEMPLATE . '.' . $phpEx);
-	die(405);
+	die();
 endif;
 
 if (!$db) initialize_db(TRUE);
@@ -110,7 +110,7 @@ if ($longURL !== FALSE) :  // iether edit or create
 			$page['content'] = T('LONGURL_NOT_VALID', array('url' => $longURL));;
 			poke_validation(T('VALIDATION_ERROR'));
 			include('includes/' . TEMPLATE . '.' . $phpEx);
-			die(412);
+			die();
 		endif;
 
 		// Check if LongURL already in use
@@ -119,7 +119,7 @@ if ($longURL !== FALSE) :  // iether edit or create
 			header_code(500);
 			poke_error(T('CANNOT_CONNECT'));
 			include('includes/' . TEMPLATE . '.' . $phpEx);
-			die(500);
+			die();
 		elseif ($ret['code'] == 200) :
 			header_code(409);
 			poke_validation(T('DUPLICATION_ERROR'));
@@ -129,7 +129,7 @@ if ($longURL !== FALSE) :  // iether edit or create
 				'shorturl' => $ret['url'],
 				));
 			include('includes/' . TEMPLATE . '.' . $phpEx);
-			die(409);
+			die();
 		endif;
 	endif;
 
@@ -143,7 +143,7 @@ if ($longURL !== FALSE) :  // iether edit or create
 			access_denied();
 			poke_validation(T('SHORT_NOT_AUTH'));
 			include('includes/' . TEMPLATE . '.' . $phpEx);
-			die(403);
+			die();
 		endif;
 
 		// Validate ShortURL
@@ -152,7 +152,7 @@ if ($longURL !== FALSE) :  // iether edit or create
 			$page['content'] = T('SHORTURL_NOT_VALID', array('url' => $shortURL));
 			poke_validation(T('VALIDATION_ERROR'));
 			include('includes/' . TEMPLATE . '.' . $phpEx);
-			die(412);
+			die();
 		endif;
 
 		// Check if short not already used
@@ -161,7 +161,7 @@ if ($longURL !== FALSE) :  // iether edit or create
 			header_code(500);
 			poke_error(T('CANNOT_CONNECT'));
 			include('includes/' . TEMPLATE . '.' . $phpEx);
-			die(500);
+			die();
 		elseif ($ret['code'] == 200) :
 			header_code(409);
 			poke_validation(T('DUPLICATION_ERROR'));
@@ -171,7 +171,7 @@ if ($longURL !== FALSE) :  // iether edit or create
 				'shorturl' => $shortURL,
 				));
 			include('includes/' . TEMPLATE . '.' . $phpEx);
-			die(409);
+			die();
 		endif;
 	endif;
 
@@ -187,7 +187,7 @@ if ($longURL !== FALSE) :  // iether edit or create
 				header_code(500);
 				poke_error(T('UNABLE_TO_GENERATE_SHORT'));
 				include('includes/' . TEMPLATE . '.' . $phpEx);
-				die(500);
+				die();
 			endif;
 		endif;
 
@@ -212,7 +212,7 @@ if ($longURL !== FALSE) :  // iether edit or create
 			), '<p>', '</p>');
 		$page['title'] = T('SHORT_CREATED');
 		include('includes/' . TEMPLATE . '.' . $phpEx);
-		die(201);
+		die();
 
 	else :
 		/* ------------------------- Edit post ------------------------- */
@@ -220,7 +220,7 @@ if ($longURL !== FALSE) :  // iether edit or create
 		if ($userlevel < USER_LEVEL_EL) :  // 2st level check - create rights
 			access_denied();
 			include('includes/' . TEMPLATE . '.' . $phpEx);
-			die(403);
+			die();
 		endif;
 
 		$userid2 = isset($_REQUEST['userid']) ? $_REQUEST['userid'] : FALSE;
@@ -286,7 +286,7 @@ if (!$permited) :
 	access_denied();
 	poke_validation(T('NOT_YOURS'));
 	include('includes/' . TEMPLATE . '.' . $phpEx);
-	die(403);
+	die();
 endif;
 
 /* ------------------------- Edit Form ------------------------- */

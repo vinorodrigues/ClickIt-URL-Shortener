@@ -29,8 +29,8 @@ $page['head_suffix'] = "\t<style>" .
 	" th { border-bottom: 1px dashed #CCC; }" .
 	" td.s { background: rgba(238, 238, 238, 0.2);  vertical-align:middle; " .
 		"border-top: 1px solid #DDD; border-bottom: 1px solid #DDD; } " .
-	" span.s { color: navy; font-weight: bold; }" .
-	" ul.s { font-size: 77%; color: #666; }" .
+	" span.sp { color: navy; font-weight: bold; }" .
+	" span.s, ul.s { font-size: 77%; color: #666; }" .
 	" ul.s a { color: #666; } " .
 	" small.l { color: maroon; font-size: 77%; font-style: italic; }" .
 	" span.h { display: block; margin: 1em auto; text-align: center; font-size: 77%; color: #AAA; }" .
@@ -56,7 +56,7 @@ ob_start();
 <td class="r">
 <p>c1k.it is an open source project - it's source is free (as in freedom) and free (as in no-cost). Its code is hosted on <a rel="source" href="http://c1k.it/code">GitHub</a>.</p>
 <p>It's licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.</p>
-<p class="indent">Basically, that means that you can use its source for your own work, including commercial uses.  But...</p>
+<p class="indent">Basically, that means that you can use its source for your own work, including commercial uses&sup1;.  But...</p>
 <ul>
 	<li class="indent">You must attribute (or openly mention) the original Author.</li>
 	<li class="indent">You must "share alike" – meaning you'll need to make the parts that you use or modify also freely available.</li>
@@ -73,6 +73,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 </p>
 -->
+
 <span class="h">-oOo-</span>
 <p>But writing ones code from scratch is ludicrous, so we’ve used some other work that needs attribution:</p>
 </td>
@@ -108,9 +109,10 @@ Copyright &copy; 2011, Yahoo! Inc.<br />
 <img alt="" src="images/apple-88x31.png" />
 </td>
 <td class="r s">
-<span class="s">Special thanks to:</span>
+<span class="sp">Special thanks to:</span>
 <ul>
-	<li class="indent">Silkscreen Font <i>by</i> <a href="http://kottke.org/plus/type/silkscreen/">Jason Kottke</a></li>
+	<li class="indent">PixelMix Font <i>by</i> <a href="http://www.AndrewTyler.net">Andrew Tyler</a> <small class="l">(CC-by-nc-nd-3.0)</small><br />
+		<span class="s">&sup1; = Commercial use is not granted for the PixelMix font.</span></li>
 	<li class="indent">Browser detection <i>by</i> <a href="http://chrisschuld.com/projects/browser-php-detecting-a-users-browser-from-php/">Chris Schuld</a> <small class="l">(GPL)</small></li>
 	<li class="indent">Icons <i>by</i> <a href="http://www.famfamfam.com/lab/icons/silk/">FAMFAMFAM</a> <small class="l">(CC-by-3.0)</small></li>
 	<li class="indent">Button images <i>by</i> <a href="http://somerandomdude.com/projects/iconic/">SomeRandomDude</a> <small class="l">(CC-by-sa-3.0)</small></li>

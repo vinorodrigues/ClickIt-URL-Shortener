@@ -37,4 +37,5 @@ else :
 	poke_warning('You where not logged in', TRUE);
 endif;
 
-die( redirect($page['base_path']) );
+redirect($page['base_path']);
+die();

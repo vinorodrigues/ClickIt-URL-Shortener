@@ -20,7 +20,7 @@ initialize_security();
 if ($userlevel < USER_LEVEL_DS) :
 	access_denied();
 	include('includes/' . TEMPLATE . '.' . $phpEx);
-	die(403);
+	die();
 endif;
 
 $urlid = isset($_REQUEST['id']) ? $_REQUEST['id'] : FALSE;
@@ -31,7 +31,7 @@ if (!$urlid) :
 	poke_validation(T('INAPPROPRIATE'));
 	$page['navigation'] = T('HOME', array('url' => $page['base_path']));
 	include('includes/' . TEMPLATE . '.' . $phpEx);
-	die(405);
+	die();
 endif;
 
 if (!$db) initialize_db(TRUE);
@@ -46,7 +46,7 @@ if (!$row) :
 	header_code(404);
 	poke_error(T('RECORD_NOT_FOUND', array('id' => $urlid)));
 	include('includes/' . TEMPLATE . '.' . $phpEx);
-	die(404);
+	die();
 endif;
 
 $permited = (($userlevel >= USER_LEVEL_AD) or ($userid == $row['userid']));
@@ -54,7 +54,7 @@ if (!$permited) :
 	access_denied();
 	poke_validation(P('NOT_YOURS'));
 	include('includes/' . TEMPLATE . '.' . $phpEx);
-	die(403);
+	die();
 endif;
 
 $title = (!$row['title'] ? $row['longurl'] : $row['title']);
@@ -87,6 +87,7 @@ switch ($delete_action) :
 		break;
 endswitch;
 
-die( redirect($http_referer) );
+redirect($http_referer);
+die();
 
 ?>

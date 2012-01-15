@@ -9,18 +9,37 @@
  *   clickit [dot] source [at] mail [dot] vinorodrigues [dot] com
  */
 
+function innerHTML($node) {
+	$doc = new DOMDocument();
+	foreach ($node->childNodes as $child)
+		$doc->appendChild($doc->importNode($child, true));
+	return $doc->saveHTML();
+} 
+
 require_once('includes/library.php');
 require_once('includes/lang.' . $phpEx);
 initialize_settings();
+$db = initialize_db(TRUE);
 initialize_lang();
 
-ob_start();
-?>
+if (file_exists($settings['file_terms'])) {
+	libxml_use_internal_errors(TRUE);
+	$doc = new DOMDocument();
+	$doc->loadHTMLFile($settings['file_terms']);
+	$node = $doc->getElementsByTagName('body')->item(0);  // extract the body
+	$title = $doc->getElementsByTagName('h1')->item(0);  // extract the title, should be the first <h1>
+	if ($title) {
+		$node->removeChild($title);
+		$page['title'] = $title->nodeValue;
+	} else {
+		$title = $doc->getElementsByTagName('title')->item(0);  // okay, then lets try <TITLE>
+		$page['title'] = $title ? $title->nodeValue : T('TERMS_OF_SERVICE');
+	}
 
-This site (and it's source code) is offered and distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+	ob_start();
+	echo innerHTML($node);
+	$page['content'] = ob_get_clean();
+	libxml_clear_errors(); libxml_use_internal_errors(FALSE);
+}
 
-<?php
-$page['content'] = ob_get_clean();
-$page['title'] = 'Terms Of Service';
 include('includes/' . TEMPLATE . '.' . $phpEx);

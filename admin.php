@@ -62,10 +62,10 @@ function load_db_based_settings($s2d, $userid = 0) {
 /* -------------------- Code begins here -------------------- */
 
 if ($userlevel < USER_LEVEL_AD) :
-	access_denied();
+	access_denied(401);  // Unauthorized
 	poke_info(T('NOT_ADMIN'));
 	include('includes/' . TEMPLATE . '.' . $phpEx);
-	die(401);
+	die();
 endif;
 
 // $settings_array
@@ -210,7 +210,8 @@ if (isset($_REQUEST['f']) && ($_REQUEST['f'] == 'post')) :
 	poke_info(T('CHANGES_MADE', array('cnt' => $run)), TRUE);
 	$url = $page['base_path'] . 'admin.' . $phpEx . '?userid=' . $w_userid;
 
-	die( redirect($url) );
+	redirect($url);
+	die();
 endif;
 
 /* ---------- Form code ---------- */
@@ -218,18 +219,23 @@ endif;
 require_once('includes/thelper.' . $phpEx);
 
 ob_start();
+?>
 
-print '<div class="panel">' .
-	get_admin_select_user(T('SHOW_SETTINGS_FOR'), $_SERVER['PHP_SELF'],
-		$w_userid, array(0 => '(' . T('ALL_USERS') . ')')) .
-	'</div><br />';
+<div class="panel">
+<button class="minibutton silver btn-back" onclick="window.location='admin.<?php print $phpEx; ?>'"><span class="icon"></span><?php P('BACK'); ?></button>
+&nbsp;
+<?php print get_admin_select_user(T('SHOW_SETTINGS_FOR'), $_SERVER['PHP_SELF'],
+	$w_userid, array(0 => '(' . T('ALL_USERS') . ')')); ?>
+</div><br />
+
+<?php
 
 global $run, $tab;
 $run = 0;
 $tab = 0;
 ?>
 
-<form action="admin.<?php print $phpEx; ?>" method="post" name="f">
+<form action="<?php print $_SERVER['SCRIPT_NAME'] ?>" method="post" name="f">
 <input type="hidden" name="f" value="post" />
 <input type="hidden" name="userid" value="<?php print $w_userid; ?>" />
 
@@ -358,5 +364,5 @@ $s1 = "function checkboxer(tocheck, todisable) {
 }";
 $page['scripts'] = loadscript($s1);
 
-$page['title'] = T('SITE_ADMIN');
+$page['title'] = T('SITE_ADMIN') . ' - ' . T('SITE_SETTINGS');
 include('includes/' . TEMPLATE . '.' . $phpEx);

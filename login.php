@@ -24,7 +24,8 @@ if (!isset($http_referer))
 if ($userid > 0) :
 
 	poke_info( T('ALREADY_SIGNED_IN', array('username' => $username)), TRUE);
-	die( redirect($http_referer) );
+	redirect($http_referer);
+	die();
 
 else :
 

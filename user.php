@@ -99,7 +99,7 @@ switch ($function) :
 					endswitch;
 					poke_validation(T('VALIDATION_ERROR'));
 					include('includes/' . TEMPLATE . '.' . $phpEx);
-					die($check);
+					die();
 				endif;
 				$data['username'] = $username;
 			endif;
@@ -116,7 +116,7 @@ switch ($function) :
 					endswitch;
 					poke_validation(T('VALIDATION_ERROR'));
 					include('includes/' . TEMPLATE . '.' . $phpEx);
-					die($check);
+					die();
 				endif;
 				$data['email'] = $email;
 			endif;
@@ -148,7 +148,8 @@ switch ($function) :
 			poke_warning(T('NO_CHANGES_FOUND'), TRUE);
 		endif;
 
-		die( redirect($http_referer) );
+		redirect($http_referer);
+		die();
 		break;
 
 
@@ -195,7 +196,7 @@ switch ($function) :
 			header_code(412);  // Not acceptable
 			poke_validation(T('EMAILS_DO_NOT_MATCH'));
 			include('includes/' . TEMPLATE . '.' . $phpEx);
-			die(412);
+			die();
 		endif;
 
 		$check = check_email($email);
@@ -208,7 +209,7 @@ switch ($function) :
 			endswitch;
 			poke_validation(T('VALIDATION_ERROR'));
 			include('includes/' . TEMPLATE . '.' . $phpEx);
-			die($check);
+			die();
 		endif;
 
 		$password = generate_password();
@@ -244,7 +245,8 @@ switch ($function) :
 		if (session_id()) session_destroy();
 		setcookie('token', '', 0);
 
-		die( redirect($url) );
+		redirect($url);
+		die();
 
 		break;
 
@@ -308,7 +310,7 @@ switch ($function) :
 			$page['content'] = T('PASSWORD_NOT_VALID');
 			poke_validation(T('VALIDATION_ERROR'));
 			include('includes/' . TEMPLATE . '.' . $phpEx);
-			die($check);
+			die();
 		endif;
 
 		$passwd = md5( $_REQUEST['passwd'] );
@@ -330,7 +332,8 @@ switch ($function) :
 
 		poke_success(T('EDITS_SAVED'), TRUE);
 
-		die( redirect($http_referer) );
+		redirect($http_referer);
+		die();
 		break;
 
 
@@ -381,7 +384,8 @@ switch ($function) :
 		$deleteword = $_REQUEST['delete'];
 		if (strcasecmp($deleteword, 'DELETE') !== 0) :
 			poke_warning(T('USER_NOT_DELETED'), TRUE);
-			die( redirect($http_referer) );
+			redirect($http_referer);
+			die();
 		else :
 			// wrap in transaction **********
 			// TODO : USER : Delete Rollback on error
@@ -414,7 +418,8 @@ switch ($function) :
 
 			poke_success(T('USER_DELETED'), TRUE);
 			$url = ($userid == $w_userid) ? ($page['base_path'] . 'user.' . $phpEx) : $page['base_path'];
-			die( redirect($url) );
+			redirect($url);
+			die();
 		endif;
 		break;
 

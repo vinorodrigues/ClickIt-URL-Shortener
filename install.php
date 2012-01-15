@@ -16,7 +16,7 @@ if (file_exists('config.' . $phpEx)) :
 	$e = 403;
 	poke_error('File <code>config.' . $phpEx . '</code> already exists');
 	include('error.' . $phpEx);
-	die(403);
+	die();
 endif;
 
 $method = 'post';  // set to post forms
@@ -261,7 +261,7 @@ if (($nextstep > 1) && ($nextstep < 6)) :  // = 2
 
 	restore_exception_handler();
 	restore_error_handler();
-	if (!empty($messages)) : $e = 500; include('error.' . $phpEx); die(500); endif;
+	if (!empty($messages)) : $e = 500; include('error.' . $phpEx); die(); endif;
 
 	if ($nextstep == 5) :  // = 5
 		// Finally - we write the config.php file
@@ -312,7 +312,7 @@ endif;
 switch($nextstep) :
 	/* ----- 0 ------------------------------------------------------------- */
 	case 0 :
-		if (!defined('IN_CLICKIT')) : $e = 403; include('error.' . $phpEx); die(403); endif;
+		if (!defined('IN_CLICKIT')) : $e = 403; include('error.' . $phpEx); die(); endif;
 
 	case 1 :
 		ob_start();
@@ -492,7 +492,7 @@ You will now be directed to the home page.
 
 	/* ----- default ------------------------------------------------------- */
 	default:
-		$e = 405; include('error.' . $phpEx); die(405);
+		$e = 405; include('error.' . $phpEx); die();
 		break;
 endswitch;
 

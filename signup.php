@@ -22,7 +22,7 @@ if (!isset($settings['allow_signup']) || !$settings['allow_signup']) :
 	access_denied();
 	$page['content'] = T('SIGNUPS_DISABLED');
 	include('includes/' . TEMPLATE . '.' . $phpEx);
-	die(403);
+	die();
 endif;
 
 $username = isset($_REQUEST['username']) ? strtolower($_REQUEST['username']) : FALSE;
@@ -33,7 +33,7 @@ if ($username !== FALSE) :
 		$page['content'] = T('CAPTCHA_FAILED');
 		poke_validation(T('VALIDATION_ERROR'));
 		include('includes/' . TEMPLATE . '.' . $phpEx);
-		die($check);
+		die();
 	endif;
 
 	if (!$db) $db = initialize_db(TRUE);
@@ -48,7 +48,7 @@ if ($username !== FALSE) :
 		endswitch;
 		poke_validation(T('VALIDATION_ERROR'));
 		include('includes/' . TEMPLATE . '.' . $phpEx);
-		die($check);
+		die();
 	endif;
 
 	$realname = isset($_REQUEST['realname']) ? $_REQUEST['realname'] : '';
@@ -59,7 +59,7 @@ if ($username !== FALSE) :
 		header_code(412);  // Not acceptable
 		poke_validation(T('EMAILS_DO_NOT_MATCH'));
 		include('includes/' . TEMPLATE . '.' . $phpEx);
-		die(412);
+		die();
 	endif;
 
 	$check = check_email($email);
@@ -72,7 +72,7 @@ if ($username !== FALSE) :
 		endswitch;
 		poke_validation(T('VALIDATION_ERROR'));
 		include('includes/' . TEMPLATE . '.' . $phpEx);
-		die($check);
+		die();
 	endif;
 
 	$password = generate_password();
@@ -134,7 +134,7 @@ if ($username !== FALSE) :
 	$page['content'] = '<p>' . T('RETURN_TO_HOMEPAGE', array('url' => $page['base_path'])) . '</p>';
 	$page['title'] = T('USER_CREATED');
 	include('includes/' . TEMPLATE . '.' . $phpEx);
-	die(201);
+	die();
 
 else :
 

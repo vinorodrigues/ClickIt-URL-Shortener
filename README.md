@@ -51,7 +51,9 @@ We hope you enjoy learning, or even using, this source.
 
 ## Upcomming milestones
 
-* 0.6 Beta - Basic Reporting
+* 0.6 Beta - Plugin framework
+
+* 0.7 Beta - Basic Reporting
 
 * 0.9 RC1 - Basic cleanups for release candidate
 
@@ -59,13 +61,14 @@ We hope you enjoy learning, or even using, this source.
 
 * 1.1 - Jason and XML API's
 
-* (1.2) - Drupal plugin
+* (D7) - Drupal plugin
 
-* (1.3) - Wordpress plugin
+* (WP) - Wordpress plugin
 
 
 # Get Involved
 
-Co-maintainers are most welcome (actually needed), please email author via GitHub.
+Co-maintainers are most welcome (actually needed), please email author.
 
 - [Vino Rodrigues](http://www.tecsmith.com.au) ;)
+clickit [dot] source [at] mail [dot] vinorodrigues [dot] com

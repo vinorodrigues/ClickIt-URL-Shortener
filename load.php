@@ -17,9 +17,10 @@ initialize_settings();
 /* ----- Offline ----- */
 
 if ($settings['offline']) :
-	header('HTTP/1.1 503 Service Unavailable');
+	// header('HTTP/1.1 503 Service Unavailable');
+	header_code(503);
 	include('offline.' . $phpEx);
-	die(503);
+	die();
 endif;
 
 /* ----- Get URL ----- */
@@ -31,7 +32,7 @@ elseif (isset($_REQUEST['q'])) :
 else :
 	$e = 404;
 	include('error.' . $phpEx);
-	die(404);
+	die();
 endif;
 
 $action = preg_replace("/[a-z0-9_]+/i", "", $expectedURL, 1);
@@ -41,7 +42,8 @@ if (file_exists($shortURL . '.' . $phpEx)) :
 	// make sure it's not this file or else we'll go into a infinite loop
 	if ( strcasecmp($shortURL, pathinfo(__FILE__, PATHINFO_FILENAME)) != 0 ) :
 		// include($shortURL . '.' . $phpEx);
-		die( redirect($shortURL . '.' . $phpEx) );
+		redirect($shortURL . '.' . $phpEx);
+		die();
 	endif;
 endif;
 $actionBit = substr($action, 0, 1);
@@ -61,9 +63,10 @@ $db = initialize_db();
 if ($settings['offline']) :
 	restore_exception_handler();
 	restore_error_handler();
-	header('HTTP/1.1 503 Service Unavailable');
+	// header('HTTP/1.1 503 Service Unavailable');
+	header_code(503);
 	include('offline.' . $phpEx);
-	die(503);
+	die();
 endif;
 
 /* ----- Find Short Bit ----- */
@@ -226,7 +229,8 @@ function countdown() {
 		break; */
 
 	default : // 'redir'
-		die( redirect($p_url, TRUE) );
+		redirect($p_url, TRUE);
+		die();
 		break;
 
 endswitch;

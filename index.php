@@ -26,7 +26,7 @@ if ((!file_exists('config.' . $phpEx)) && (!file_exists('~config.' . $phpEx))) :
 		$e = 501;  // Not implemented
 		$m = 'Neither configuration nor installation files exist';
 		include('error.' . $phpEx);
-		die(501);
+		die();
 	endif;
 endif;
 
