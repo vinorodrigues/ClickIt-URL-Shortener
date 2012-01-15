@@ -80,13 +80,15 @@ $lang['LOGON'] = '<a href="*|url|*" class="loginout">Login</a>';
 $lang['LOGOFF'] = '<a href="*|url|*" class="loginout">Logout</a>';
 $lang['LIST_PAGE'] = '<a href="*|url|*" class="list">Your URLs</a>';
 $lang['ARCH_PAGE'] = '<a href="*|url|*" class="arch">Your Archives</a>';
-$lang['ADMIN_PAGE'] = '<a href="*|url|*" class="admin">Settings</a>';
+$lang['ADMIN_PAGE'] = '<a href="*|url|*" class="admin">Options</a>';
 
-$lang['COPYRIGHT'] = 'Copyleft <small>(CC)</small> 2011 <a href="*|url|*">Tecsmith</a>';
-$lang['LICENSE'] = '<a rel="license" href="*|url|*">Some rights reserved</a>';
+$lang['COPYRIGHT'] = '<a rel="license" href="*|lic|*">Copyright &copy; *|year|*</a> <a href="*|url|*" title="Tecsmith"><img src="images/tecsmith-45x8.png" alt="Tecsmith" /></a>';
 $lang['TERMSOS'] = '<a rel="toc" href="*|url|*">Terms of Service</a>';
 $lang['PRIVACY'] = '<a rel="privacy" href="*|url|*">Privacy Policy</a>';
 $lang['SUPPORT'] = '<a rel="support" href="*|url|*">Help!</a>';
+
+$lang['PRIVACY_POLICY'] = 'Privacy Policy';
+$lang['TERMS_OF_SERVICE'] = 'Terms of Service';
 
 $lang['YOU_MUST_LOGIN'] = 'You need to login to access this resource.';
 
@@ -167,16 +169,6 @@ $lang['RETURN_TO_HOMEPAGE'] = 'Return to the <a href="*|url|*">home page</a>.';
 $lang['USER_NAME_OR_EMAIL_NOT_FOUND'] = 'User Name or Email not found or account disabled';
 $lang['TRY_AGAIN'] = '<a href="*|url|*">Try again</a>?';
 $lang['TOKEN_NOT_FOUND'] = 'Token not found or check mismatch';
-
-// admin page
-
-$lang['NOT_ADMIN'] = 'You do not have administartor privlages';
-
-$lang['SAVED_IN_NO_ENTRY'] = 'Not found';
-$lang['SAVED_IN_PHP'] = 'Set in the configuration file';
-$lang['SAVED_IN_DATABASE'] = 'Set as global to all users';
-$lang['SAVED_IN_USER'] = 'Set as specific to this user';
-
 
 // index page
 
@@ -355,7 +347,7 @@ $lang['VIEW_ARCHIVES'] = 'View Archives';
 $lang['PASSWORD_WARNING'] = array(
 	'Remember that if this site is not transmitted in SSL (you\'ll see a <code>https://</code> in the URL, and a verified lock will appear on your browser), that your password will be sent to this server in clear text and can be snooped on at transmission.',
 	'<b class="red">It is recommended that you use a different password for every site you access, including this one.</b>',
-	'We will not store your password as clear text – rather the password in encrypted with a unidirectional MD5 algorithm – i.e. it cannot be decrypted.',
+	'We will not store your password as clear text ï¿½ rather the password in encrypted with a unidirectional MD5 algorithm ï¿½ i.e. it cannot be decrypted.',
 	);
 $lang['PASSWORD_CONDITIONS'] =
 	'Passwords must: <ul>' .
@@ -424,7 +416,18 @@ $lang['GET_HELP'] = '<img src="images/ico_help.png" alt="Help" />';
 
 // admin page
 
-$lang['SITE_ADMIN'] = 'Settings';
+$lang['NOT_ADMIN'] = 'You do not have administartor privlages';
+
+$lang['SAVED_IN_NO_ENTRY'] = 'Not found';
+$lang['SAVED_IN_PHP'] = 'Set in the configuration file';
+$lang['SAVED_IN_DATABASE'] = 'Set as global to all users';
+$lang['SAVED_IN_USER'] = 'Set as specific to this user';
+
+$lang['SITE_ADMIN'] = 'Options';
+$lang['SITE_SETTINGS'] = 'Settings';
+$lang['SITE_SETTINGS_HELP'] = 'Sitewide and user specific settings';
+$lang['SITE_PLUGINS'] = 'Plugins';
+$lang['SITE_PLUGINS_HELP'] = 'Sitewide plugins';
 
 $lang['OTHER_SETTINGS'] = 'Other Settings';
 $lang['SHOW_SETTINGS_FOR'] = 'Show settings for';
