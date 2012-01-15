@@ -20,6 +20,8 @@ if (!defined('IN_CLICKIT')) die('Restricted');
 $settings['offline'] = FALSE;
 $settings['webmaster_email'] = 'webmaster@c1k.it';
 $settings['webmaster_name'] = 'c1k.it';
+$settings['file_terms'] = 'tos.html';
+$settings['file_privacy'] = 'privacy.html';
 $settings['func_getbrowser'] = 'browser/chrisschuld.' . $phpEx;
 $settings['func_lang'] = 'en.' . $phpEx;
 $settings['cdn'] = 'local';

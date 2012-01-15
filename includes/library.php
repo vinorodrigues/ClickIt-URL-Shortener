@@ -13,8 +13,7 @@
 /* ----- Application related ----- */
 
 define('IN_CLICKIT', TRUE);
-define('CLICKIT_VER', '0.5&beta;');
-define('CLICKIT_BUILD', '$Id$');
+define('CLICKIT_VER', '0.5.2&beta;');
 define('TEMPLATE', 'template');
 
 define('CHART_API_SERVER', 'http://chart.apis.google.com/chart');
@@ -64,9 +63,9 @@ function header_code($code) {
 	$page['title'] = T('STATUS_' . $code);
 }
 
-function access_denied() {
+function access_denied($code = 403) {
 	global $page;
-	header_code(403);
+	header_code($code);
 	poke_error(T('ACCESS_DENIED'));
 	$page['content'] = T('NO_ACCESS');
 
@@ -122,9 +121,10 @@ function initialize_settings($is_install = FALSE) {
 	/* -- */
 	if ((!$is_install) && isset($settings['offline']) && $settings['offline']) :
 		global $page;
-		header('HTTP/1.1 503 Service Unavailable');
+		// header('HTTP/1.1 503 Service Unavailable');
+		header_code(503);
 		include('offline.' . $phpEx);
-		die(503);
+		die();
 	endif;
 
 	return $settings;
@@ -179,9 +179,10 @@ function initialize_db($load_settings = TRUE) {
 			// lockout if off line
 			if (isset($settings['offline']) && $settings['offline']) :
 				global $page;
-				header('HTTP/1.1 503 Service Unavailable');
+				// header('HTTP/1.1 503 Service Unavailable');
+				header_code(503);
 				include('offline.' . $phpEx);
-				die(503);
+				die();
 			endif;
 		endif;
 	endif;
@@ -597,7 +598,8 @@ function initialize_security($must_login = FALSE) {
 								poke_info(T('MUST_CHANGE_PASSWORD'), TRUE);
 							endif;
 
-							die( redirect($nextpage) );
+							redirect($nextpage);
+							die();
 						else :
 							$blc++;
 							$max = isset($settings['badlogonmax']) ? intval($settings['badlogonmax']) : 3;
@@ -638,8 +640,10 @@ function initialize_security($must_login = FALSE) {
 		global $page, $messages, $phpEx;
 		$page['content'] .= T('YOU_MUST_LOGIN', NULL, '<p class="loginrequired">', '</p>' . PHP_EOL);
 		$http_referer = $_SERVER['REQUEST_URI'];
+		// header('HTTP/1.1 206 Partial Content');
+		header_code(206);
 		include('login.' . $phpEx);
-		die(206);  // Partial Content
+		die();
 	endif;
 
 	return FALSE;
@@ -648,7 +652,7 @@ function initialize_security($must_login = FALSE) {
 function get_admin_select_user($prompt, $form_action, $selectedid, $extra_options = NULL) {
 	global $USERS_TABLE, $sql, $userid, $userlevel, $db;
 
-	$R = "<form action=\"$form_action\" name=\"u\" method=\"get\">";
+	$R = "<form action=\"$form_action\" name=\"u\" method=\"get\" style=\"display:inline;margin:auto;\">";
 	$R .= "<label for=\"userid\">$prompt</label>";
 	$R .= ": <select name=\"userid\" id=\"userid\" onchange=\"document.forms['u'].submit()\">";
 	if ($extra_options)
@@ -777,7 +781,8 @@ function redirect($url, $external = FALSE) {
 		header("Referer: $ref_path");  // be nice and tell the other server where you came from
 	endif;
 	header('Location: ' . $url, TRUE, $code);
-	return $code;  // use this to die()
+	echo "Redirecting to <a href=\"" . $url . "\">" . $url . "</a>.";  /// just in case all goes wrong on the browser
+	return $code;
 }
 
 function get_referer($set_to_self = TRUE) {

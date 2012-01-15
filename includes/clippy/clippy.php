@@ -1,10 +1,10 @@
 <?php
 
 function clippy_get_html($text, $bgcolor = '#FFFFFF') {
-	$c_path = 'includes/clippy/clippy.swf';
+	$c_path = 'includes/clippy/';
 
-	$html = '<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"
-	width="110" height="14" id="clippy" >
+	$html = '<span class="clippy"><object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"
+	width="110" height="14" id="clippy">
 	<param name="movie" value="clippy.swf" />
 	<param name="allowScriptAccess" value="always" />
 	<param name="quality" value="high" />
@@ -16,11 +16,11 @@ function clippy_get_html($text, $bgcolor = '#FFFFFF') {
 		pluginspage="http://www.macromedia.com/go/getflashplayer"
 		FlashVars="text=#{text}"
 		bgcolor="#{bgcolor}" />
-</object>';
+</object></span>';
 
 	return str_replace(
 		array('#{text}', '#{bgcolor}', 'clippy.swf'),
-		array(urlencode($text), $bgcolor, $c_path),
+		array(urlencode($text), $bgcolor, $c_path . 'clippy.swf'),
 		$html);
 }
 

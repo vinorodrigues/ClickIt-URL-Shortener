@@ -113,8 +113,9 @@ if ($use_fb) :
 		' layout="standard"' .
 		' show-faces="true"' .
 		' width="320"' .  // size of iPhone
-		' action="recommend"' .
+		' action="like"' .
 		' colorscheme="light"' .
+		' send="true"' .
 		// ' font="arial"' .
 		'></fb:like>';
 	$page['footer'] .= '</div>' . PHP_EOL . PHP_EOL;

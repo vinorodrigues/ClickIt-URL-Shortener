@@ -90,8 +90,8 @@ endif;
 <?php print $page['content']; ?>
 </div></div>
 <div id="footer"><?php
-	print T('COPYRIGHT', array('url' => 'http://tecsmith.com.au' )) . T('-') . T('[') .
-		T('LICENSE', array('url' => $page['base_path'] . 'license.' . $phpEx )) . T('|') .
+	print T('COPYRIGHT', array('url' => 'http://tecsmith.com.au', 'lic' => $page['base_path'] . 'license.' . $phpEx, 'year' => date('Y'))) . 
+		T('-') . T('[') .
 		T('TERMSOS', array('url' => $page['base_path'] . 'tos.' . $phpEx )) . T('|') .
 		T('PRIVACY', array('url' => $page['base_path'] . 'privacy.' . $phpEx ));
 	if (($userid > 0) && isset($settings['support_url']) && (!empty($settings['support_url'])))

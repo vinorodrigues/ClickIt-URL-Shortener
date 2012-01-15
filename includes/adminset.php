@@ -19,6 +19,7 @@ define('AS_T_BOOL', 'checkbox');
 define('AS_T_EMAIL', 'email');
 define('AS_T_URL', 'url');
 define('AS_T_TEXT', 'text');
+define('AS_T_FILE', 'text');  // TODO : Create browse for file
 define('AS_T_SELECT', 'select');
 define('AS_T_RADIO', 'radio');
 define('AS_T_NUM', 'number');
@@ -54,16 +55,26 @@ $settings_array = array(
 		AS_HINT => 'Send email from this name.',
 		AS_NOT_FOR_USER => TRUE,
 		),
-	'Plugins' => array(
+	'Dependencies' => array(
 		AS_TYPE => AS_T_SUBSECTION,
 		),
+	'file_terms' => array(
+		AS_TYPE => AS_T_FILE,
+		AS_HINT => 'HTML file that contains the site Terms Of Service.',
+		AS_NOT_FOR_USER => TRUE,
+		),
+	'file_privacy' => array(
+		AS_TYPE => AS_T_FILE,
+		AS_HINT => 'HTML file that contains the site Privacy Policy.',
+		AS_NOT_FOR_USER => TRUE,
+		),
 	'func_getbrowser' => array(
-		AS_TYPE => AS_T_TEXT,
+		AS_TYPE => AS_T_FILE,
 		AS_HINT => 'PHP file that contains <code>function _get_browser()</code>.',
 		AS_NOT_FOR_USER => TRUE,
 		),
 	'func_lang' => array(
-		AS_TYPE => AS_T_TEXT,
+		AS_TYPE => AS_T_FILE,
 		AS_HINT => 'PHP file that contains the default <code>$lang</code> array.',
 		AS_NOT_FOR_USER => TRUE,
 		),

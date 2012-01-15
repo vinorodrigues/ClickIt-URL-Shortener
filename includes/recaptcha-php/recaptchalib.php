@@ -63,17 +63,18 @@ if (!isset($GLOBALS['curl_config'])) $GLOBALS['curl_config'] = array();
  * @return string - encoded request
  */
 function _recaptcha_qsencode($data) {
-	// PHP 5+
-	if (version_compare(PHP_VERSION, '5.0.0', '>=') )
+	if ( version_compare(PHP_VERSION, '5.0.0', '>=') ) :
+		// PHP 5+
 		return http_build_query($data);
-
-	// PHP 4
-	$req = "";
-	foreach ( $data as $key => $value )
-		$req .= $key . '=' . urlencode( stripslashes($value) ) . '&';
-	// Cut the last '&'
-	$req = substr($req, 0, strlen($req)-1);
-	return $req;
+	else :
+		// PHP 4
+		$req = "";
+		foreach ( $data as $key => $value )
+			$req .= $key . '=' . urlencode( stripslashes($value) ) . '&';
+		// Cut the last '&'
+		$req = substr($req, 0, strlen($req)-1);
+		return $req;
+	endif;
 }
 
 /**
