@@ -200,7 +200,7 @@ function _piwik_http_post_curl($piwik_host, $site_id, $data) {
 	curl_close($ch);
 
 	if ( $response === false ) {
-		trigger_error('Error connecting to ' . $host . '.', E_USER_ERROR);
+		trigger_error('Error connecting to ' . $piwik_host . '.', E_USER_ERROR);
 		return false;
 	}
 

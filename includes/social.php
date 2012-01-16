@@ -65,6 +65,32 @@ _gaq.push(['_trackPageview']);
 	$page['scripts'] .= loadscript($s);
 endif;
 
+// -------------------- Twitter integration --------------------
+
+if ($use_tw) :
+	$page['scripts'] .= "\t<script src=\"http://platform.twitter.com/anywhere.js" .
+		"?id=" . $settings['twitter_key'] . "&v=1\" type=\"text/javascript\"></script>" . PHP_EOL;
+
+	if (!isset($settings['twitter_follow_list'])) $settings['twitter_follow_list'] = '';
+	$follows = explode(',', $settings['twitter_follow_list']);
+
+	$s = "twttr.anywhere(function(twitter) {";
+	$i = 0;
+	foreach ($follows as $name) :
+		$i++;
+		$s .= "\ttwitter('#follow-twitter-$i').followButton('$name');";
+	endforeach;
+	$s .= "});";
+	$page['scripts'] .= loadscript($s);
+
+	if (!isset($page['footer'])) $page['footer'] = '';
+	$page['footer'] .= PHP_EOL . '<div class="twitter clearfix">';
+	for ($i = 1; $i <= count($follows); $i++) :
+		$page['footer'] .= "<div id=\"follow-twitter-$i\"></div>";
+	endfor;
+	$page['footer'] .= '</div>' . PHP_EOL . PHP_EOL;
+endif;
+
 // -------------------- Facebook integration --------------------
 
 if ($use_fb) :
@@ -124,30 +150,6 @@ if ($use_fb) :
 	$page['head_suffix'] = "\t<meta property=\"fb:app_id\" content=\"" . $settings['facebook_id'] . "\" />\n";
 endif;
 
-// -------------------- Twitter integration --------------------
-
-if ($use_tw) :
-	$page['scripts'] .= "\t<script src=\"http://platform.twitter.com/anywhere.js" .
-		"?id=" . $settings['twitter_key'] . "&v=1\" type=\"text/javascript\"></script>" . PHP_EOL;
-
-	if (!isset($settings['twitter_follow_list'])) $settings['twitter_follow_list'] = '';
-	$follows = explode(',', $settings['twitter_follow_list']);
-
-	$s = "twttr.anywhere(function(twitter) {";
-	$i = 0;
-	foreach ($follows as $name) :
-		$i++;
-		$s .= "\ttwitter('#follow-twitter-$i').followButton('$name');";
-	endforeach;
-	$s .= "});";
-	$page['scripts'] .= loadscript($s);
-
-	if (!isset($page['footer'])) $page['footer'] = '';
-	$page['footer'] .= PHP_EOL . '<div class="twitter clearfix">';
-	for ($i = 1; $i <= count($follows); $i++) :
-		$page['footer'] .= "<div id=\"follow-twitter-$i\"></div>";
-	endfor;
-	$page['footer'] .= '</div>' . PHP_EOL . PHP_EOL;
-endif;
+// -------------------- (end) --------------------
 
 ?>
