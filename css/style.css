@@ -417,8 +417,6 @@ fieldset.install {
 	background: url('../includes/clippy/clippy.png') top left no-repeat;
 }
 
-
-
 /* See http://positioniseverything.net/easyclearing.html for a description of this code. */
 .clearfix:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
 .clearfix { display: inline-table; }
@@ -427,3 +425,8 @@ fieldset.install {
 *+html .clearfix { height: 1%; }
 .clearfix { display: block; }
 /* End hide from IE-mac */
+
+/* Github Fork me */
+@media (max-width: 1024px) {
+	.forkme { display: none !important; }
+}

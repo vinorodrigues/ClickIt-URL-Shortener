@@ -148,10 +148,11 @@ if ($use_fb) :
 endif;
 
 // -------------------- Fork Me on GitHub --------------------
+// see: https://github.com/blog/273-github-ribbons
 
 if (isset($settings['github_fork_me']) && $settings['github_fork_me']) :
 	if (!isset($page['footer'])) $page['footer'] = '';
-	$page['footer'] .= '<a href="http://c1k.it/code"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>';
+	$page['footer'] .= '<a href="http://c1k.it/code" class="forkme"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png" alt="Fork me on GitHub" class="forkme"></a>';
 endif;
 
 // -------------------- (end) --------------------
