@@ -70,6 +70,4 @@ We hope you enjoy learning, or even using, this source.
 
 Co-maintainers are most welcome (actually needed), please email author.
 
-- [Vino Rodrigues](http://www.tecsmith.com.au) ;)
-
-clickit [dot] source [at] mail [dot] vinorodrigues [dot] com
+- [Vino Rodrigues](http://vinorodrigues.com) ;)

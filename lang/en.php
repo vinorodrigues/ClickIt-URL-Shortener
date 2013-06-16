@@ -82,7 +82,7 @@ $lang['LIST_PAGE'] = '<a href="*|url|*" class="list">Your URLs</a>';
 $lang['ARCH_PAGE'] = '<a href="*|url|*" class="arch">Your Archives</a>';
 $lang['ADMIN_PAGE'] = '<a href="*|url|*" class="admin">Options</a>';
 
-$lang['COPYRIGHT'] = '<a rel="license" href="*|lic|*">Copyright &copy; *|year|*</a> <a href="*|url|*" title="Tecsmith"><img src="images/tecsmith-45x8.png" alt="Tecsmith" /></a>';
+$lang['COPYRIGHT'] = '<a rel="license" href="*|lic|*">Copyright &copy; 2011-*|year|*</a> <a href="*|url|*" title="Tecsmith"><img src="images/tecsmith-45x8.png" alt="Tecsmith" /></a>';
 $lang['TERMSOS'] = '<a rel="toc" href="*|url|*">Terms of Service</a>';
 $lang['PRIVACY'] = '<a rel="privacy" href="*|url|*">Privacy Policy</a>';
 $lang['SUPPORT'] = '<a rel="support" href="*|url|*">Help!</a>';

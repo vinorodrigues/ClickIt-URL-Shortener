@@ -12,10 +12,11 @@
 if (!defined('IN_CLICKIT')) die('Restricted');
 
 $use_fb = isset($settings['facebook_id']) && (!empty($settings['facebook_id']));
-$use_pk = isset($settings['piwik_site']) && (!empty($settings['piwik_site'])) &&
-	isset($settings['piwik_id']) && (!empty($settings['piwik_id']));
+$use_pk = (isset($settings['piwik_site']) && (!empty($settings['piwik_site']))) &&
+		(isset($settings['piwik_id']) && (!empty($settings['piwik_id'])));
 $use_ga = isset($settings['ga_profile']) && (!empty($settings['ga_profile']));
-$use_tw = isset($settings['twitter_key']) && (!empty($settings['twitter_key']));
+$use_tw = (isset($settings['twitter_share']) && (!empty($settings['twitter_share']))) ||
+		(isset($settings['twitter_follow_list']) && (!empty($settings['twitter_follow_list'])));
 if ((!isset($page['scripts'])) && ($use_fb || $use_tw || $use_pk || $use_ga))
 	$page['scripts'] = '';
 
@@ -68,26 +69,22 @@ endif;
 // -------------------- Twitter integration --------------------
 
 if ($use_tw) :
-	$page['scripts'] .= "\t<script src=\"http://platform.twitter.com/anywhere.js" .
-		"?id=" . $settings['twitter_key'] . "&v=1\" type=\"text/javascript\"></script>" . PHP_EOL;
-
-	if (!isset($settings['twitter_follow_list'])) $settings['twitter_follow_list'] = '';
-	$follows = explode(',', $settings['twitter_follow_list']);
-
-	$s = "twttr.anywhere(function(twitter) {";
-	$i = 0;
-	foreach ($follows as $name) :
-		$i++;
-		$s .= "\ttwitter('#follow-twitter-$i').followButton('$name');";
-	endforeach;
-	$s .= "});";
-	$page['scripts'] .= loadscript($s);
-
 	if (!isset($page['footer'])) $page['footer'] = '';
 	$page['footer'] .= PHP_EOL . '<div class="twitter clearfix">';
-	for ($i = 1; $i <= count($follows); $i++) :
-		$page['footer'] .= "<div id=\"follow-twitter-$i\"></div>";
-	endfor;
+	
+	if (isset($settings['twitter_share']) && (!empty($settings['twitter_share']))) {
+		$page['footer'] .= '<a href="https://twitter.com/share" class="twitter-share-button" data-dnt="true">Tweet</a>';
+	}
+	
+	if (isset($settings['twitter_follow_list']) && (!empty($settings['twitter_follow_list']))) {
+		$follows = explode(',', $settings['twitter_follow_list']);
+		foreach ($follows as $name) :
+			$page['footer'] .= '<a href="https://twitter.com/' . $name . '" class="twitter-follow-button" data-show-count="false" data-dnt="true">Follow @' . $name . '</a>';
+		endforeach;
+	}
+
+	$page['scripts'] .= "\t<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>" . PHP_EOL;
+	
 	$page['footer'] .= '</div>' . PHP_EOL . PHP_EOL;
 endif;
 
@@ -148,6 +145,13 @@ if ($use_fb) :
 
 	// See: http://www.facebook.com/insights/
 	$page['head_suffix'] = "\t<meta property=\"fb:app_id\" content=\"" . $settings['facebook_id'] . "\" />\n";
+endif;
+
+// -------------------- Fork Me on GitHub --------------------
+
+if (isset($settings['github_fork_me']) && $settings['github_fork_me']) :
+	if (!isset($page['footer'])) $page['footer'] = '';
+	$page['footer'] .= '<a href="http://c1k.it/code"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>';
 endif;
 
 // -------------------- (end) --------------------

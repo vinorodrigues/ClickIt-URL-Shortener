@@ -167,15 +167,20 @@ $settings_array = array(
 		AS_TYPE => AS_T_SUBSECTION,
 		AS_NOT_FOR_USER => TRUE,
 		),
+	'github_fork_me' => array(
+		AS_TYPE => AS_T_BOOL,
+		AS_HINT => 'Provide a link to the project page on GitHub',
+		AS_NOT_FOR_USER => TRUE,
+		),
 	'facebook_id' => array(
 		AS_TYPE => AS_T_TEXT,
 		AS_HINT => 'Facebook Application ID, see <a href="http://www.facebook.com/developers/apps.php">http://www.facebook.com/developers/apps.php</a>',
 		AS_NOT_FOR_USER => TRUE,
 		),
 	#'facebook_key',  // UNUSED
-	'twitter_key' => array(
-		AS_TYPE => AS_T_TEXT,
-		AS_HINT => 'Twitter @Anywhere API Key, see <a href="https://dev.twitter.com/apps">https://dev.twitter.com/apps</a>',
+	'twitter_share' => array(
+		AS_TYPE => AS_T_BOOL,
+		AS_HINT => 'Provide a Twitter share button',
 		AS_NOT_FOR_USER => TRUE,
 		),
 	'twitter_follow_list' => array(
