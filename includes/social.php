@@ -73,13 +73,13 @@ if ($use_tw) :
 	$page['footer'] .= PHP_EOL . '<div class="twitter clearfix">';
 	
 	if (isset($settings['twitter_share']) && (!empty($settings['twitter_share']))) {
-		$page['footer'] .= '<a href="https://twitter.com/share" class="twitter-share-button" data-dnt="true">Tweet</a>';
+		$page['footer'] .= '<a href="https://twitter.com/share" class="twitter-share-button" data-dnt="true">Tweet</a> ';
 	}
 	
 	if (isset($settings['twitter_follow_list']) && (!empty($settings['twitter_follow_list']))) {
 		$follows = explode(',', $settings['twitter_follow_list']);
 		foreach ($follows as $name) :
-			$page['footer'] .= '<a href="https://twitter.com/' . $name . '" class="twitter-follow-button" data-show-count="false" data-dnt="true">Follow @' . $name . '</a>';
+			$page['footer'] .= '<a href="https://twitter.com/' . $name . '" class="twitter-follow-button" data-show-count="false" data-dnt="true">Follow @' . $name . '</a> ';
 		endforeach;
 	}
 
