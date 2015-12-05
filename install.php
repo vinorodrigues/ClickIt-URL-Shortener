@@ -325,7 +325,7 @@ switch($nextstep) :
 
 <p>What type of database system will you be connecting to?
 <select name="dbms">
-<?php $x = array('mysql', 'mysqli');
+<?php $x = array('mysqli');
 	foreach ($x as $s) :
 		print "  <option value=\"$s\"";
 		if (strcasecmp($settings['dbms'], $s) == 0) print "selected=\"selected\"";

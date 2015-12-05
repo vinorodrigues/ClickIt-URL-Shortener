@@ -26,11 +26,13 @@ include_once('lang.' . $phpEx);
 
 /* ----- Helper function ----- */
 
+if (!function_exists('boolval')) :
 function boolval($var) {
 	if (empty($var)) return FALSE;
 	if (is_bool($var)) return $var;
 	return intval($var) > 0;
 }
+endif;
 
 function is_odd($val) {
 	return ($val & 1);
