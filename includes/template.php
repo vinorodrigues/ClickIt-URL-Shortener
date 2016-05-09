@@ -25,7 +25,7 @@ if ($bf && file_exists($bf)) :
 	include_once($bf);
 	$brwsr = _get_browser($_SERVER['HTTP_USER_AGENT']);
 	if ($brwsr && preg_match('/^(iPhone|iPad|iPod)/i', $brwsr['browser']) > 0) :
-		$page['head'] .= "\t<link rel=\"apple-touch-icon\" href=\"touchicon.png\" />\n";
+		$page['head'] .= "\t<link rel=\"apple-touch-icon\" href=\"apple-touch-touchicon.png\" />\n";
 		$page['head'] .= "\t<meta name=\"viewport\" content=\"width=device-width, user-scalable=no; initial-scale=1.0; maximum-scale=1.0;\" />\n";
 		if (!isset($page['head_suffix'])) $page['head_suffix'] = '';
 		$page['head_suffix'] .= "\t<link rel=\"stylesheet\" href=\"" . $page['base_path'] . "css/apple.css\" type=\"text/css\" />\n";
@@ -90,7 +90,7 @@ endif;
 <?php print $page['content']; ?>
 </div></div>
 <div id="footer"><?php
-	print T('COPYRIGHT', array('url' => 'http://tecsmith.com.au', 'lic' => $page['base_path'] . 'license.' . $phpEx, 'year' => date('Y'))) . 
+	print T('COPYRIGHT', array('url' => 'http://tecsmith.com.au', 'lic' => $page['base_path'] . 'license.' . $phpEx, 'year' => date('Y'))) .
 		T('-') . T('[') .
 		T('TERMSOS', array('url' => $page['base_path'] . 'tos.' . $phpEx )) . T('|') .
 		T('PRIVACY', array('url' => $page['base_path'] . 'privacy.' . $phpEx ));

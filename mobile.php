@@ -34,7 +34,7 @@ print __('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http:/
 <title><?php print $p_title; ?></title>
 <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
 <link rel="icon" type="image/gif" href="favicon.gif" />
-<link rel="apple-touch-icon" href="touchicon.png" />
+<link rel="apple-touch-icon" href="apple-touch-touchicon.png" />
 <meta name="viewport" content="width=device-width, user-scalable=no; initial-scale=1.0; maximum-scale=1.0;" />
 </head>
 <body style="margin:0;padding:0;">
