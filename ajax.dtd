@@ -1,9 +1,0 @@
-<!ELEMENT response (issued,code,status,data,html)>
-
-<!ATTLIST response sender CDATA #IMPLIED>
-
-<!ELEMENT issued (#PCDATA)>
-<!ELEMENT code (#PCDATA)>
-<!ELEMENT status (#PCDATA)>
-<!ELEMENT data (#PCDATA)>
-<!ELEMENT html ANY>
