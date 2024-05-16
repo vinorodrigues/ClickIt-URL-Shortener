@@ -182,9 +182,9 @@ function processQueryString($find) {
  */
 function http_response_cache_now() {
   $ts = time();
-  header('Expires: ' . date(DATE_RFC822, $ts) );
-  header('Last-Modified: ' . date(DATE_RFC822, $ts) );
-  header('Cache-Control: no-cache, must-revalidate' );
+  header('Expires: ' . date(DATE_RFC822, $ts));
+  header('Last-Modified: ' . date(DATE_RFC822, $ts));
+  header('Cache-Control: no-cache, must-revalidate');
   header('Pragma: no-cache' );
 }
 
@@ -200,9 +200,12 @@ function http_response_cache_for($secs = 0) {
   }
 
   $ts = time();
-  header('Expires: ' . date(DATE_RFC822, $ts + $secs) );
-	header('Last-Modified: ' . date(DATE_RFC822, $ts) );
-	header('Cache-Control: max-age=' . $secs . ', must-revalidate' );
+  header('Expires: ' . date(DATE_RFC822, $ts + $secs));
+  header('Retry-After: ' . date(DATE_RFC822, $ts + $secs - 1));
+	header('Last-Modified: ' . date(DATE_RFC822, $ts));
+	header('Cache-Control: max-age=' . $secs . ', must-revalidate');
+  header('vary: User-Agent');
+  header('ETag: W/"' . date('YmdHis', $ts) . '"');
 }
 
 /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
@@ -439,8 +442,10 @@ switch ($command) {
         ' target="_blank"' .
         '>' . mb_strimwidth($url, 0, 35, '...') . ' <i class="ml-2 fas fa-up-right-from-square"></i></a></div>';
     } else {
-      $cache_for = 0;  // TODO: Set up a expiry system, 2x features; 1. cache for x time, & 2. expiry date - after which won't work
+      // TODO: Set up a expiry system, 2x features; 1. cache for x time, & 2. expiry date - after which won't work
+      $cache_for = DEFAULT_CACHE_TIME;
       http_response_redirection($url, $promise, $cache_for);  // !!! GETS GO!
+
       die(); // !!!
     }
     break;
