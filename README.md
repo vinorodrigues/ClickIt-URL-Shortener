@@ -30,15 +30,18 @@ The main reason was however a set and forget redirector that was easy to install
 
 ### Past Versions
 
-Version 1 ... actually, I never moved beyond version 0.5.2 ... was a fully UI-ed interface.  Most of the work I did on this was UI backend stuff - user management, complexity of showing long list, navigating around data, configuration management, etc.  The actual redirection is like, 2 lines of code *(or can be)*.
+Version 1 ... actually, I never moved beyond version 0.5.2 ... was a fully UI-ed interface.  Most of the work I did on this was UI backend stuff - user management, complexity of showing long lists, navigating around data, configuration management, etc.  The actual redirection is like, 2 lines of code *(or can be)*.
 
 ### What's new in Ver 2
 
-I realised that this could just be a single file solution.  So I re-wrote it from scratch to be so.  So, Version 2, is one file, install it on you service, create a sorts "database" - a JSON file and it works.  Done.
+I realised that this could just be a single file solution.  So I re-wrote it from scratch to be so.  So, Version 2, is one file, install it on you service, create a sorts "database" - a JSON file - and it works.  Done.
 
-## Releases
+To edit, add, remove stuff; just edit the JSON file.  If you need to do this daily... then this is not the tool for you.
 
-See the <CHANGELOG.md> file
+## Resources
+
+- **Releases** - See the [CHANGELOG.md](CHANGELOG.md) file.
+- **Docs** - *(i.e. How to install and run.)*  See the [docs](docs/README.md) folder.
 
 
 ## Get Involved
