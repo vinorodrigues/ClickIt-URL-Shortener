@@ -2,12 +2,12 @@
 
 Options +FollowSymLinks
 RewriteEngine On
-# RewriteBase /
+RewriteBase /
 
-ErrorDocument 404 /index.php?e=404
+ErrorDocument 400 /index.php?e=400
 ErrorDocument 401 /index.php?e=401
 ErrorDocument 403 /index.php?e=403
-ErrorDocument 400 /index.php?e=400
+ErrorDocument 404 /index.php?e=404
 ErrorDocument 500 /index.php?e=500
 
 # Restrict rewriting URLs only to paths that do not actually exists
