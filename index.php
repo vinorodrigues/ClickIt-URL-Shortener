@@ -12,10 +12,22 @@ const DEBUG = false;
 
 global $config, $command, $promise, $content, $short, $url;
 
+/*
+ * You can skip using an external URLs file by populating your list right here.
+ * To do that, just uncomment the line below and populate the array with your URLs.
+ * Note: This will also disable the loading of the `$config` object, so edit that too.
+ */
+/* $urls = [
+  's1' => 'http://{your_url}',
+  's2' => 'http://{your_url}, 302',
+  's3' => [ 'https://{your_url}', 302 ]
+]; /* */
+
 $config = [
   'json_data_filename' => 'short_urls.json',
   // Thanks to https://goqr.me/api/doc/create-qr-code/
-  'qr_code_engine' => 'https://api.qrserver.com/v1/create-qr-code/?format=svg&color=000000&bgcolor=FFFFFF&qzone=2&margin=0&size=320x320&ecc=L&data={{url}}',
+  'qr_code_engine' => 'https://api.qrserver.com/v1/create-qr-code/?format=svg&color=000000&bgcolor=FFFFFF&qzone=2&margin=0&size=300x300&ecc=L&data={{url}}',
+  'extra_css' => '<style>.img-qrcode{width:300px;height:300px}</style>',
   'default_title' => 'c1k.it',
   // Thanks to https://www.srihash.org/ for the SRI Hash Generator
   'bootstrap_css' => [
@@ -49,6 +61,8 @@ $config = [
   ],
   'copyright' => '&copy; 2011-2024 Vino Rodrigues | <a href="https://github.com/vinorodrigues/clickit-url-shortener"><i class="fa-brands fa-github-alt"></i> ClickIt-URL-Shortener</a>'
 ];
+
+/* --------- Static content --------- */
 
 $images = [
   'icon.svg' => [
@@ -219,8 +233,8 @@ function http_response_cache_for($secs = 0) {
   $ts = time();
   header('Expires: ' . date(DATE_RFC822, $ts + $secs));
   header('Retry-After: ' . date(DATE_RFC822, $ts + $secs - 1));
-	header('Last-Modified: ' . date(DATE_RFC822, $ts));
-	header('Cache-Control: max-age=' . $secs . ', must-revalidate');
+  header('Last-Modified: ' . date(DATE_RFC822, $ts));
+  header('Cache-Control: max-age=' . $secs . ', must-revalidate');
   header('vary: User-Agent');
   header('ETag: W/"' . date('YmdHis', $ts) . '"');
 }
@@ -261,7 +275,7 @@ function generateQRCodeURL($url, $qr_code_engine) {
 // Initialize Globals
 $command = $promise = $content = $short = $url = false;
 $config = (object) $config;
-$urls = false;
+if (!isset($urls)) $urls = false;
 
 header('X-Powered-By: ClickIt-URL-Shortener, by Vino Rodrigues (@vinorodrigues)', true);
 
@@ -269,7 +283,7 @@ header('X-Powered-By: ClickIt-URL-Shortener, by Vino Rodrigues (@vinorodrigues)'
  * Note: Data will always load from in-file '$config->json_data_filename',
  * but once loaded the content of the json may override the $config object.
  */
-if (file_exists($config->json_data_filename)) {
+if ((false === $urls) && file_exists($config->json_data_filename)) {
   $json_data = @json_decode( file_get_contents($config->json_data_filename), true );
   if ((null == $json_data) || (JSON_ERROR_NONE !== json_last_error()) ) {
     $command = 'e';
@@ -376,16 +390,16 @@ switch ($command) {
   case '-':
     // --- info page ---
 
-    $heading = 'Info';
+    $heading = '<i class="fa fa-circle-info"></i> Info';
     $inc_fa = true;
     $content = '<p class="">Short URL = <code>' . $short . '</code><br>' .
       'Destination URL = <code>' . $url . '</code><br>' .
       'Redirecting with code: <code>' . $promise . '</code></p>' .
-      '<p class="text-center"><img src="' . generateQRCodeURL($url, $config->qr_code_engine) . '" class="img-fluid img-thumbnail"></p>' .
+      '<p class="text-center"><img src="' . generateQRCodeURL($url, $config->qr_code_engine) . '" class="img-fluid img-thumbnail x-qr"></p>' .
       '<div class="text-center"><a class="btn btn-lg btn-outline-secondary" href="' . $url . '"' .
       ' title="' . $url . '"' .
       ' target="_blank"' .
-      '>' . mb_strimwidth($url, 0, 35, '...') . ' <i class="ml-2 fas fa-up-right-from-square"></i></a></div>';
+      '>' . mb_strimwidth($url, 0, 25, '...') . ' <i class="ml-2 fas fa-up-right-from-square"></i></a></div>';
 
     break;
 
@@ -411,6 +425,7 @@ switch ($command) {
     case 'i':
       // --- Include files, inline ---
       if ( !empty($images) ) {
+        $promise = strtolower($promise);  // lowercase filenames!
         if (array_key_exists($promise, $images)) {
 
           $ct = isset($images[$promise]['c']) ? $images[$promise]['c'] : 'text/plain';
@@ -428,6 +443,7 @@ switch ($command) {
           $hold = isset($images[$promise]['h']) ? intval($images[$promise]['h']) : DEFAULT_CACHE_TIME;
 
           header('Content-type: ' . $ct, true);
+          header('Content-Disposition: attachment; filename="' . $promise . '"');
           http_response_cache_for($hold);
           print( $content );
 
@@ -591,32 +607,34 @@ if ('e' == $command) { // Error page, common
   <link rel="icon" type="image/png" href="<?= getCurrentUrl() . '/?i=favicon.png' ?>">
   <link rel="icon" type="image/svg+xml" href="<?= getCurrentUrl() . '/?i=icon.svg' ?>" sizes="any">
   <title><?= $title ?></title>
-  <style> .dialog { z-index: 100; } </style>
+  <style>
+    .wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
+    .dialog { display: flex; z-index: 100; max-width: 100%; }
+    .logo { max-height: 64px; max-width: 100%; }
+    .card-body p { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  </style>
 <?php if (isset($config->extra_css) && !empty($config->extra_css)) { echo $config->extra_css . PHP_EOL; } ?>
 </head>
 <body>
-  <div class="d-flex justify-content-center align-items-center" style="height: 100vh">
-    <div class="text-center">
+  <div class="wrapper">
 
-      <div class="dialog card border rounded-lg shadow-lg text-center border-<?= $color ?>" style="border-radius:1em !important">
-        <h5 class="card-header bg-light px-5 py-3 border-<?= $color ?>" style="border-top-left-radius:1em;border-top-right-radius:1em"><img src="<?= getCurrentUrl() . '/?i=logo.svg' ?>" height="72"></h5>
-        <div class="card-body text-left">
-          <h1 class="card-title text-center"><?= $heading ?></h1>
-          <?= $content ?>
-        </div>
+    <div class="dialog card border rounded-lg shadow-lg text-center border-<?= $color ?>" style="border-radius:1em !important">
+      <h5 class="card-header bg-light px-5 py-3 border-<?= $color ?>" style="border-top-left-radius:1em;border-top-right-radius:1em"><img src="<?= getCurrentUrl() . '/?i=logo.svg' ?>" class="logo"></h5>
+      <div class="card-body text-left">
+        <h1 class="card-title text-center"><?= $heading ?></h1>
+        <?= $content ?>
+      </div>
 <?php if (!empty($href)) { ?>
-        <div class="card-body text-center border-top">
-          <a href="<?= $href ?>" class="btn btn-outline-primary"><?= $btn_text ?></a>
-        </div>
+      <div class="card-body text-center border-top">
+        <a href="<?= $href ?>" class="btn btn-outline-primary"><?= $btn_text ?></a>
+      </div>
 <?php } ?>
 <?php if (!empty($config->copyright)) { ?>
-        <div class="card-footer text-muted small"><?= $config->copyright ?></div>
+      <div class="card-footer text-muted small"><?= $config->copyright ?></div>
 <?php } ?>
-      </div>
-
     </div>
-  </div>
 
+  </div>
 <?php if ($inc_js) { ?>
   <script src="<?= $config->jquery_js['url'] ?>" integrity="<?= $config->jquery_js['hash'] ?>" crossorigin="anonymous"></script>
 <?php /* <script src="<?= $config->popper_js['url'] ?>" integrity="<?= $config->popper_js['hash'] ?>" crossorigin="anonymous"></script> */ ?>
