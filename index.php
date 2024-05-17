@@ -117,7 +117,7 @@ function validateRedirectionHtmlResponseCode($code) {
  * Validates if a short URL is not a reserved command
  */
 function validateShortURLisNotCommand($s_url) {
-  return !in_array($s_url, array('-', '@', 'e', 'h', 'i', 'u', 'x'));
+  return !in_array($s_url, ['-', '@', '*', 'e', 'h', 'i', 'u', 'x']);
 }
 
 /**
@@ -314,6 +314,7 @@ if ( ('u' == $command) && (strlen($promise) > 2) && isSecondCharAnEqual($promise
 }
 
 processQueryString('@');  // asking for QR-code
+processQueryString('*');  // asking for sitemap.xml
 
 if (!$command) {
   // Command not set yet, so assume it's a redirection URL
@@ -324,7 +325,7 @@ if (!$command) {
 // +------------+
 // |  Lets go!  |
 // +------------+
-if (('u' == $command) || ('@' == $command)) {
+if (in_array($command, ['u', '@']))  {
   // no query situation - if there is a url named `0` then do that, else show hello screen ;)
   if (empty($promise)) $promise = '0';
 
@@ -333,7 +334,7 @@ if (('u' == $command) || ('@' == $command)) {
   if (false !== $urls) {
     $special = substr($promise, -1);
     $promise = strtolower($promise);
-    if (('@' == $special) || ('-' == $special)) {
+    if (in_array($special, ['@', '-'])) {
       $promise = substr($promise, 0, strlen($promise) - 1);
     } else {
       $special = false;
@@ -395,7 +396,7 @@ switch ($command) {
     $content = '<p class="">Short URL = <code>' . $short . '</code><br>' .
       'Destination URL = <code>' . $url . '</code><br>' .
       'Redirecting with code: <code>' . $promise . '</code></p>' .
-      '<p class="text-center"><img src="' . generateQRCodeURL($url, $config->qr_code_engine) . '" class="img-fluid img-thumbnail x-qr"></p>' .
+      '<p class="text-center"><img src="' . generateQRCodeURL($url, $config->qr_code_engine) . '" class="img-fluid img-thumbnail img-qrcode"></p>' .
       '<div class="text-center"><a class="btn btn-lg btn-outline-secondary" href="' . $url . '"' .
       ' title="' . $url . '"' .
       ' target="_blank"' .
@@ -407,6 +408,33 @@ switch ($command) {
     // --- QR-code ---
     $url = generateQRCodeURL($url, $config->qr_code_engine);
     http_response_redirection($url, 307, 0);  // always 307, always no-cache
+    die(); // !!!
+    break;
+
+  case '*':
+    // --- SiteMap.XML ---
+
+    header('Content-type: text/xml', true);
+    header('Content-Disposition: inline; filename="sitemap.xml"');
+
+    echo '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
+    echo '<!-- This should never get called. The robots.txt file prohibits it. -->' . PHP_EOL;
+    // echo '<?xml-stylesheet type="text/xsl" href="sitemap.xsl"' . '?' . '>' . PHP_EOL;
+    echo '<urlset' .
+      ' xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"' .
+      // ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' .
+      // ' xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd"' .
+      '>' . PHP_EOL;
+
+    if (!empty($urls)) {
+      foreach ($urls as $short => $url) {
+        echo "\t" .'<url>';
+        echo '<loc>' . add_trailing_slash(getCurrentUrl()) . '?u=' . rawurlencode($short) . '</loc>';
+        // not doing `<lastmod>`
+        echo '</url>' . PHP_EOL;
+      }
+    }
+    echo '</urlset>';
     die(); // !!!
     break;
 
@@ -603,9 +631,9 @@ if ('e' == $command) { // Error page, common
 <?php if ($inc_highlighter) { ?>
   <link rel="stylesheet" href="<?= $config->highlight_css['url'] ?>" integrity="<?= $config->highlight_css['hash'] ?>" crossorigin="anonymous">
 <?php } ?>
-  <link rel="apple-touch-icon" href="<?= getCurrentUrl() . '/?i=favicon.png' ?>">
-  <link rel="icon" type="image/png" href="<?= getCurrentUrl() . '/?i=favicon.png' ?>">
-  <link rel="icon" type="image/svg+xml" href="<?= getCurrentUrl() . '/?i=icon.svg' ?>" sizes="any">
+  <link rel="apple-touch-icon" href="<?= add_trailing_slash(getCurrentUrl()) . '?i=favicon.png' ?>">
+  <link rel="icon" type="image/png" href="<?= add_trailing_slash(getCurrentUrl()) . '?i=favicon.png' ?>">
+  <link rel="icon" type="image/svg+xml" href="<?= add_trailing_slash(getCurrentUrl()) . '?i=icon.svg' ?>" sizes="any">
   <title><?= $title ?></title>
   <style>
     .wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
@@ -619,7 +647,7 @@ if ('e' == $command) { // Error page, common
   <div class="wrapper">
 
     <div class="dialog card border rounded-lg shadow-lg text-center border-<?= $color ?>" style="border-radius:1em !important">
-      <h5 class="card-header bg-light px-5 py-3 border-<?= $color ?>" style="border-top-left-radius:1em;border-top-right-radius:1em"><img src="<?= getCurrentUrl() . '/?i=logo.svg' ?>" class="logo"></h5>
+      <h5 class="card-header bg-light px-5 py-3 border-<?= $color ?>" style="border-top-left-radius:1em;border-top-right-radius:1em"><img src="<?= add_trailing_slash(getCurrentUrl()) . '?i=logo.svg' ?>" class="logo"></h5>
       <div class="card-body text-left">
         <h1 class="card-title text-center"><?= $heading ?></h1>
         <?= $content ?>
