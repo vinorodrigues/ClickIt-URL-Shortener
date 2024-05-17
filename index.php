@@ -2,8 +2,7 @@
 /**
  * @package    c1k.it
  * @author     Vino Rodrigues (@vinorodrigues)
- * @copyright  Tecsmith.com.au
- *   See LICENSE.md for copyright notice and details.
+ * @copyright  (c) 2024 - See LICENSE.md for copyright notice and details.
  * @license    MIT
  */
 
@@ -11,10 +10,12 @@ const DEFAULT_REDIRECTION_CODE = 307;
 const DEFAULT_CACHE_TIME = (24 * 60 * 60);  // 1 day, in seconds
 const DEBUG = false;
 
+global $config, $command, $promise, $content, $short, $url;
+
 $config = [
+  'json_data_filename' => 'short_urls.json',
   // Thanks to https://goqr.me/api/doc/create-qr-code/
   'qr_code_engine' => 'https://api.qrserver.com/v1/create-qr-code/?format=svg&color=000000&bgcolor=FFFFFF&qzone=2&margin=0&size=320x320&ecc=L&data={{url}}',
-  'json_data_filename' => 'short_urls.json',
   'default_title' => 'c1k.it',
   // Thanks to https://www.srihash.org/ for the SRI Hash Generator
   'bootstrap_css' => [
@@ -70,8 +71,8 @@ $images = [
   ]
 ];
 
-$config = (object) $config;
-header('X-Powered-By: ClickIt-URL-Shortener, by Vino Rodrigues (@vinorodrigues)', true);
+
+// ---------- Helper functions ---------
 
 /**
  * Check if a valid HTML Respose code is used
@@ -129,18 +130,32 @@ function var_dump_ret($mixed, $name = false) {
   return $ret;
 }
 
+function strip_trailing_slash($url) {
+  return rtrim($url, '/');
+}
+
+function add_trailing_slash($url) {
+  return strip_trailing_slash($url) . '/';
+}
+
 /**
  * Get the URL of the calling PHP file
  * !! not the best implementation, but PHP does not do this well
  */
 function getCurrentUrl() {
-  return 'http' .
-    ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 's' : '') .
-    '://' .
-    $_SERVER['HTTP_HOST'] .
-    dirname($_SERVER['PHP_SELF']) .
-    '/' .
-    basename($_SERVER['PHP_SELF']);
+  global $config;
+
+  if (isset($config->base_url) && !empty($config->base_url)) {
+    $base = strip_trailing_slash( $config->base_url );
+  } else {
+    $base = strip_trailing_slash( 'http' .
+      ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 's' : '') .
+      '://' .
+      $_SERVER['HTTP_HOST'] .
+      dirname($_SERVER['PHP_SELF']) );
+  }
+
+  return add_trailing_slash($base) . basename($_SERVER['PHP_SELF']);
 }
 
 /**
@@ -150,6 +165,7 @@ function getCurrentUrl() {
 function getCurrentQuery() {
   $self = dirname($_SERVER['PHP_SELF']) . '/' . basename($_SERVER['PHP_SELF']);
   $ret = $_SERVER['REQUEST_URI'];
+
   $p = strpos($ret, $self);
   if (0 === $p) $ret = substr($ret, strlen($self));
   $p = strpos($ret, '?');
@@ -161,6 +177,7 @@ function getCurrentQuery() {
     $ret = explode('/', $ret);
     $ret = $ret[ count($ret) - 1 ];  // get the last one
   }
+
   return $ret;
 }
 
@@ -208,7 +225,6 @@ function http_response_cache_for($secs = 0) {
   header('ETag: W/"' . date('YmdHis', $ts) . '"');
 }
 
-/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
 /**
  * This is the main redirection code!!
  */
@@ -240,12 +256,14 @@ function generateQRCodeURL($url, $qr_code_engine) {
 // ---------- End of helpers ---------
 
 
-// $content = var_dump_ret($_REQUEST, '$_REQUEST');
+// ---------- Stuff starts here ----------
 
-global $command, $promise, $content, $short, $url;
+// Initialize Globals
 $command = $promise = $content = $short = $url = false;
-
+$config = (object) $config;
 $urls = false;
+
+header('X-Powered-By: ClickIt-URL-Shortener, by Vino Rodrigues (@vinorodrigues)', true);
 
 /*
  * Note: Data will always load from in-file '$config->json_data_filename',
@@ -470,6 +488,7 @@ switch ($command) {
     $href = '';
     $btn_text = '<i class="fa-brands fa-github-alt"></i> View project';
     $color = 'info';
+    $inc_highlighter = true;
     break;
 
   default:
@@ -572,6 +591,7 @@ if ('e' == $command) { // Error page, common
   <link rel="icon" type="image/png" href="<?= getCurrentUrl() . '/?i=favicon.png' ?>">
   <link rel="icon" type="image/svg+xml" href="<?= getCurrentUrl() . '/?i=icon.svg' ?>" sizes="any">
   <title><?= $title ?></title>
+  <style> .dialog { z-index: 100; } </style>
 <?php if (isset($config->extra_css) && !empty($config->extra_css)) { echo $config->extra_css . PHP_EOL; } ?>
 </head>
 <body>
