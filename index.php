@@ -116,9 +116,20 @@ function validateRedirectionHtmlResponseCode($code) {
 
 /**
  * Validates if a short URL is not a reserved command
+ *
+ * These are:
+ * - `-` - show info page
+ * - `@` - show QR-code
+ * - `*` - show sitemap.xml, disabled if priavte
+ * - `+` - pass data to a plugin
+ * - `e` - show error page
+ * - `h` - "hello" or "home" page
+ * - `i` - "include" internal file, e.g. logo.png
+ * - `u` - redirect URL
+ * - `x` - settings missing, show "needs install" page
  */
 function validateShortURLisNotCommand($s_url) {
-  return !in_array($s_url, ['-', '@', '*', 'e', 'h', 'i', 'u', 'x']);
+  return !in_array($s_url, ['-', '@', '*', '+', 'e', 'h', 'i', 'u', 'x']);
 }
 
 /**
@@ -135,14 +146,16 @@ function isSecondCharAnEqual($str) {
 /**
  * for DEGUG-ing
  */
-function var_dump_ret($mixed, $name = false) {
+function var_dump_ret($mixed, $name = false, $echo = false) {
   ob_start();
   var_dump($mixed);
 
   $ret = !$name ? '' : '<tt>' . $name . '</tt> = ';
   $ret .= '<code>'. htmlspecialchars(ob_get_contents(), ENT_QUOTES) . '</code><br>';
   ob_end_clean();
-  return $ret;
+  if (!$echo) return $ret;
+
+  echo str_replace(['&quot;', '&gt;', '&lt;'], ['"', '>', '<'], strip_tags( $ret ));
 }
 
 function strip_trailing_slash($url) {
@@ -309,6 +322,31 @@ function json_decode_helper($string) {
   return $r;
 }
 
+/**
+ * performs `isset($mixed) ? $mixed : $fallback;`
+ */
+function if_set($mixed, $fallback = false) {
+  return isset($mixed) ? $mixed : $fallback;
+}
+
+if (!function_exists('array_is_list')) {
+  /**
+   * Determines if the given array is a list.
+   * An array is considered a list if its keys consist of consecutive numbers from 0 to count($array)-1.
+   */
+  function array_is_list(array $arr) {
+      if ($arr === []) return true;
+      return array_keys($arr) === range(0, count($arr) - 1);
+  }
+}
+
+/**
+ * Clean a string for use as a filename or function name
+ */
+function sanitize($string) {
+  return preg_replace('/[^a-z0-9_]/', '', strtolower($string));
+}
+
 // ---------- End of helpers ---------
 
 
@@ -339,7 +377,7 @@ if ((false === $urls) && file_exists($config->json_data_filename)) {
     if (isset($json_data['config'])) $config = (object) array_merge( (array) $config, $json_data['config'] );
   }
 } else {
-  // JSON file not there, ask for it
+  // JSON file not there, ask for it; a.k.a. needs install
   $command = 'x';
 }
 
@@ -385,24 +423,40 @@ if (in_array($command, ['u', '@']))  {
       $special = false;
     }
 
-    $dest = isset($urls[$promise]) ? $urls[$promise] : false;
+    $dest = if_set($urls[$promise]);
+
     if (false !== $dest) {
       $short = $promise;  // keep this for info and QR-code gen
-
+      $url = false;
       if (is_array($dest)) {
-        $url = isset($dest[0]) ? $dest[0] : false;
-        $promise = isset($dest[1]) ? $dest[1] : DEFAULT_REDIRECTION_CODE;
+
+        if (array_is_list($dest)) {
+          $url = if_set($dest[0]);
+          $promise = if_set($dest[1], DEFAULT_REDIRECTION_CODE);
+        } else {
+          if (isset($dest['plugin']) && !empty($dest['plugin'])) {
+            $url = sanitize($dest['plugin']);
+            $promise = $dest;
+            unset($promise['plugin']);
+            $command = '+';
+          } else {
+            $url = if_set($dest['url']);
+            $promise = if_set($dest['code'], DEFAULT_REDIRECTION_CODE);
+          }
+        }
       } else if (is_string($dest)) {
         if (strpos($dest, ',')) {
           $tmp = array_map('trim', explode(',', $dest));
-          $url = isset($tmp[0]) ? $tmp[0] : false;
-          $promise = isset($tmp[1]) ? $tmp[1] : DEFAULT_REDIRECTION_CODE;
+          $url = if_set($tmp[0]);
+          $promise = if_set($tmp[1], DEFAULT_REDIRECTION_CODE);
         } else {
           // just a simple string
           $url = $dest;
           $promise = DEFAULT_REDIRECTION_CODE;
         }
-      } else {
+      }  // `$url == false` will handle the rest
+
+      if (false == $url) {
         $command = 'e';
         $promise = 500;
       }
@@ -492,6 +546,35 @@ switch ($command) {
     }
     break;
 
+  case '+':
+    // --- Plugin engine ---
+
+    $fn = 'plugin_' . $url . '.php';
+    if (file_exists($fn)) {
+
+      @include_once( $fn );  // load the plugin
+
+      $fn = 'f_' . $url . '_destination';
+      if (isset($special)) {
+        switch ($special) {
+          case '@': $fn .= '_at'; break;
+          case '-': $fn .= '_dash'; break;
+        }
+      }
+      if (function_exists($fn)) {
+        $fn($promise);  // call the plugin function
+        die(); // !!!
+      } else {
+        $command = 'e';
+        $promise = 501;
+        $url = $fn . '()';
+      }
+    } else {
+      $command = 'e';
+      $promise = 501;
+    }
+    break;
+
   case 'e':
     // -------------------------------------
     // --- ignore for now, process later ---
@@ -510,7 +593,7 @@ switch ($command) {
         $promise = strtolower($promise);  // lowercase filenames!
         if (array_key_exists($promise, $images)) {
 
-          $ct = isset($images[$promise]['c']) ? $images[$promise]['c'] : 'text/plain';
+          $ct = if_set($images[$promise]['c'], 'text/plain');
 
           if (isset($images[$promise]['d']) && !empty(isset($images[$promise]['d']))) {
             if (isset($images[$promise]['b']) && $images[$promise]['b']) {
@@ -646,6 +729,9 @@ if ('e' == $command) { // Error page, common
       }
     } else if ($promise == 500) {
       $content .= 'Internal Server Error';
+    } else if ($promise == 501) {
+      $content .= 'Not Implemented';
+      if (!empty($url)) $content .= ': <code>' . $url . '</code>';
     }
     $content .= '</small></h2>';
   }
@@ -655,10 +741,10 @@ if ('e' == $command) { // Error page, common
 
   if (DEBUG) {
     echo '<!--' . PHP_EOL;
-    echo str_replace('&quot;', '"', strip_tags( var_dump_ret($command, '$command') ) );
-    echo str_replace('&quot;', '"', strip_tags( var_dump_ret($promise, '$promise') ) );
-    echo str_replace('&quot;', '"', strip_tags( var_dump_ret($url, '$url') ) );
-    echo str_replace('&quot;', '"', strip_tags( var_dump_ret($short, '$short') ) );
+    var_dump_ret($command, '$command', true);
+    var_dump_ret($promise, '$promise', true);
+    var_dump_ret($url, '$url', true);
+    var_dump_ret($short, '$short', true);
     echo '-->';
   }
   $inc_fa = true;
