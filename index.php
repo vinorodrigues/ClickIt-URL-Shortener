@@ -25,6 +25,7 @@ global $config, $command, $promise, $content, $short, $url;
 
 $config = [
   'json_data_filename' => 'short_urls.json',
+  'private' => true,
   // Thanks to https://goqr.me/api/doc/create-qr-code/
   'qr_code_engine' => 'https://api.qrserver.com/v1/create-qr-code/?format=svg&color=000000&bgcolor=FFFFFF&qzone=2&margin=0&size=300x300&ecc=L&data={{url}}',
   'extra_css' => '<style>.img-qrcode{width:300px;height:300px}</style>',
@@ -267,6 +268,47 @@ function generateQRCodeURL($url, $qr_code_engine) {
   }
 }
 
+/**
+ * Translates the JSON error code to english
+ */
+function json_last_error_text() {
+  global $json_exception;
+  if (isset($json_exception)) {
+    $r = $json_exception->getMessage();
+  } else {
+    $e = json_last_error();
+    $r = $e;
+    // @see: https://www.php.net/manual/en/function.json-last-error.php, for descriptions
+    switch ($e) {
+      case JSON_ERROR_DEPTH: $r = 'JSON_ERROR_DEPTH'; break;
+      case JSON_ERROR_STATE_MISMATCH: $r = 'JSON_ERROR_STATE_MISMATCH'; break;
+      case JSON_ERROR_CTRL_CHAR: $r = 'JSON_ERROR_CTRL_CHAR'; break;
+      case JSON_ERROR_SYNTAX: $r = 'JSON_ERROR_SYNTAX'; break;
+      case JSON_ERROR_UTF8: $r = 'JSON_ERROR_UTF8'; break;
+      case JSON_ERROR_RECURSION: $r = 'JSON_ERROR_RECURSION'; break;
+      case JSON_ERROR_INF_OR_NAN: $r = 'JSON_ERROR_INF_OR_NAN'; break;
+      case JSON_ERROR_UNSUPPORTED_TYPE: $r = 'JSON_ERROR_UNSUPPORTED_TYPE'; break;
+      case JSON_ERROR_INVALID_PROPERTY_NAME: $r = 'JSON_ERROR_INVALID_PROPERTY_NAME'; break;
+      case JSON_ERROR_UTF16: $r = 'JSON_ERROR_UTF16'; break;
+    }
+  }
+  return $r;
+}
+
+/**
+ * Calls `json_decode` with the correct settings
+ */
+function json_decode_helper($string) {
+  global $json_exception;
+  try {
+    $r = json_decode($string, true, JSON_BIGINT_AS_STRING | JSON_INVALID_UTF8_SUBSTITUTE | JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR );
+  } catch (Exception $e) {
+    $json_exception = clone $e;
+    $r = false;
+  }
+  return $r;
+}
+
 // ---------- End of helpers ---------
 
 
@@ -276,6 +318,9 @@ function generateQRCodeURL($url, $qr_code_engine) {
 $command = $promise = $content = $short = $url = false;
 $config = (object) $config;
 if (!isset($urls)) $urls = false;
+if (DEBUG) {
+  $config->private = false;
+}
 
 header('X-Powered-By: ClickIt-URL-Shortener, by Vino Rodrigues (@vinorodrigues)', true);
 
@@ -284,10 +329,10 @@ header('X-Powered-By: ClickIt-URL-Shortener, by Vino Rodrigues (@vinorodrigues)'
  * but once loaded the content of the json may override the $config object.
  */
 if ((false === $urls) && file_exists($config->json_data_filename)) {
-  $json_data = @json_decode( file_get_contents($config->json_data_filename), true );
+  $json_data = json_decode_helper( @file_get_contents($config->json_data_filename) );
   if ((null == $json_data) || (JSON_ERROR_NONE !== json_last_error()) ) {
     $command = 'e';
-    $content = '<p>JSON error code <b>' . json_last_error() . '</b> in file <code>' . $config->json_data_filename . '</code></p>';
+    $content = '<p>JSON error <b>' . json_last_error_text() . '</b> in file <code>' . $config->json_data_filename . '</code></p>';
     $promise = 500;
   } else {
     if (isset($json_data['urls'])) $urls = $json_data['urls'];
@@ -414,28 +459,37 @@ switch ($command) {
   case '*':
     // --- SiteMap.XML ---
 
-    header('Content-type: text/xml', true);
-    header('Content-Disposition: inline; filename="sitemap.xml"');
+    if (!$config->private) {
 
-    echo '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
-    echo '<!-- This should never get called. The robots.txt file prohibits it. -->' . PHP_EOL;
-    // echo '<?xml-stylesheet type="text/xsl" href="sitemap.xsl"' . '?' . '>' . PHP_EOL;
-    echo '<urlset' .
-      ' xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"' .
-      // ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' .
-      // ' xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd"' .
-      '>' . PHP_EOL;
+      header('Content-type: text/xml', true);
+      header('Content-Disposition: inline; filename="sitemap.xml"');
 
-    if (!empty($urls)) {
-      foreach ($urls as $short => $url) {
-        echo "\t" .'<url>';
-        echo '<loc>' . add_trailing_slash(getCurrentUrl()) . '?u=' . rawurlencode($short) . '</loc>';
-        // not doing `<lastmod>`
-        echo '</url>' . PHP_EOL;
+      echo '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
+      echo '<!-- This should never get called. The robots.txt file prohibits it. -->' . PHP_EOL;
+      // echo '<?xml-stylesheet type="text/xsl" href="sitemap.xsl"' . '?' . '>' . PHP_EOL;
+      echo '<urlset' .
+        ' xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"' .
+        // ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' .
+        // ' xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd"' .
+        '>' . PHP_EOL;
+
+      if (!empty($urls)) {
+        foreach ($urls as $short => $url) {
+          echo "\t" .'<url>';
+          echo '<loc>' . add_trailing_slash(getCurrentUrl()) . '?u=' . rawurlencode($short) . '</loc>';
+          // not doing `<lastmod>`
+          echo '</url>' . PHP_EOL;
+        }
       }
+      echo '</urlset>';
+      die(); // !!!
+
+    } else {
+
+      $command = 'e';
+      $promise = 401;
+
     }
-    echo '</urlset>';
-    die(); // !!!
     break;
 
   case 'e':
@@ -577,7 +631,7 @@ if ('e' == $command) { // Error page, common
 
   // Build string for some 4xx, and the 500 client response codes
   if (empty($content)) {
-    $content .= '<h2 class="text-center h1">';
+    $content .= '<h2 class="text-center"><small class="text-muted">';
     if ($promise == 400) {
       $content .= 'Bad Request';
     } else if ($promise == 401) {
@@ -593,7 +647,7 @@ if ('e' == $command) { // Error page, common
     } else if ($promise == 500) {
       $content .= 'Internal Server Error';
     }
-    $content .= '</h2>';
+    $content .= '</small></h2>';
   }
 
   $heading = '<i class="fas fa-' . $_fa . '"></i> ' . $promise;
