@@ -105,4 +105,4 @@ By default, if you open the redirector without a short code it will show you a "
 
 That's it for now.  Have fun!  ;)
 
-> Made with &#x2665; by Vino Rodrigues
+> Made with &#x2665; by [Vino Rodrigues](https://github.com/vinorodrigues)
