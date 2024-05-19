@@ -297,8 +297,6 @@ function liquefyStr($str, $replacements = []) {
   return $str;
 }
 
-echo liquefyStr("Hello {{name}}, welcome to {{plACe}}!", ['name' => 'Alice', 'place' => 'Wonderland']); die();
-
 /**
  * generates the URL for the QR-Code API provider
  */
