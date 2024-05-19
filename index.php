@@ -8,6 +8,7 @@
 
 const DEFAULT_REDIRECTION_CODE = 307;
 const DEFAULT_CACHE_TIME = (24 * 60 * 60);  // 1 day, in seconds
+const DEFAULT_CURL_TIMEOUT = 10;  // in seconds
 const DEBUG = false;
 
 global $config, $command, $promise, $content, $short, $url;
@@ -28,6 +29,8 @@ $config = [
   'private' => true,
   // Thanks to https://goqr.me/api/doc/create-qr-code/
   'qr_code_engine' => 'https://api.qrserver.com/v1/create-qr-code/?format=svg&color=000000&bgcolor=FFFFFF&qzone=2&margin=0&size=300x300&ecc=L&data={{url}}',
+  'qr_content_type' => 'image/svg+xml',
+  'qr_file_ext' => '.svg',
   'extra_css' => '<style>.img-qrcode{width:300px;height:300px}</style>',
   'default_title' => 'c1k.it',
   // Thanks to https://www.srihash.org/ for the SRI Hash Generator
@@ -143,19 +146,21 @@ function isSecondCharAnEqual($str) {
   return $str[1] === '=';
 }
 
-/**
- * for DEGUG-ing
- */
-function var_dump_ret($mixed, $name = false, $echo = false) {
-  ob_start();
-  var_dump($mixed);
+if (DEBUG) {
+  /**
+   * for DEGUG-ing
+   */
+  function var_dump_ret($mixed, $name = false, $echo = false) {
+    ob_start();
+    var_dump($mixed);
 
-  $ret = !$name ? '' : '<tt>' . $name . '</tt> = ';
-  $ret .= '<code>'. htmlspecialchars(ob_get_contents(), ENT_QUOTES) . '</code><br>';
-  ob_end_clean();
-  if (!$echo) return $ret;
+    $ret = !$name ? '' : '<tt>' . $name . '</tt> = ';
+    $ret .= '<code>'. htmlspecialchars(ob_get_contents(), ENT_QUOTES) . '</code><br>';
+    ob_end_clean();
+    if (!$echo) return $ret;
 
-  echo str_replace(['&quot;', '&gt;', '&lt;'], ['"', '>', '<'], strip_tags( $ret ));
+    echo str_replace(['&quot;', '&gt;', '&lt;'], ['"', '>', '<'], strip_tags( $ret ));
+  }
 }
 
 function strip_trailing_slash($url) {
@@ -282,6 +287,52 @@ function generateQRCodeURL($url, $qr_code_engine) {
 }
 
 /**
+ * fetches an external file with cURL or ``
+ */
+function http_get_remote_file($file_url, $content_type, $filename = false, $cache_for = DEFAULT_CACHE_TIME) {
+  $has_error = false;
+
+  header('Content-Type: ' . $content_type, true);
+  if (!$filename) {
+    header('Content-Disposition: inline; filename="' .  $filename . '"');
+  }
+  http_response_cache_for( $cache_for );
+
+  $curl = @curl_init();  // Initialize cURL
+  if (false !== $curl) {
+    curl_setopt( $curl, CURLOPT_URL, $file_url );
+    curl_setopt( $curl, CURLOPT_FOLLOWLOCATION, true );
+    curl_setopt( $curl, CURLOPT_MAXREDIRS, 10 );
+    curl_setopt( $curl, CURLOPT_HEADER, false );
+    curl_setopt( $curl, CURLOPT_BINARYTRANSFER, true );
+    curl_setopt( $curl, CURLOPT_HTTPGET, true );
+    curl_setopt( $curl, CURLOPT_TIMEOUT, DEFAULT_CURL_TIMEOUT );
+    curl_setopt( $curl, CURLOPT_CONNECTTIMEOUT, DEFAULT_CURL_TIMEOUT );
+
+    if (curl_exec( $curl ) === false) {  // fetch and dump
+      $has_error = 'cURL Error ' . curl_errno($curl) . ': ' . curl_error($curl);
+    }
+    curl_close( $curl );  // close cURL resource, and free up system resources
+  } else {
+    // cURL is not avail.
+    $opts = [ 'http' => [ 'method' => 'GET' ]];
+    $context = stream_context_create($opts);
+    $content = file_get_contents( $file_url, false, $context );
+    if (false !== $content) {
+      print( $content );
+    } else {
+      $has_error = 'PHP file_get_contents Error';
+    }
+  }
+
+  if (false !== $has_error) {
+    header('Content-Type: text/plain', true);
+    echo $has_error;
+  }
+  return !$has_error;
+}
+
+/**
  * Translates the JSON error code to english
  */
 function json_last_error_text() {
@@ -320,13 +371,6 @@ function json_decode_helper($string) {
     $r = false;
   }
   return $r;
-}
-
-/**
- * performs `isset($mixed) ? $mixed : $fallback;`
- */
-function if_set($mixed, $fallback = false) {
-  return isset($mixed) ? $mixed : $fallback;
 }
 
 if (!function_exists('array_is_list')) {
@@ -381,6 +425,10 @@ if ((false === $urls) && file_exists($config->json_data_filename)) {
   $command = 'x';
 }
 
+if (DEBUG) {
+  if (isset($config->base_url)) unset($config->base_url);
+}
+
 processQueryString('e');
 processQueryString('E');
 if (('e' == $command) && !$promise) $promise = 405;
@@ -423,7 +471,7 @@ if (in_array($command, ['u', '@']))  {
       $special = false;
     }
 
-    $dest = if_set($urls[$promise]);
+    $dest = isset($urls[$promise]) ? $urls[$promise] : false;
 
     if (false !== $dest) {
       $short = $promise;  // keep this for info and QR-code gen
@@ -431,8 +479,8 @@ if (in_array($command, ['u', '@']))  {
       if (is_array($dest)) {
 
         if (array_is_list($dest)) {
-          $url = if_set($dest[0]);
-          $promise = if_set($dest[1], DEFAULT_REDIRECTION_CODE);
+          $url = isset($dest[0]) ? $dest[0] : false;
+          $promise = isset($dest[1]) ? $dest[1] : DEFAULT_REDIRECTION_CODE;
         } else {
           if (isset($dest['plugin']) && !empty($dest['plugin'])) {
             $url = sanitize($dest['plugin']);
@@ -440,15 +488,15 @@ if (in_array($command, ['u', '@']))  {
             unset($promise['plugin']);
             $command = '+';
           } else {
-            $url = if_set($dest['url']);
-            $promise = if_set($dest['code'], DEFAULT_REDIRECTION_CODE);
+            $url = isset($dest['url']) ? $dest['url'] : false;
+            $promise = isset($dest['code']) ? $dest['code'] : DEFAULT_REDIRECTION_CODE;
           }
         }
       } else if (is_string($dest)) {
         if (strpos($dest, ',')) {
           $tmp = array_map('trim', explode(',', $dest));
-          $url = if_set($tmp[0]);
-          $promise = if_set($tmp[1], DEFAULT_REDIRECTION_CODE);
+          $url = isset($tmp[0]) ? $tmp[0] : false;
+          $promise = isset($tmp[1]) ? $tmp[1] : DEFAULT_REDIRECTION_CODE;
         } else {
           // just a simple string
           $url = $dest;
@@ -492,10 +540,15 @@ switch ($command) {
 
     $heading = '<i class="fa fa-circle-info"></i> Info';
     $inc_fa = true;
+    if (DEBUG) {
+      $filename = getCurrentUrl() . '?u=' . $short . '@';
+    } else {
+      $filename = generateQRCodeURL($url, $config->qr_code_engine);
+    }
     $content = '<p class="">Short URL = <code>' . $short . '</code><br>' .
       'Destination URL = <code>' . $url . '</code><br>' .
       'Redirecting with code: <code>' . $promise . '</code></p>' .
-      '<p class="text-center"><img src="' . generateQRCodeURL($url, $config->qr_code_engine) . '" class="img-fluid img-thumbnail img-qrcode"></p>' .
+      '<p class="text-center"><img src="' . $filename . '" class="img-fluid img-thumbnail img-qrcode"></p>' .
       '<div class="text-center"><a class="btn btn-lg btn-outline-secondary" href="' . $url . '"' .
       ' title="' . $url . '"' .
       ' target="_blank"' .
@@ -505,17 +558,28 @@ switch ($command) {
 
   case '@':
     // --- QR-code ---
+
+    // 'qr_content_type' => 'image/svg+xml',
+    // 'qr_file_ext' => '.svg',
+
+
+
     $url = generateQRCodeURL($url, $config->qr_code_engine);
-    http_response_redirection($url, 307, 0);  // always 307, always no-cache
+
+    if (isset($config->qr_content_type)) {
+      $filename = isset($config->qr_file_ext) ? sanitize($short) . $config->qr_file_ext : false;
+      http_get_remote_file($url, $config->qr_content_type, $filename);
+    } else {
+      http_response_redirection($url, 307, 0);  // always 307, always no-cache
+    }
     die(); // !!!
     break;
 
   case '*':
     // --- SiteMap.XML ---
-
     if (!$config->private) {
 
-      header('Content-type: text/xml', true);
+      header('Content-Type: text/xml', true);
       header('Content-Disposition: inline; filename="sitemap.xml"');
 
       echo '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
@@ -554,7 +618,18 @@ switch ($command) {
 
       @include_once( $fn );  // load the plugin
 
-      $fn = 'f_' . $url . '_destination';
+      $cnf = 'plugin_' . $url;  // extract configuration from config
+      if (isset($config->$cnf)) {
+        $cnf = json_decode(json_encode($config->$cnf), true);  // nasty, but can go deep
+      } else {
+        $cnf = false;
+      }
+      if (false !== $cnf) {
+        $cnf['short'] = $short;
+        $cnf['self'] = add_trailing_slash(getCurrentUrl());
+      }
+
+      $fn = 'f_' . $url . '_redirection';
       if (isset($special)) {
         switch ($special) {
           case '@': $fn .= '_at'; break;
@@ -562,7 +637,7 @@ switch ($command) {
         }
       }
       if (function_exists($fn)) {
-        $fn($promise);  // call the plugin function
+        $fn($promise, $cnf); // call the plugin function, with conf.
         die(); // !!!
       } else {
         $command = 'e';
@@ -593,7 +668,7 @@ switch ($command) {
         $promise = strtolower($promise);  // lowercase filenames!
         if (array_key_exists($promise, $images)) {
 
-          $ct = if_set($images[$promise]['c'], 'text/plain');
+          $ct = isset($images[$promise]['c']) ? $images[$promise]['c'] : 'text/plain';
 
           if (isset($images[$promise]['d']) && !empty(isset($images[$promise]['d']))) {
             if (isset($images[$promise]['b']) && $images[$promise]['b']) {
@@ -607,7 +682,7 @@ switch ($command) {
 
           $hold = isset($images[$promise]['h']) ? intval($images[$promise]['h']) : DEFAULT_CACHE_TIME;
 
-          header('Content-type: ' . $ct, true);
+          header('Content-Type: ' . $ct, true);
           header('Content-Disposition: attachment; filename="' . $promise . '"');
           http_response_cache_for($hold);
           print( $content );
