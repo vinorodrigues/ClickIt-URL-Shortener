@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v2.0.0] - 2024-05-19
+
+### Changed
+
+- Default arrays are declared as `[]`, not as `array()`. &#x1F937;
+- Info page tweaks.
+- QR-Code images are fetched if the content type is given in `$config`, instead of redirects.  *(Allows one to hide the QR-Code engine used.)*
+- How the dialog is centered on the screen.
+
+### Added
+
+- **Plugins**! You can now extend the code with optional plugins, included in this rel. is:
+    - vCard support
+- New command - "`*`" - to generate a **`sitemap.xml`** file.
+- Function - `http_get_remote_file()` - to fetch files remotely.
+- Custom inline CSS to center dialog.
+- `.htaccess` rule to generate `sitemap.xml`.
+- Blocking AI bots in `robots.txt`.
+
+
 
 ## [v2.0.0-beta-2] - 2024-05-17
 
@@ -39,7 +59,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Full re-write... no use writing a changelog, it's basically a new product :)
 
 
-## [Abandoned]
+## [Abandoned] - Version not built
 
 ### Milestones
 
@@ -99,7 +119,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Database access external, you'll need to use something like phpMyAdmin
 
 
+-----
+> Made with &#x2665; by [Vino Rodrigues](https://github.com/vinorodrigues)
 
+
+[v2.0.0]: https://github.com/vinorodrigues/ClickIt-URL-Shortener/compare/v2.0.0-beta-2...v2.0.0
 [v2.0.0-beta-2]: https://github.com/vinorodrigues/ClickIt-URL-Shortener/compare/v2.0.0-beta-1...v2.0.0-beta-2
 [v2.0.0-beta-1]: https://github.com/vinorodrigues/ClickIt-URL-Shortener/compare/v0.5.3...HEAD
 [Abandoned]: https://github.com/vinorodrigues/ClickIt-URL-Shortener/releases/tag/v0.5.3
