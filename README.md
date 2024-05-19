@@ -2,7 +2,7 @@
 
 ## Introduction
 
-[c1k.it](http://c1k.it), *pronounced* as "Click It", was started back in 2011 as a URL shortening service.
+[c1k.it](http://c1k.it), *pronounced* as "click it", was started back in 2011 as a URL shortening service.
 
 <img src="docs/assets/img/logo.min.svg" height="48">
 
@@ -29,7 +29,7 @@ In 2011 this was useful as a toolchain from my online marketing clients.  But ov
 
 Besides - one of the ancillary reason for this project was to enable people to self-host their own URL shortening services - but even that is now better maintained in other projects than this was, like [yourls.org](yourls.org/docs) - that was started as far back as 2009 *(before I started this, but after I found out it existed - ironically, in a classic case of [multiple discovery](https://en.wikipedia.org/wiki/multiple_discovery))*.
 
-The main reason was however a set and forget redirector that was easy to install and maintain ... and thus do simple, self-serving redirection, like Harvard Business Review does with [s.hbr.org](http://s.hbr.org), or The Economist does with [econ.st](http://econ.st).  With a self configured URL shortener you can  change the Long URL, so over time your short can point to different content, like an updated price list, without having to change your short bit and republishing.
+The main reason was however a set-and-forget redirector that was easy to install and maintain ... and thus do simple, self-serving redirection, like Harvard Business Review does with [s.hbr.org](http://s.hbr.org), or The Economist does with [econ.st](http://econ.st).  With a self configured URL shortener you can  change the Long URL, so over time your short can point to different content, like an updated price list, without having to change your short bit and republishing.
 
 ### Past Versions
 
@@ -41,11 +41,13 @@ I realised that this could just be a single file solution<sup>*</sup>.  So I re-
 
 To edit, add, remove stuff; just edit the JSON file.  If you need to do this daily... then this is not the tool for you.
 
+If you're looking for an *(REST)* API to automate short generation ... also not the tool for you.
+
 ## Resources
 
 - **Releases** - See the [CHANGELOG.md](CHANGELOG.md) file.
 - **Docs** - *(i.e. How to install and run.)*  See the [docs](docs/README.md) folder.
-
+- **To Do** - See the [TODO.md](TODO.md) file.
 
 ## Get Involved
 
