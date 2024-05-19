@@ -1,3 +1,8 @@
+<files "short_urls.json">
+  Order Allow,Deny
+  Deny from all
+</files>
+
 <ifmodule mod_rewrite.c>
 
   Options +FollowSymLinks
