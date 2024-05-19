@@ -8,14 +8,30 @@
 
 const DEFAULT_REDIRECTION_CODE = 307;
 const DEFAULT_CACHE_TIME = (24 * 60 * 60);  // 1 day, in seconds
+const DEFAULT_CURL_TIMEOUT = 10;  // in seconds
 const DEBUG = false;
 
 global $config, $command, $promise, $content, $short, $url;
 
+/*
+ * You can skip using an external URLs file by populating your list right here.
+ * To do that, just uncomment the line below and populate the array with your URLs.
+ * Note: This will also disable the loading of the `$config` object, so edit that too.
+ */
+/* $urls = [
+  's1' => 'http://{your_url}',
+  's2' => 'http://{your_url}, 302',
+  's3' => [ 'https://{your_url}', 302 ]
+]; /* */
+
 $config = [
   'json_data_filename' => 'short_urls.json',
+  'private' => true,
   // Thanks to https://goqr.me/api/doc/create-qr-code/
-  'qr_code_engine' => 'https://api.qrserver.com/v1/create-qr-code/?format=svg&color=000000&bgcolor=FFFFFF&qzone=2&margin=0&size=320x320&ecc=L&data={{url}}',
+  'qr_code_engine' => 'https://api.qrserver.com/v1/create-qr-code/?format=svg&color=000000&bgcolor=FFFFFF&qzone=2&margin=0&size=300x300&ecc=L&data={{url}}',
+  'qr_content_type' => 'image/svg+xml',
+  'qr_file_ext' => '.svg',
+  'extra_css' => '<style>.img-qrcode{width:300px;height:300px}</style>',
   'default_title' => 'c1k.it',
   // Thanks to https://www.srihash.org/ for the SRI Hash Generator
   'bootstrap_css' => [
@@ -49,6 +65,8 @@ $config = [
   ],
   'copyright' => '&copy; 2011-2024 Vino Rodrigues | <a href="https://github.com/vinorodrigues/clickit-url-shortener"><i class="fa-brands fa-github-alt"></i> ClickIt-URL-Shortener</a>'
 ];
+
+/* --------- Static content --------- */
 
 $images = [
   'icon.svg' => [
@@ -101,9 +119,20 @@ function validateRedirectionHtmlResponseCode($code) {
 
 /**
  * Validates if a short URL is not a reserved command
+ *
+ * These are:
+ * - `-` - show info page
+ * - `@` - show QR-code
+ * - `*` - show sitemap.xml, disabled if priavte
+ * - `+` - pass data to a plugin
+ * - `e` - show error page
+ * - `h` - "hello" or "home" page
+ * - `i` - "include" internal file, e.g. logo.png
+ * - `u` - redirect URL
+ * - `x` - settings missing, show "needs install" page
  */
 function validateShortURLisNotCommand($s_url) {
-  return !in_array($s_url, array('-', '@', 'e', 'h', 'i', 'u', 'x'));
+  return !in_array($s_url, ['-', '@', '*', '+', 'e', 'h', 'i', 'u', 'x']);
 }
 
 /**
@@ -117,17 +146,21 @@ function isSecondCharAnEqual($str) {
   return $str[1] === '=';
 }
 
-/**
- * for DEGUG-ing
- */
-function var_dump_ret($mixed, $name = false) {
-  ob_start();
-  var_dump($mixed);
+if (DEBUG) {
+  /**
+   * for DEGUG-ing
+   */
+  function var_dump_ret($mixed, $name = false, $echo = false) {
+    ob_start();
+    var_dump($mixed);
 
-  $ret = !$name ? '' : '<tt>' . $name . '</tt> = ';
-  $ret .= '<code>'. htmlspecialchars(ob_get_contents(), ENT_QUOTES) . '</code><br>';
-  ob_end_clean();
-  return $ret;
+    $ret = !$name ? '' : '<tt>' . $name . '</tt> = ';
+    $ret .= '<code>'. htmlspecialchars(ob_get_contents(), ENT_QUOTES) . '</code><br>';
+    ob_end_clean();
+    if (!$echo) return $ret;
+
+    echo str_replace(['&quot;', '&gt;', '&lt;'], ['"', '>', '<'], strip_tags( $ret ));
+  }
 }
 
 function strip_trailing_slash($url) {
@@ -219,8 +252,8 @@ function http_response_cache_for($secs = 0) {
   $ts = time();
   header('Expires: ' . date(DATE_RFC822, $ts + $secs));
   header('Retry-After: ' . date(DATE_RFC822, $ts + $secs - 1));
-	header('Last-Modified: ' . date(DATE_RFC822, $ts));
-	header('Cache-Control: max-age=' . $secs . ', must-revalidate');
+  header('Last-Modified: ' . date(DATE_RFC822, $ts));
+  header('Cache-Control: max-age=' . $secs . ', must-revalidate');
   header('vary: User-Agent');
   header('ETag: W/"' . date('YmdHis', $ts) . '"');
 }
@@ -241,16 +274,141 @@ function http_response_redirection($url, $code, $cache_for) {
 }
 
 /**
+ * A function that uses `{{` `}}`, like [Liquid](https://shopify.github.io/liquid/), to replace text.
+ *
+ * Usage: `liquefyStr("Hello {{name}}, welcome to {{place}}!", ['name' => 'Alice', 'place' => 'Wonderland']);`
+ */
+function liquefyStr($str, $replacements = []) {
+  if (!empty($replacements && is_array($replacements))) {
+
+    // Create the regex pattern
+    $pattern = "/" . preg_quote('{{', '/') . "\s*(.*?)\s*" . preg_quote('}}', '/') . "/i";
+
+    // Use a callback function to handle replacements
+    $callback = function($matches) use ($replacements) {
+        $key = strtolower(trim($matches[1]));
+        return isset($replacements[$key]) ? $replacements[$key] : $matches[0];
+    };
+
+    // Perform the replacement
+    $str = preg_replace_callback($pattern, $callback, $str);
+
+  }
+  return $str;
+}
+
+echo liquefyStr("Hello {{name}}, welcome to {{plACe}}!", ['name' => 'Alice', 'place' => 'Wonderland']); die();
+
+/**
  * generates the URL for the QR-Code API provider
  */
 function generateQRCodeURL($url, $qr_code_engine) {
-  $tag = '{{url}}';
-  $url = rawurlencode($url);
-  if (false == strpos($qr_code_engine, $tag) ) {
-    return $qr_code_engine . $url;
-  } else {
-    return str_replace($tag, $url, $qr_code_engine);
+  return liquefyStr($qr_code_engine, ['url' => rawurlencode($url)]);
+}
+
+/**
+ * fetches an external file with cURL or ``
+ */
+function http_get_remote_file($file_url, $content_type, $filename = false, $cache_for = DEFAULT_CACHE_TIME) {
+  $has_error = false;
+
+  header('Content-Type: ' . $content_type, true);
+  if (!$filename) {
+    header('Content-Disposition: inline; filename="' .  $filename . '"');
   }
+  http_response_cache_for( $cache_for );
+
+  $curl = @curl_init();  // Initialize cURL
+  if (false !== $curl) {
+    curl_setopt( $curl, CURLOPT_URL, $file_url );
+    curl_setopt( $curl, CURLOPT_FOLLOWLOCATION, true );
+    curl_setopt( $curl, CURLOPT_MAXREDIRS, 10 );
+    curl_setopt( $curl, CURLOPT_HEADER, false );
+    curl_setopt( $curl, CURLOPT_BINARYTRANSFER, true );
+    curl_setopt( $curl, CURLOPT_HTTPGET, true );
+    curl_setopt( $curl, CURLOPT_TIMEOUT, DEFAULT_CURL_TIMEOUT );
+    curl_setopt( $curl, CURLOPT_CONNECTTIMEOUT, DEFAULT_CURL_TIMEOUT );
+
+    if (curl_exec( $curl ) === false) {  // fetch and dump
+      $has_error = 'cURL Error ' . curl_errno($curl) . ': ' . curl_error($curl);
+    }
+    curl_close( $curl );  // close cURL resource, and free up system resources
+  } else {
+    // cURL is not avail.
+    $opts = [ 'http' => [ 'method' => 'GET' ]];
+    $context = stream_context_create($opts);
+    $content = file_get_contents( $file_url, false, $context );
+    if (false !== $content) {
+      print( $content );
+    } else {
+      $has_error = 'PHP file_get_contents Error';
+    }
+  }
+
+  if (false !== $has_error) {
+    header('Content-Type: text/plain', true);
+    echo $has_error;
+  }
+  return !$has_error;
+}
+
+/**
+ * Translates the JSON error code to english
+ */
+function json_last_error_text() {
+  global $json_exception;
+  if (isset($json_exception)) {
+    $r = $json_exception->getMessage();
+  } else {
+    $e = json_last_error();
+    $r = $e;
+    // @see: https://www.php.net/manual/en/function.json-last-error.php, for descriptions
+    switch ($e) {
+      case JSON_ERROR_DEPTH: $r = 'JSON_ERROR_DEPTH'; break;
+      case JSON_ERROR_STATE_MISMATCH: $r = 'JSON_ERROR_STATE_MISMATCH'; break;
+      case JSON_ERROR_CTRL_CHAR: $r = 'JSON_ERROR_CTRL_CHAR'; break;
+      case JSON_ERROR_SYNTAX: $r = 'JSON_ERROR_SYNTAX'; break;
+      case JSON_ERROR_UTF8: $r = 'JSON_ERROR_UTF8'; break;
+      case JSON_ERROR_RECURSION: $r = 'JSON_ERROR_RECURSION'; break;
+      case JSON_ERROR_INF_OR_NAN: $r = 'JSON_ERROR_INF_OR_NAN'; break;
+      case JSON_ERROR_UNSUPPORTED_TYPE: $r = 'JSON_ERROR_UNSUPPORTED_TYPE'; break;
+      case JSON_ERROR_INVALID_PROPERTY_NAME: $r = 'JSON_ERROR_INVALID_PROPERTY_NAME'; break;
+      case JSON_ERROR_UTF16: $r = 'JSON_ERROR_UTF16'; break;
+    }
+  }
+  return $r;
+}
+
+/**
+ * Calls `json_decode` with the correct settings
+ */
+function json_decode_helper($string) {
+  global $json_exception;
+  try {
+    $r = json_decode($string, true, JSON_BIGINT_AS_STRING | JSON_INVALID_UTF8_SUBSTITUTE | JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR );
+  } catch (Exception $e) {
+    $json_exception = clone $e;
+    $r = false;
+  }
+  return $r;
+}
+
+if (!function_exists('array_is_list')) {
+  /**
+   * Determines if the given array is a list.
+   * An array is considered a list if its keys consist of consecutive numbers from 0 to count($array)-1.
+   */
+  function array_is_list(array $arr) {
+      if ($arr === []) return true;
+      return array_keys($arr) === range(0, count($arr) - 1);
+  }
+}
+
+/**
+ * Clean a string for use as a filename or function name
+ */
+function sanitize($string) {
+  return preg_replace('/[^a-z0-9_]/', '', strtolower($string));
 }
 
 // ---------- End of helpers ---------
@@ -261,7 +419,10 @@ function generateQRCodeURL($url, $qr_code_engine) {
 // Initialize Globals
 $command = $promise = $content = $short = $url = false;
 $config = (object) $config;
-$urls = false;
+if (!isset($urls)) $urls = false;
+if (DEBUG) {
+  $config->private = false;
+}
 
 header('X-Powered-By: ClickIt-URL-Shortener, by Vino Rodrigues (@vinorodrigues)', true);
 
@@ -269,19 +430,23 @@ header('X-Powered-By: ClickIt-URL-Shortener, by Vino Rodrigues (@vinorodrigues)'
  * Note: Data will always load from in-file '$config->json_data_filename',
  * but once loaded the content of the json may override the $config object.
  */
-if (file_exists($config->json_data_filename)) {
-  $json_data = @json_decode( file_get_contents($config->json_data_filename), true );
+if ((false === $urls) && file_exists($config->json_data_filename)) {
+  $json_data = json_decode_helper( @file_get_contents($config->json_data_filename) );
   if ((null == $json_data) || (JSON_ERROR_NONE !== json_last_error()) ) {
     $command = 'e';
-    $content = '<p>JSON error code <b>' . json_last_error() . '</b> in file <code>' . $config->json_data_filename . '</code></p>';
+    $content = '<p>JSON error <b>' . json_last_error_text() . '</b> in file <code>' . $config->json_data_filename . '</code></p>';
     $promise = 500;
   } else {
     if (isset($json_data['urls'])) $urls = $json_data['urls'];
     if (isset($json_data['config'])) $config = (object) array_merge( (array) $config, $json_data['config'] );
   }
 } else {
-  // JSON file not there, ask for it
+  // JSON file not there, ask for it; a.k.a. needs install
   $command = 'x';
+}
+
+if (DEBUG) {
+  if (isset($config->base_url)) unset($config->base_url);
 }
 
 processQueryString('e');
@@ -300,6 +465,7 @@ if ( ('u' == $command) && (strlen($promise) > 2) && isSecondCharAnEqual($promise
 }
 
 processQueryString('@');  // asking for QR-code
+processQueryString('*');  // asking for sitemap.xml
 
 if (!$command) {
   // Command not set yet, so assume it's a redirection URL
@@ -310,7 +476,7 @@ if (!$command) {
 // +------------+
 // |  Lets go!  |
 // +------------+
-if (('u' == $command) || ('@' == $command)) {
+if (in_array($command, ['u', '@']))  {
   // no query situation - if there is a url named `0` then do that, else show hello screen ;)
   if (empty($promise)) $promise = '0';
 
@@ -319,19 +485,33 @@ if (('u' == $command) || ('@' == $command)) {
   if (false !== $urls) {
     $special = substr($promise, -1);
     $promise = strtolower($promise);
-    if (('@' == $special) || ('-' == $special)) {
+    if (in_array($special, ['@', '-'])) {
       $promise = substr($promise, 0, strlen($promise) - 1);
     } else {
       $special = false;
     }
 
     $dest = isset($urls[$promise]) ? $urls[$promise] : false;
+
     if (false !== $dest) {
       $short = $promise;  // keep this for info and QR-code gen
-
+      $url = false;
       if (is_array($dest)) {
-        $url = isset($dest[0]) ? $dest[0] : false;
-        $promise = isset($dest[1]) ? $dest[1] : DEFAULT_REDIRECTION_CODE;
+
+        if (array_is_list($dest)) {
+          $url = isset($dest[0]) ? $dest[0] : false;
+          $promise = isset($dest[1]) ? $dest[1] : DEFAULT_REDIRECTION_CODE;
+        } else {
+          if (isset($dest['plugin']) && !empty($dest['plugin'])) {
+            $url = sanitize($dest['plugin']);
+            $promise = $dest;
+            unset($promise['plugin']);
+            $command = '+';
+          } else {
+            $url = isset($dest['url']) ? $dest['url'] : false;
+            $promise = isset($dest['code']) ? $dest['code'] : DEFAULT_REDIRECTION_CODE;
+          }
+        }
       } else if (is_string($dest)) {
         if (strpos($dest, ',')) {
           $tmp = array_map('trim', explode(',', $dest));
@@ -342,7 +522,9 @@ if (('u' == $command) || ('@' == $command)) {
           $url = $dest;
           $promise = DEFAULT_REDIRECTION_CODE;
         }
-      } else {
+      }  // `$url == false` will handle the rest
+
+      if (false == $url) {
         $command = 'e';
         $promise = 500;
       }
@@ -376,24 +558,116 @@ switch ($command) {
   case '-':
     // --- info page ---
 
-    $heading = 'Info';
+    $heading = '<i class="fa fa-circle-info"></i> Info';
     $inc_fa = true;
+    if (DEBUG) {
+      $filename = getCurrentUrl() . '?u=' . $short . '@';
+    } else {
+      $filename = generateQRCodeURL($url, $config->qr_code_engine);
+    }
     $content = '<p class="">Short URL = <code>' . $short . '</code><br>' .
       'Destination URL = <code>' . $url . '</code><br>' .
       'Redirecting with code: <code>' . $promise . '</code></p>' .
-      '<p class="text-center"><img src="' . generateQRCodeURL($url, $config->qr_code_engine) . '" class="img-fluid img-thumbnail"></p>' .
+      '<p class="text-center"><img src="' . $filename . '" class="img-fluid img-thumbnail img-qrcode"></p>' .
       '<div class="text-center"><a class="btn btn-lg btn-outline-secondary" href="' . $url . '"' .
       ' title="' . $url . '"' .
       ' target="_blank"' .
-      '>' . mb_strimwidth($url, 0, 35, '...') . ' <i class="ml-2 fas fa-up-right-from-square"></i></a></div>';
+      '>' . mb_strimwidth($url, 0, 25, '...') . ' <i class="ml-2 fas fa-up-right-from-square"></i></a></div>';
 
     break;
 
   case '@':
     // --- QR-code ---
+
+    // 'qr_content_type' => 'image/svg+xml',
+    // 'qr_file_ext' => '.svg',
+
+
+
     $url = generateQRCodeURL($url, $config->qr_code_engine);
-    http_response_redirection($url, 307, 0);  // always 307, always no-cache
+
+    if (isset($config->qr_content_type)) {
+      $filename = isset($config->qr_file_ext) ? sanitize($short) . $config->qr_file_ext : false;
+      http_get_remote_file($url, $config->qr_content_type, $filename);
+    } else {
+      http_response_redirection($url, 307, 0);  // always 307, always no-cache
+    }
     die(); // !!!
+    break;
+
+  case '*':
+    // --- SiteMap.XML ---
+    if (!$config->private) {
+
+      header('Content-Type: text/xml', true);
+      header('Content-Disposition: inline; filename="sitemap.xml"');
+
+      echo '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
+      echo '<!-- This should never get called. The robots.txt file prohibits it. -->' . PHP_EOL;
+      // echo '<?xml-stylesheet type="text/xsl" href="sitemap.xsl"' . '?' . '>' . PHP_EOL;
+      echo '<urlset' .
+        ' xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"' .
+        // ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' .
+        // ' xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd"' .
+        '>' . PHP_EOL;
+
+      if (!empty($urls)) {
+        foreach ($urls as $short => $url) {
+          echo "\t" .'<url>';
+          echo '<loc>' . add_trailing_slash(getCurrentUrl()) . '?u=' . rawurlencode($short) . '</loc>';
+          // not doing `<lastmod>`
+          echo '</url>' . PHP_EOL;
+        }
+      }
+      echo '</urlset>';
+      die(); // !!!
+
+    } else {
+
+      $command = 'e';
+      $promise = 401;
+
+    }
+    break;
+
+  case '+':
+    // --- Plugin engine ---
+
+    $fn = 'plugin_' . $url . '.php';
+    if (file_exists($fn)) {
+
+      @include_once( $fn );  // load the plugin
+
+      $cnf = 'plugin_' . $url;  // extract configuration from config
+      if (isset($config->$cnf)) {
+        $cnf = json_decode(json_encode($config->$cnf), true);  // nasty, but can go deep
+      } else {
+        $cnf = false;
+      }
+      if (false !== $cnf) {
+        $cnf['short'] = $short;
+        $cnf['self'] = add_trailing_slash(getCurrentUrl());
+      }
+
+      $fn = 'f_' . $url . '_redirection';
+      if (isset($special)) {
+        switch ($special) {
+          case '@': $fn .= '_at'; break;
+          case '-': $fn .= '_dash'; break;
+        }
+      }
+      if (function_exists($fn)) {
+        $fn($promise, $cnf); // call the plugin function, with conf.
+        die(); // !!!
+      } else {
+        $command = 'e';
+        $promise = 501;
+        $url = $fn . '()';
+      }
+    } else {
+      $command = 'e';
+      $promise = 501;
+    }
     break;
 
   case 'e':
@@ -411,6 +685,7 @@ switch ($command) {
     case 'i':
       // --- Include files, inline ---
       if ( !empty($images) ) {
+        $promise = strtolower($promise);  // lowercase filenames!
         if (array_key_exists($promise, $images)) {
 
           $ct = isset($images[$promise]['c']) ? $images[$promise]['c'] : 'text/plain';
@@ -427,7 +702,8 @@ switch ($command) {
 
           $hold = isset($images[$promise]['h']) ? intval($images[$promise]['h']) : DEFAULT_CACHE_TIME;
 
-          header('Content-type: ' . $ct, true);
+          header('Content-Type: ' . $ct, true);
+          header('Content-Disposition: attachment; filename="' . $promise . '"');
           http_response_cache_for($hold);
           print( $content );
 
@@ -533,7 +809,7 @@ if ('e' == $command) { // Error page, common
 
   // Build string for some 4xx, and the 500 client response codes
   if (empty($content)) {
-    $content .= '<h2 class="text-center h1">';
+    $content .= '<h2 class="text-center"><small class="text-muted">';
     if ($promise == 400) {
       $content .= 'Bad Request';
     } else if ($promise == 401) {
@@ -548,8 +824,11 @@ if ('e' == $command) { // Error page, common
       }
     } else if ($promise == 500) {
       $content .= 'Internal Server Error';
+    } else if ($promise == 501) {
+      $content .= 'Not Implemented';
+      if (!empty($url)) $content .= ': <code>' . $url . '</code>';
     }
-    $content .= '</h2>';
+    $content .= '</small></h2>';
   }
 
   $heading = '<i class="fas fa-' . $_fa . '"></i> ' . $promise;
@@ -557,10 +836,10 @@ if ('e' == $command) { // Error page, common
 
   if (DEBUG) {
     echo '<!--' . PHP_EOL;
-    echo str_replace('&quot;', '"', strip_tags( var_dump_ret($command, '$command') ) );
-    echo str_replace('&quot;', '"', strip_tags( var_dump_ret($promise, '$promise') ) );
-    echo str_replace('&quot;', '"', strip_tags( var_dump_ret($url, '$url') ) );
-    echo str_replace('&quot;', '"', strip_tags( var_dump_ret($short, '$short') ) );
+    var_dump_ret($command, '$command', true);
+    var_dump_ret($promise, '$promise', true);
+    var_dump_ret($url, '$url', true);
+    var_dump_ret($short, '$short', true);
     echo '-->';
   }
   $inc_fa = true;
@@ -587,36 +866,38 @@ if ('e' == $command) { // Error page, common
 <?php if ($inc_highlighter) { ?>
   <link rel="stylesheet" href="<?= $config->highlight_css['url'] ?>" integrity="<?= $config->highlight_css['hash'] ?>" crossorigin="anonymous">
 <?php } ?>
-  <link rel="apple-touch-icon" href="<?= getCurrentUrl() . '/?i=favicon.png' ?>">
-  <link rel="icon" type="image/png" href="<?= getCurrentUrl() . '/?i=favicon.png' ?>">
-  <link rel="icon" type="image/svg+xml" href="<?= getCurrentUrl() . '/?i=icon.svg' ?>" sizes="any">
+  <link rel="apple-touch-icon" href="<?= add_trailing_slash(getCurrentUrl()) . '?i=favicon.png' ?>">
+  <link rel="icon" type="image/png" href="<?= add_trailing_slash(getCurrentUrl()) . '?i=favicon.png' ?>">
+  <link rel="icon" type="image/svg+xml" href="<?= add_trailing_slash(getCurrentUrl()) . '?i=icon.svg' ?>" sizes="any">
   <title><?= $title ?></title>
-  <style> .dialog { z-index: 100; } </style>
+  <style>
+    .wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
+    .dialog { display: flex; z-index: 100; max-width: 100%; }
+    .logo { max-height: 64px; max-width: 100%; }
+    .card-body p { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  </style>
 <?php if (isset($config->extra_css) && !empty($config->extra_css)) { echo $config->extra_css . PHP_EOL; } ?>
 </head>
 <body>
-  <div class="d-flex justify-content-center align-items-center" style="height: 100vh">
-    <div class="text-center">
+  <div class="wrapper">
 
-      <div class="dialog card border rounded-lg shadow-lg text-center border-<?= $color ?>" style="border-radius:1em !important">
-        <h5 class="card-header bg-light px-5 py-3 border-<?= $color ?>" style="border-top-left-radius:1em;border-top-right-radius:1em"><img src="<?= getCurrentUrl() . '/?i=logo.svg' ?>" height="72"></h5>
-        <div class="card-body text-left">
-          <h1 class="card-title text-center"><?= $heading ?></h1>
-          <?= $content ?>
-        </div>
+    <div class="dialog card border rounded-lg shadow-lg text-center border-<?= $color ?>" style="border-radius:1em !important">
+      <h5 class="card-header bg-light px-5 py-3 border-<?= $color ?>" style="border-top-left-radius:1em;border-top-right-radius:1em"><img src="<?= add_trailing_slash(getCurrentUrl()) . '?i=logo.svg' ?>" class="logo"></h5>
+      <div class="card-body text-left">
+        <h1 class="card-title text-center"><?= $heading ?></h1>
+        <?= $content ?>
+      </div>
 <?php if (!empty($href)) { ?>
-        <div class="card-body text-center border-top">
-          <a href="<?= $href ?>" class="btn btn-outline-primary"><?= $btn_text ?></a>
-        </div>
+      <div class="card-body text-center border-top">
+        <a href="<?= $href ?>" class="btn btn-outline-primary"><?= $btn_text ?></a>
+      </div>
 <?php } ?>
 <?php if (!empty($config->copyright)) { ?>
-        <div class="card-footer text-muted small"><?= $config->copyright ?></div>
+      <div class="card-footer text-muted small"><?= $config->copyright ?></div>
 <?php } ?>
-      </div>
-
     </div>
-  </div>
 
+  </div>
 <?php if ($inc_js) { ?>
   <script src="<?= $config->jquery_js['url'] ?>" integrity="<?= $config->jquery_js['hash'] ?>" crossorigin="anonymous"></script>
 <?php /* <script src="<?= $config->popper_js['url'] ?>" integrity="<?= $config->popper_js['hash'] ?>" crossorigin="anonymous"></script> */ ?>
