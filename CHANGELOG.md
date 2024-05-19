@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - vCard support
 - New command - "`*`" - to generate a **`sitemap.xml`** file.
 - Function - `http_get_remote_file()` - to fetch files remotely.
+- Function - `liquefyStr()` - to replace `{{markers}}` in strings
 - Custom inline CSS to center dialog.
 - `.htaccess` rule to generate `sitemap.xml`.
 - Blocking AI bots in `robots.txt`.

@@ -274,16 +274,36 @@ function http_response_redirection($url, $code, $cache_for) {
 }
 
 /**
+ * A function that uses `{{` `}}`, like [Liquid](https://shopify.github.io/liquid/), to replace text.
+ *
+ * Usage: `liquefyStr("Hello {{name}}, welcome to {{place}}!", ['name' => 'Alice', 'place' => 'Wonderland']);`
+ */
+function liquefyStr($str, $replacements = []) {
+  if (!empty($replacements && is_array($replacements))) {
+
+    // Create the regex pattern
+    $pattern = "/" . preg_quote('{{', '/') . "\s*(.*?)\s*" . preg_quote('}}', '/') . "/i";
+
+    // Use a callback function to handle replacements
+    $callback = function($matches) use ($replacements) {
+        $key = strtolower(trim($matches[1]));
+        return isset($replacements[$key]) ? $replacements[$key] : $matches[0];
+    };
+
+    // Perform the replacement
+    $str = preg_replace_callback($pattern, $callback, $str);
+
+  }
+  return $str;
+}
+
+echo liquefyStr("Hello {{name}}, welcome to {{plACe}}!", ['name' => 'Alice', 'place' => 'Wonderland']); die();
+
+/**
  * generates the URL for the QR-Code API provider
  */
 function generateQRCodeURL($url, $qr_code_engine) {
-  $tag = '{{url}}';
-  $url = rawurlencode($url);
-  if (false == strpos($qr_code_engine, $tag) ) {
-    return $qr_code_engine . $url;
-  } else {
-    return str_replace($tag, $url, $qr_code_engine);
-  }
+  return liquefyStr($qr_code_engine, ['url' => rawurlencode($url)]);
 }
 
 /**

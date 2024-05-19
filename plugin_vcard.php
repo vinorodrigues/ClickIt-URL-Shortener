@@ -145,13 +145,11 @@ function f_vcard_generateVCard($data) {
 }
 
 function f_vcard_generateQRCodeURL($data, $qr_code_engine) {
-  $tag = '{{data}}';
-  $data = urlencode($data);
-  if (false == strpos($qr_code_engine, $tag) ) {
-    return $qr_code_engine . $data;
-  } else {
-    return str_replace($tag, $data, $qr_code_engine);
+  if (!function_exists('liquefyStr')) {
+    echo '`liquefyStr()` not found!';
+    die();  // can't be bothered to do this properly, obviously dependant on `index.php`
   }
+  return liquefyStr($qr_code_engine, ['data' => urlencode($data)]);
 }
 
 // ========== PLUGIN code ==========
