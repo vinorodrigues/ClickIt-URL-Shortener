@@ -14,6 +14,7 @@ A simple, but featureful, URL shortening service, for self-hosted usage.
 
 ### In Progress
 
+- [ ] Allow URL's to expire
 
 ### Done &#x2713;
 
